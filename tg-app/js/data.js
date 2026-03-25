@@ -1,0 +1,1263 @@
+/**
+ * data.js — Данные каталога тканей 100FF VL
+ * Данные из прайса: 65 позиций, 6 категорий, цена в USD за метр.
+ *
+ * Чтобы добавить цвета к ткани — найди её по article и заполни массив colors:
+ *   { id: 'c1', hex: '#ЦВЕТ', name: 'Название', stock: МЕТРЫ, rolls: РУЛОНЫ }
+ *
+ * Чтобы изменить категории — обнови поле category и массив CATEGORIES.
+ */
+
+'use strict';
+
+// ================================================================
+// КАТАЛОГ ТКАНЕЙ
+// ================================================================
+const FABRICS = [
+
+  // ── КОСТЮМНО-ПЛАТЕЛЬНЫЕ ─────────────────────────────────────
+
+  {
+    id: 1,
+    name: 'Севилья',
+    article: 'VL-23/Севилья',
+    category: 'Костюмные',
+    composition: '25% Вис, 6% Шерсть, 69% ПЭ',
+    width: 150,
+    density: 270,
+    basePricePerMeter: 4.95,
+    minOrder: 10,
+    step: 5,
+    description: 'Костюмно-плательная ткань с добавлением шерсти. Плотная, хорошо держит форму, не мнётся. Подходит для костюмов, брюк, юбок и жакетов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #7A7A8A 0%, #3A3A4A 100%)',
+  },
+  {
+    id: 2,
+    name: 'Прага',
+    article: 'VL-23/Прага',
+    category: 'Костюмные',
+    composition: '10% Шерсть, 26% Вис, 60% ПЭ, 4% Спан',
+    width: 150,
+    density: 270,
+    basePricePerMeter: 4.95,
+    minOrder: 10,
+    step: 5,
+    description: 'Плотная костюмная ткань с шерстью и спандексом. Тянется, не стесняет движений. Идеальна для деловых костюмов и брюк с посадкой.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #5A5A6A 0%, #2A2A3A 100%)',
+  },
+  {
+    id: 3,
+    name: 'Мадрид',
+    article: 'VL-22/Мадрид',
+    category: 'Костюмные',
+    composition: '40% ХБ, 10% Лавсан, 45% ПЭ, 5% ЭЛ',
+    width: 150,
+    density: 240,
+    basePricePerMeter: 5.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Смесовая костюмная ткань с хлопком и эластаном. Дышащая, комфортная при носке, хорошо держит стрелки и форму изделия.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #8A7A6A 0%, #4A3A2A 100%)',
+  },
+  {
+    id: 4,
+    name: 'Монако',
+    article: 'VL-23/Монако',
+    category: 'Костюмные',
+    composition: '37% ХБ, 60% ПЭ, 3% ЭЛ',
+    width: 150,
+    density: 200,
+    basePricePerMeter: 5.70,
+    minOrder: 10,
+    step: 5,
+    description: 'Лёгкая костюмная ткань с хлопком. Приятная к телу, дышащая, подходит для летних костюмов и брюк. Хорошо гладится.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #4A5A7A 0%, #1A2A4A 100%)',
+  },
+  {
+    id: 5,
+    name: 'Палермо',
+    article: 'VL-23/Палермо',
+    category: 'Костюмные',
+    composition: '25% ХБ, 75% ПЭ',
+    width: 150,
+    density: 260,
+    basePricePerMeter: 5.20,
+    minOrder: 10,
+    step: 5,
+    description: 'Плотная смесовая ткань с устойчивостью к износу. Практичная, не растягивается, хорошо сохраняет форму при длительной носке.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #7A6A5A 0%, #3A2A1A 100%)',
+  },
+  {
+    id: 6,
+    name: 'Токио 0.5',
+    article: 'VL-23/Токио 0.5',
+    category: 'Костюмные',
+    composition: '35% Вис, 63% ПЭ, 2% Спан',
+    width: 150,
+    density: 230,
+    basePricePerMeter: 5.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Костюмная ткань серии Токио с лёгким блеском вискозы. Тянется по вертикали, отлично садится по фигуре. Для платьев и костюмов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #6A5A7A 0%, #2A1A4A 100%)',
+  },
+  {
+    id: 7,
+    name: 'Токио 1',
+    article: 'VL-23/Токио 1',
+    category: 'Костюмные',
+    composition: '32% Вис, 66% ПЭ, 2% Спан',
+    width: 150,
+    density: 210,
+    basePricePerMeter: 5.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Средняя плотность серии Токио. Лёгкая, приятная к телу, хорошо драпируется. Подходит для офисных платьев и брюк.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #7A5A8A 0%, #3A1A4A 100%)',
+  },
+  {
+    id: 8,
+    name: 'Токио 1.5',
+    article: 'VL-23/Токио 1.5',
+    category: 'Костюмные',
+    composition: '28% Вис, 70% ПЭ, 2% Спан',
+    width: 150,
+    density: 240,
+    basePricePerMeter: 5.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Плотная версия серии Токио. Держит форму, не просвечивает. Лучший выбор для строгих костюмов и деловых платьев.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #5A4A6A 0%, #1A0A2A 100%)',
+  },
+  {
+    id: 9,
+    name: 'Элиза',
+    article: 'VL-23/Элиза',
+    category: 'Костюмные',
+    composition: '37% Вис, 60% ПЭ, 3% ЭЛ',
+    width: 150,
+    density: 240,
+    basePricePerMeter: 5.00,
+    minOrder: 10,
+    step: 5,
+    description: 'Элегантная костюмная ткань с добавлением эластана. Приятный матовый блеск, хорошо тянется, комфортна в носке весь день.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #5A6A7A 0%, #1A2A3A 100%)',
+  },
+  {
+    id: 10,
+    name: 'Марсель',
+    article: 'VL-24/Марсель',
+    category: 'Костюмные',
+    composition: '26% Вис, 70% ПЭ, 4% Спан',
+    width: 150,
+    density: 230,
+    basePricePerMeter: 5.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Новинка 2024. Костюмная ткань с повышенным содержанием спандекса. Отличная эластичность, возвращается в форму после растяжения.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #4A6A6A 0%, #1A3A3A 100%)',
+  },
+  {
+    id: 11,
+    name: 'Лондон',
+    article: 'VL-23/Лондон',
+    category: 'Костюмные',
+    composition: '33% Вис, 60% ПЭ, 7% ЭЛ',
+    width: 150,
+    density: 240,
+    basePricePerMeter: 5.30,
+    minOrder: 10,
+    step: 5,
+    description: 'Костюмно-плательная ткань с повышенным эластаном. Максимальный комфорт, тянется во все стороны. Для fitted-силуэтов и облегающих изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #2A3A5A 0%, #0A1A3A 100%)',
+  },
+  {
+    id: 12,
+    name: 'Пандора лайт',
+    article: 'VL-23/Пандора лайт',
+    category: 'Костюмные',
+    composition: '18% Вис, 77% ПЭ, 5% ЭЛ',
+    width: 150,
+    density: 160,
+    basePricePerMeter: 3.70,
+    minOrder: 10,
+    step: 5,
+    description: 'Лёгкая версия Пандоры. Тонкая, дышащая, с лёгким блеском. Хороша для летних платьев и блуз. Одна из самых доступных позиций серии.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #A0A0B0 0%, #606070 100%)',
+  },
+  {
+    id: 13,
+    name: 'Пандора',
+    article: 'VL-23/Пандора',
+    category: 'Костюмные',
+    composition: '18% Вис, 77% ПЭ, 5% ЭЛ',
+    width: 150,
+    density: 210,
+    basePricePerMeter: 4.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Классическая Пандора — одна из самых популярных позиций. Средняя плотность, отличная драпировка, широкий выбор расцветок.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #7A7A8A 0%, #3A3A4A 100%)',
+  },
+  {
+    id: 14,
+    name: 'Флоренция',
+    article: 'VL-24/Флоренция',
+    category: 'Костюмные',
+    composition: '32% Вис, 65% ПЭ, 3% Спан',
+    width: 145,
+    density: 260,
+    basePricePerMeter: 6.50,
+    minOrder: 10,
+    step: 5,
+    description: 'Премиальная новинка 2024. Плотная костюмная ткань с мягкой текстурой. Ширина 145 см, отличный выход изделий. Для сезонных коллекций.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #8A5A5A 0%, #4A1A1A 100%)',
+  },
+  {
+    id: 15,
+    name: 'Ницца',
+    article: 'VL-24/Ницца',
+    category: 'Костюмные',
+    composition: '33% Вис, 5% Шерсть, 60% ПЭ, 2% Спан',
+    width: 140,
+    density: 260,
+    basePricePerMeter: 7.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Премиальная ткань с натуральной шерстью. Благородный матовый вид, отличная посадка, не скатывается. Для дизайнерских коллекций.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #6A5A3A 0%, #2A1A0A 100%)',
+  },
+  {
+    id: 16,
+    name: 'Alpaka',
+    article: 'VL-06/Alpaka',
+    category: 'Костюмные',
+    composition: '25% Вис, 75% ПЭ',
+    width: 150,
+    density: 175,
+    basePricePerMeter: 4.80,
+    minOrder: 10,
+    step: 5,
+    description: 'Лёгкая костюмная ткань с нежной текстурой. Матовая поверхность, хорошая драпировка. Универсальная для платьев, блуз и лёгких жакетов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #C0B090 0%, #806040 100%)',
+  },
+  {
+    id: 17,
+    name: 'Лили',
+    article: 'VL-23/Лили',
+    category: 'Костюмные',
+    composition: '90% ПЭ, 10% Спан',
+    width: 150,
+    density: 200,
+    basePricePerMeter: 3.50,
+    minOrder: 10,
+    step: 5,
+    description: 'Доступная костюмная ткань из полиэстера со спандексом. Практичная, износостойкая, легко стирается. Хороший выбор для массовых коллекций.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #B0A0C0 0%, #605070 100%)',
+  },
+
+  // ── РУБАШЕЧНО-ПЛАТЕЛЬНЫЙ ХЛОПОК ─────────────────────────────
+
+  {
+    id: 18,
+    name: 'ХБ002',
+    article: 'VL-23/ХБ002',
+    category: 'Хлопок',
+    composition: '100% ХБ',
+    width: 150,
+    density: 120,
+    basePricePerMeter: 4.30,
+    minOrder: 10,
+    step: 5,
+    description: 'Чистый хлопок для рубашек и платьев. Дышащий, гигроскопичный, приятный к коже. Легко обрабатывается, хорошо гладится.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #F0E8D8 0%, #C0A888 100%)',
+  },
+  {
+    id: 19,
+    name: 'ХБ003',
+    article: 'VL-23/ХБ003',
+    category: 'Хлопок',
+    composition: '75% ХБ, 20% ПЭ, 5% ЭЛ',
+    width: 150,
+    density: 120,
+    basePricePerMeter: 4.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Хлопок с добавлением полиэстера и эластана. Не мнётся так сильно как чистый хлопок, тянется. Удобен в носке, практичен в уходе.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #E8E0D0 0%, #B0A890 100%)',
+  },
+  {
+    id: 20,
+    name: 'ХБ004',
+    article: 'VL-23/ХБ004',
+    category: 'Хлопок',
+    composition: '90% ХБ, 10% ЭЛ',
+    width: 150,
+    density: 170,
+    basePricePerMeter: 4.95,
+    minOrder: 10,
+    step: 5,
+    description: 'Плотный хлопок с эластаном. Более тяжёлый и структурный, чем ХБ002/003. Отлично подходит для рубашек с хорошей посадкой.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #E0D8C8 0%, #A89878 100%)',
+  },
+  {
+    id: 21,
+    name: 'ХБ Принт',
+    article: 'VL-23/ХБ Принт',
+    category: 'Хлопок',
+    composition: '100% Хлопок',
+    width: 150,
+    density: 115,
+    basePricePerMeter: 4.00,
+    minOrder: 10,
+    step: 5,
+    description: 'Тонкий хлопок с печатным рисунком. Лёгкий, дышащий, яркие принты. Для летних платьев, сарафанов, детской одежды.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #F0D8C0 0%, #C09870 100%)',
+  },
+  {
+    id: 22,
+    name: 'Belinda Soft',
+    article: 'VL-06/Belinda Soft',
+    category: 'Хлопок',
+    composition: '24% Вис, 71% ПЭ, 5% ЭЛ',
+    width: 150,
+    density: 150,
+    basePricePerMeter: 5.30,
+    minOrder: 10,
+    step: 5,
+    description: 'Мягкая рубашечная ткань с вискозой. Нежная на ощупь, не раздражает кожу. Для блуз, рубашек и платьев-рубашек.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #E8EEF8 0%, #A8B8D8 100%)',
+  },
+  {
+    id: 23,
+    name: 'Фланель 170',
+    article: 'VL-23/Фланель 170',
+    category: 'Хлопок',
+    composition: '80% Хлопок, 20% ПЭ',
+    width: 150,
+    density: 170,
+    basePricePerMeter: 3.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Классическая фланель лёгкой плотности. Мягкая, тёплая, с характерным начёсом. Для пижам, рубашек, детской одежды.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #D8C8B8 0%, #907860 100%)',
+  },
+  {
+    id: 24,
+    name: 'Фланель 270',
+    article: 'VL-23/Фланель 270',
+    category: 'Хлопок',
+    composition: '80% Хлопок, 20% ПЭ',
+    width: 150,
+    density: 270,
+    basePricePerMeter: 4.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Средняя фланель — самая популярная плотность. Тёплая, мягкая, хорошо шьётся. Для рубашек, халатов, пижам, детских изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #C8B8A8 0%, #806850 100%)',
+  },
+  {
+    id: 25,
+    name: 'Фланель 400',
+    article: 'VL-23/Фланель 400',
+    category: 'Хлопок',
+    composition: '80% Хлопок, 20% ПЭ',
+    width: 150,
+    density: 400,
+    basePricePerMeter: 6.10,
+    minOrder: 10,
+    step: 5,
+    description: 'Тяжёлая премиальная фланель. Очень тёплая, плотная, долговечная. Для верхней рубашечной одежды, пальто, одеял и домашнего текстиля.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #B0A090 0%, #605040 100%)',
+  },
+
+  // ── ПЛАТЕЛЬНО-БЛУЗОЧНЫЕ ──────────────────────────────────────
+
+  {
+    id: 26,
+    name: 'Монро',
+    article: 'VL-23/Монро',
+    category: 'Плательные',
+    composition: '50% ХБ, 25% Вис, 25% ПЭ',
+    width: 150,
+    density: 90,
+    basePricePerMeter: 3.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Лёгкая плательная ткань с хлопком. Тонкая, дышащая, немного прозрачная. Для летних платьев, блуз, туник.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #F8EED8 0%, #D0B890 100%)',
+  },
+  {
+    id: 27,
+    name: 'Len-Mix',
+    article: 'VL-23/Len-Mix',
+    category: 'Плательные',
+    composition: '50% Лён, 45% Вис, 5% ЭЛ',
+    width: 150,
+    density: 160,
+    basePricePerMeter: 4.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Льняная смесь с вискозой и эластаном. Натуральная фактура льна, мягкость вискозы, комфорт при носке. Для летних комплектов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #D8C8A0 0%, #988860 100%)',
+  },
+  {
+    id: 28,
+    name: 'Белла',
+    article: 'VL-23/Белла',
+    category: 'Плательные',
+    composition: '55% Лён, 45% ПЭ',
+    width: 140,
+    density: 180,
+    basePricePerMeter: 4.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Льняная ткань с полиэстером. Характерная льняная текстура, меньше мнётся чем чистый лён. Для платьев, брюк, юбок.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #D0C098 0%, #907860 100%)',
+  },
+  {
+    id: 29,
+    name: 'Лен Руж',
+    article: 'VL-23/Лен Руж',
+    category: 'Плательные',
+    composition: '32% Вис, 65% ПЭ, 3% ЭЛ',
+    width: 150,
+    density: 155,
+    basePricePerMeter: 4.20,
+    minOrder: 10,
+    step: 5,
+    description: 'Лёгкая плательная ткань с имитацией льняной фактуры. Не мнётся, практичная в уходе. Хороший выбор для лаконичных летних изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #C8A888 0%, #886040 100%)',
+  },
+  {
+    id: 30,
+    name: 'PRO Лен',
+    article: 'VL-23/PRO Лен',
+    category: 'Плательные',
+    composition: '100% ПЭ',
+    width: 150,
+    density: 135,
+    basePricePerMeter: 3.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Имитация льна из полиэстера. Характерная фактура, не мнётся, легко стирается. Практичная альтернатива натуральному льну для повседневных изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #D8D0B8 0%, #989080 100%)',
+  },
+  {
+    id: 31,
+    name: 'Кармэла',
+    article: 'VL-23/Кармэла',
+    category: 'Плательные',
+    composition: '100% Купро',
+    width: 150,
+    density: 180,
+    basePricePerMeter: 10.00,
+    minOrder: 10,
+    step: 5,
+    description: 'Премиальная ткань из купро — натурального целлюлозного волокна. Шелковистая на ощупь, красиво драпируется, гипоаллергенная. Для haute couture изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #C8A878 0%, #785830 100%)',
+  },
+  {
+    id: 32,
+    name: 'TEN TEN',
+    article: 'VL-24/TEN TEN',
+    category: 'Плательные',
+    composition: '100% Лиоцелл',
+    width: 145,
+    density: 160,
+    basePricePerMeter: 6.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Лиоцелл (Tencel) — экологичное волокно из древесной целлюлозы. Мягкий, дышащий, антибактериальный. Премиальный выбор для устойчивой моды.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #A8C0B0 0%, #588070 100%)',
+  },
+  {
+    id: 33,
+    name: 'Ramie',
+    article: 'VL-24/Ramie',
+    category: 'Плательные',
+    composition: '100% Крапива',
+    width: 135,
+    density: 80,
+    basePricePerMeter: 7.90,
+    minOrder: 10,
+    step: 5,
+    description: 'Рами — ткань из крапивы. Очень лёгкая (80 г/м²), экологичная, антибактериальная. Уникальный натуральный материал для авторских коллекций.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #C8D8B8 0%, #889870 100%)',
+  },
+  {
+    id: 34,
+    name: 'Бельмондо',
+    article: 'VL-23/Бельмондо',
+    category: 'Плательные',
+    composition: '100% Вискоза',
+    width: 150,
+    density: 180,
+    basePricePerMeter: 3.80,
+    minOrder: 10,
+    step: 5,
+    description: 'Классический штапель из чистой вискозы. Мягкий, дышащий, красиво драпируется. Один из самых доступных вариантов для плательных изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #9898B8 0%, #484868 100%)',
+  },
+  {
+    id: 35,
+    name: 'Штапель принт',
+    article: 'VL-23/Штапель принт',
+    category: 'Плательные',
+    composition: '100% Вискоза',
+    width: 150,
+    density: 120,
+    basePricePerMeter: 3.70,
+    minOrder: 10,
+    step: 5,
+    description: 'Лёгкий штапель с печатным рисунком. Тонкий, мягкий, разнообразные принты. Отличный выбор для летних платьев и сарафанов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #B0A8C8 0%, #605878 100%)',
+  },
+  {
+    id: 36,
+    name: 'Мальвина',
+    article: 'VL-24/Мальвина',
+    category: 'Плательные',
+    composition: '80% Вис, 20% ПЭ',
+    width: 145,
+    density: 120,
+    basePricePerMeter: 5.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Новинка 2024 — вискоза с полиэстером. Лёгкая, с красивым драпом, меньше мнётся чем чистая вискоза. Для платьев и блуз весна-лето.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #B8A8C8 0%, #685878 100%)',
+  },
+  {
+    id: 37,
+    name: 'София',
+    article: 'VL-24/София',
+    category: 'Плательные',
+    composition: '25% Бамбук, 70% ПЭ, 5% Спан',
+    width: 150,
+    density: 150,
+    basePricePerMeter: 6.20,
+    minOrder: 10,
+    step: 5,
+    description: 'Ткань с бамбуковым волокном. Антибактериальная, гипоаллергенная, мягкая. Отличный выбор для детской одежды и нижнего белья.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #B8D0B8 0%, #689068 100%)',
+  },
+  {
+    id: 38,
+    name: 'Дубайский шёлк',
+    article: 'VL-23/Дубайский шелк',
+    category: 'Плательные',
+    composition: '98% ПЭ, 2% ЭЛ',
+    width: 150,
+    density: 130,
+    basePricePerMeter: 3.95,
+    minOrder: 10,
+    step: 5,
+    description: 'Имитация шёлка из полиэстера. Блестящая поверхность, хорошо драпируется, доступная цена. Для вечерних платьев и торжественных нарядов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #D8C8E8 0%, #906898 100%)',
+  },
+  {
+    id: 39,
+    name: 'Дубайский шёлк принт',
+    article: 'VL-23/Дубайский шелк принт',
+    category: 'Плательные',
+    composition: '98% ПЭ, 2% ЭЛ',
+    width: 150,
+    density: 130,
+    basePricePerMeter: 3.95,
+    minOrder: 10,
+    step: 5,
+    description: 'Дубайский шёлк с печатным рисунком. Блеск в сочетании с ярким принтом. Для торжественных платьев и нарядных блуз.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #E8C8D8 0%, #986878 100%)',
+  },
+  {
+    id: 40,
+    name: 'Японский шёлк',
+    article: 'VL-23/Японский шелк',
+    category: 'Плательные',
+    composition: '100% ПЭ',
+    width: 150,
+    density: 170,
+    basePricePerMeter: 5.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Японский шёлк — более плотная имитация натурального шёлка. Шелковистая поверхность, красивый блеск, хорошо шьётся. Для нарядных изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #E8E0D0 0%, #B0A880 100%)',
+  },
+  {
+    id: 41,
+    name: 'Японский шёлк принт',
+    article: 'VL-23/Японский шелк принт',
+    category: 'Плательные',
+    composition: '100% ПЭ',
+    width: 150,
+    density: 150,
+    basePricePerMeter: 5.80,
+    minOrder: 10,
+    step: 5,
+    description: 'Японский шёлк с печатью. Нарядный вид, лёгкость и блеск в сочетании с принтом. Популярен для вечерних платьев.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #D8C8E0 0%, #988090 100%)',
+  },
+  {
+    id: 42,
+    name: 'Лион',
+    article: 'VL-23/Лион',
+    category: 'Плательные',
+    composition: '95% ПЭ, 5% Метанить',
+    width: 150,
+    density: 180,
+    basePricePerMeter: 6.00,
+    minOrder: 10,
+    step: 5,
+    description: 'Ткань с металлизированной нитью (метанитью). Лёгкое мерцание, торжественный вид. Для праздничных платьев, вечерних нарядов, новогодних коллекций.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #D8C888 0%, #888050 100%)',
+  },
+  {
+    id: 43,
+    name: 'ХБ Мушка',
+    article: 'VL-23/ХБ Мушка',
+    category: 'Плательные',
+    composition: '100% ХБ',
+    width: 150,
+    density: 90,
+    basePricePerMeter: 4.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Ажурный хлопок с просечённым узором "мушка". Лёгкий, декоративный, для накидок, блуз и летних платьев с подкладом.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #F0E8D0 0%, #C0B090 100%)',
+  },
+  {
+    id: 44,
+    name: 'Мушка',
+    article: 'VL-23/Мушка',
+    category: 'Плательные',
+    composition: '90% Нейлон, 10% Спан',
+    width: 150,
+    density: 40,
+    basePricePerMeter: 3.90,
+    minOrder: 10,
+    step: 5,
+    description: 'Очень лёгкая сетчатая ткань (40 г/м²) с ажурным узором. Прозрачная, воздушная. Для верхнего слоя платьев, накидок, декоративных элементов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #E8E8E0 0%, #C0C0B0 100%)',
+  },
+  {
+    id: 45,
+    name: 'EVA',
+    article: 'VL-24/EVA',
+    category: 'Плательные',
+    composition: '61% Вис, 39% ПЭ',
+    width: 140,
+    density: 130,
+    basePricePerMeter: 4.70,
+    minOrder: 10,
+    step: 5,
+    description: 'Новинка 2024 с высоким содержанием вискозы. Мягкая, дышащая, с натуральным блеском. Отлично драпируется, комфортна в носке.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #B0B8D0 0%, #606880 100%)',
+  },
+  {
+    id: 46,
+    name: 'Ария',
+    article: 'VL-24/Ария',
+    category: 'Плательные',
+    composition: '85% Лиоцелл, 15% ПЭ',
+    width: 150,
+    density: 55,
+    basePricePerMeter: 4.50,
+    minOrder: 10,
+    step: 5,
+    description: 'Сверхлёгкая ткань из лиоцелла (55 г/м²). Воздушная, почти прозрачная. Для накидок, летних туник, ярусных платьев. Экологичный материал.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #C8D8C8 0%, #788878 100%)',
+  },
+  {
+    id: 47,
+    name: 'Шэрон',
+    article: 'VL-24/Шэрон',
+    category: 'Плательные',
+    composition: '83% Крапива, 17% ХБ',
+    width: 130,
+    density: 145,
+    basePricePerMeter: 6.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Уникальная смесь крапивы и хлопка. Натуральная, антибактериальная, прочная. Фактурная поверхность. Для авторских коллекций и eco-fashion.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #B8C8A0 0%, #708860 100%)',
+  },
+
+  // ── ХЛОПКОВАЯ ДЖИНСА ТВИЛЛ ──────────────────────────────────
+
+  {
+    id: 48,
+    name: 'Peach Denim',
+    article: 'VL-23/Peach Denim',
+    category: 'Джинсовые',
+    composition: '95% ХБ, 5% ЭЛ',
+    width: 150,
+    density: 260,
+    basePricePerMeter: 5.70,
+    minOrder: 10,
+    step: 5,
+    description: 'Джинса с персиковой выделкой поверхности. Мягкая на ощупь, тянется. Для брюк, юбок, курток с необычной текстурой.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #E8C8A8 0%, #A07050 100%)',
+  },
+  {
+    id: 49,
+    name: 'Denim Leya',
+    article: 'VL-23/Denim Leya',
+    category: 'Джинсовые',
+    composition: '95% ХБ, 5% ЭЛ',
+    width: 150,
+    density: 220,
+    basePricePerMeter: 6.10,
+    minOrder: 10,
+    step: 5,
+    description: 'Стрейчевая джинса средней плотности. Хорошо тянется, не теряет форму. Популярный выбор для классических джинсов и юбок.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #5080B8 0%, #203060 100%)',
+  },
+  {
+    id: 50,
+    name: 'ADA',
+    article: 'VL-06/ADA',
+    category: 'Джинсовые',
+    composition: '100% Хлопок',
+    width: 160,
+    density: 190,
+    basePricePerMeter: 4.90,
+    minOrder: 10,
+    step: 5,
+    description: 'Лёгкая 100% хлопковая джинса шириной 160 см. Мягкая, дышащая, хорошо поддаётся окраске и варке. Для casual одежды.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #6898C8 0%, #284868 100%)',
+  },
+  {
+    id: 51,
+    name: 'KALGARY',
+    article: 'VL-06/KALGARY',
+    category: 'Джинсовые',
+    composition: '100% Хлопок',
+    width: 160,
+    density: 340,
+    basePricePerMeter: 6.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Тяжёлая плотная джинса (340 г/м²). Прочная, долговечная, для рабочей одежды и жёстких силуэтов. Широкое полотно 160 см.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #304870 0%, #101828 100%)',
+  },
+  {
+    id: 52,
+    name: 'TIFFANY',
+    article: 'VL-06/TIFFANY',
+    category: 'Джинсовые',
+    composition: '100% Хлопок',
+    width: 160,
+    density: 240,
+    basePricePerMeter: 5.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Классическая джинса средней плотности шириной 160 см. Оптимальный выбор для джинсов, курток, сумок и аксессуаров.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #4878A8 0%, #183050 100%)',
+  },
+  {
+    id: 53,
+    name: 'PANAMA',
+    article: 'VL-06/PANAMA',
+    category: 'Джинсовые',
+    composition: '100% Хлопок',
+    width: 160,
+    density: 260,
+    basePricePerMeter: 5.80,
+    minOrder: 10,
+    step: 5,
+    description: 'Джинсовая ткань в технике "Панама". Особая фактура переплетения, более рельефная поверхность. Для дизайнерских коллекций.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #5088B0 0%, #205060 100%)',
+  },
+  {
+    id: 54,
+    name: 'AHLAT',
+    article: 'VL-06/AHLAT',
+    category: 'Джинсовые',
+    composition: '65% ХБ, 35% Dry Touch',
+    width: 150,
+    density: 170,
+    basePricePerMeter: 7.40,
+    minOrder: 10,
+    step: 5,
+    description: 'Хлопковая джинса с технологией Dry Touch. Быстро сохнет, приятна к коже, не парит. Для активной одежды и спортивного casual.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #6090A0 0%, #204050 100%)',
+  },
+  {
+    id: 55,
+    name: 'Denim 50',
+    article: 'VL-23/Denim 50',
+    category: 'Джинсовые',
+    composition: '60% ХБ, 32% ПЭ, 8% Спан',
+    width: 150,
+    density: 200,
+    basePricePerMeter: 4.00,
+    minOrder: 10,
+    step: 5,
+    description: 'Бюджетная стрейч-джинса. Тянется в четыре стороны, не скручивается, практична в уходе. Для базовых коллекций по доступной цене.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #6888A8 0%, #304858 100%)',
+  },
+  {
+    id: 56,
+    name: 'Denim 100',
+    article: 'VL-23/Denim 100',
+    category: 'Джинсовые',
+    composition: '100% Хлопок',
+    width: 150,
+    density: 370,
+    basePricePerMeter: 5.90,
+    minOrder: 10,
+    step: 5,
+    description: 'Тяжёлая 100% хлопковая джинса (370 г/м²). Прочная, фактурная, для классических джинсов и верхней одежды. Хорошо поддаётся дистрессингу.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #284060 0%, #081828 100%)',
+  },
+  {
+    id: 57,
+    name: 'Denim Classic',
+    article: 'VL-23/Denim Classic',
+    category: 'Джинсовые',
+    composition: '98% Хлопок, 2% ПЭ',
+    width: 150,
+    density: 250,
+    basePricePerMeter: 4.80,
+    minOrder: 10,
+    step: 5,
+    description: 'Классическая джинса без стрейча. Традиционная выработка, прочная, со временем принимает форму тела. Для аутентичных джинсовых изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #3868A0 0%, #103050 100%)',
+  },
+  {
+    id: 58,
+    name: 'Denim 500 с начёсом',
+    article: 'VL-23/Denim 500',
+    category: 'Джинсовые',
+    composition: '60% ХБ, 35% ПЭ, 5% Спан',
+    width: 150,
+    density: 460,
+    basePricePerMeter: 7.10,
+    minOrder: 10,
+    step: 5,
+    description: 'Самая тяжёлая джинса в ассортименте (460 г/м²) с начёсом на изнанке. Тёплая, мягкая внутри, прочная снаружи. Для зимних джинсов и курток.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #204060 0%, #081828 100%)',
+  },
+
+  // ── ТРИКОТАЖНЫЕ ПОЛОТНА ──────────────────────────────────────
+
+  {
+    id: 59,
+    name: 'Замша на скубе',
+    article: 'Замша на скубе',
+    category: 'Трикотаж',
+    composition: '95% ПЭ, 5% ЭЛ',
+    width: 150,
+    density: 270,
+    basePricePerMeter: 4.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Трикотаж с замшевой поверхностью на скубе. Мягкий на ощупь, с матовым бархатистым видом. Для платьев, брюк, топов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #907880 0%, #503040 100%)',
+  },
+  {
+    id: 60,
+    name: 'Браш',
+    article: 'VL-23/Браш',
+    category: 'Трикотаж',
+    composition: '25% Вис, 25% Акрил, 5% Спан, 45% ПА',
+    width: 180,
+    density: 300,
+    basePricePerMeter: 10.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Трикотаж с ворсистой щёточной поверхностью. Продаётся по весу (10,6 $/кг). Тёплый, мягкий, декоративный. Для верхней одежды и аксессуаров.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #A09090 0%, #604848 100%)',
+  },
+  {
+    id: 61,
+    name: 'Ponti Roma',
+    article: 'VL-23/Ponti Roma',
+    category: 'Трикотаж',
+    composition: '80% Вис, 15% ПЭ, 5% Спан',
+    width: 160,
+    density: 390,
+    basePricePerMeter: 5.90,
+    minOrder: 10,
+    step: 5,
+    description: 'Плотный трикотаж Понти Рома. Тянется, держит форму, не просвечивает. Профессиональный выбор для структурированных платьев и костюмов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #605870 0%, #201828 100%)',
+  },
+  {
+    id: 62,
+    name: 'Вельвет бамбук',
+    article: 'VL-23/Вельвет бамбук',
+    category: 'Трикотаж',
+    composition: '20% Бамбук, 10% Вис, 65% ПЭ, 5% ЭЛ',
+    width: 180,
+    density: 410,
+    basePricePerMeter: 10.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Трикотажный бамбуковый вельвет с бархатистой поверхностью. Продаётся по весу (10,6 $/кг). Тёплый, мягкий, экологичный. Для верхней одежды.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #806070 0%, #401830 100%)',
+  },
+  {
+    id: 63,
+    name: 'ULTRA',
+    article: 'VL-23/ULTRA',
+    category: 'Трикотаж',
+    composition: '21% Вис, 73% ПЭ, 6% ЭЛ',
+    width: 170,
+    density: 280,
+    basePricePerMeter: 4.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Широкий трикотаж (170 см) с хорошим балансом тянучести и структуры. Для спортивных костюмов, лосин, боди.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #5060A0 0%, #101840 100%)',
+  },
+  {
+    id: 64,
+    name: 'Тесла',
+    article: 'VL-23/Тесла',
+    category: 'Трикотаж',
+    composition: '21% Вис, 73% ПЭ, 6% ЭЛ',
+    width: 170,
+    density: 300,
+    basePricePerMeter: 4.60,
+    minOrder: 10,
+    step: 5,
+    description: 'Более плотная версия трикотажа ULTRA (300 г/м²). Хорошо держит форму, не сквозит. Для плотных лосин, спортивных брюк и топов.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #4050A0 0%, #101830 100%)',
+  },
+
+  // ── ПОДКЛАДОЧНАЯ ТКАНЬ ───────────────────────────────────────
+
+  {
+    id: 65,
+    name: 'TAFF',
+    article: 'VL-24/TAFF',
+    category: 'Подкладочные',
+    composition: '47% Вис, 53% ПЭ',
+    width: 140,
+    density: 125,
+    basePricePerMeter: 3.30,
+    minOrder: 20,
+    step: 10,
+    description: 'Подкладочная ткань таффета. Гладкая, лёгкая, приятная к телу. Снижает электризацию, облегчает надевание одежды. Для подкладки любых изделий.',
+    colors: [
+      { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
+    ],
+    thumb: 'linear-gradient(145deg, #E0D8C8 0%, #A09880 100%)',
+  },
+
+];
+
+// ================================================================
+// КАТЕГОРИИ (должны совпадать с полем category в FABRICS)
+// ================================================================
+const CATEGORIES = [
+  'Все',
+  'Костюмные',
+  'Хлопок',
+  'Плательные',
+  'Джинсовые',
+  'Трикотаж',
+  'Подкладочные',
+];
+
+// ================================================================
+// ДАННЫЕ МЕНЕДЖЕРА
+// ================================================================
+const MANAGER = {
+  name: 'Менеджер 100FF VL',
+  since: '2006',
+  tgUsername: 'tkani_100ffVL',   // без @, только username
+  phone: '+7 (812) 408-08-28',
+  initials: 'VL',
+};
+
+// ================================================================
+// ДЕМОНСТРАЦИОННАЯ ИСТОРИЯ ЗАКАЗОВ
+// ================================================================
+const DEMO_ORDERS = [
+  {
+    id: 2847,
+    date: '14 марта 2025',
+    status: 'processing',
+    items: [
+      { fabricId: 1,  colorId: 'c1', colorName: 'Уточнить у менеджера', meters: 50 },
+      { fabricId: 13, colorId: 'c1', colorName: 'Уточнить у менеджера', meters: 80 },
+      { fabricId: 65, colorId: 'c1', colorName: 'Уточнить у менеджера', meters: 60 },
+    ],
+    total: 1100,
+  },
+  {
+    id: 2811,
+    date: '2 марта 2025',
+    status: 'done',
+    items: [
+      { fabricId: 34, colorId: 'c1', colorName: 'Уточнить у менеджера', meters: 100 },
+      { fabricId: 49, colorId: 'c1', colorName: 'Уточнить у менеджера', meters: 80  },
+      { fabricId: 61, colorId: 'c1', colorName: 'Уточнить у менеджера', meters: 50  },
+    ],
+    total: 2080,
+  },
+];
+
+// ================================================================
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// ================================================================
+
+/** Ценовые уровни по объёму */
+function getPriceTiers(fabric) {
+  const b = fabric.basePricePerMeter;
+  return [
+    { label: `${fabric.minOrder}–49 м`,  price: b },
+    { label: '50–99 м',                  price: +(b * 0.92).toFixed(2) },
+    { label: '100–299 м',                price: +(b * 0.85).toFixed(2) },
+    { label: '300+ м',                   price: +(b * 0.78).toFixed(2) },
+  ];
+}
+
+/** Цена с учётом объёма */
+function getPriceForMeters(fabric, meters) {
+  const b = fabric.basePricePerMeter;
+  if (meters >= 300) return +(b * 0.78).toFixed(2);
+  if (meters >= 100) return +(b * 0.85).toFixed(2);
+  if (meters >= 50)  return +(b * 0.92).toFixed(2);
+  return b;
+}
+
+/** Форматирует цену в долларах */
+function formatPrice(num) {
+  const n = parseFloat(num);
+  const str = Number.isInteger(n) ? String(n) : n.toFixed(2).replace('.', ',');
+  return str + '\u00A0$/м';
+}
+
+/** Статус остатка */
+function getStockStatus(stock) {
+  if (stock === 0)  return { label: 'Нет в наличии', cls: 'stock-none' };
+  if (stock < 50)   return { label: `${stock}\u00A0м ⚠`, cls: 'stock-low' };
+  return              { label: 'В наличии',           cls: 'stock-ok'  };
+}
+
+/** Округление до кратного */
+function snapToStep(value, minOrder, step) {
+  const snapped = Math.round(value / step) * step;
+  return Math.max(minOrder, snapped);
+}
+
+/** Получить ткань по id */
+function getFabricById(id) {
+  return FABRICS.find(f => f.id === id) || null;
+}
+
+/** Получить цвет ткани по id цвета */
+function getColorById(fabric, colorId) {
+  return fabric.colors.find(c => c.id === colorId) || fabric.colors[0];
+}
+
+/** Первый доступный цвет */
+function getFirstAvailableColor(fabric) {
+  return fabric.colors.find(c => c.stock > 0) || fabric.colors[0];
+}
+
+/** Метка статуса заказа */
+function getOrderStatusLabel(status) {
+  const map = {
+    processing: { label: 'В обработке',  cls: 'status-processing' },
+    confirmed:  { label: 'Подтверждена', cls: 'status-confirmed'  },
+    done:       { label: 'Выполнена',    cls: 'status-done'       },
+    cancelled:  { label: 'Отменена',     cls: 'status-cancelled'  },
+  };
+  return map[status] || map.processing;
+}
