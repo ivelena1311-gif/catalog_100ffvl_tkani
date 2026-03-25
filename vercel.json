@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/tg-app/index.html" },
+    { "source": "/(.*)", "destination": "/tg-app/$1" }
+  ]
+}
