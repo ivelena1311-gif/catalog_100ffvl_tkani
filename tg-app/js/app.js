@@ -1374,10 +1374,11 @@ function showWelcome() {
   const modal = document.getElementById('welcome-modal');
   if (!modal) return;
 
-  // Показываем с небольшой задержкой, чтобы CSS-анимация сработала
-  requestAnimationFrame(() => {
+  // setTimeout нужен, чтобы браузер успел отрисовать начальное состояние
+  // (opacity:0) до того, как добавим класс .visible — иначе transition не сработает
+  setTimeout(() => {
     modal.classList.add('visible');
-  });
+  }, 50);
 
   document.getElementById('welcome-open-btn')?.addEventListener('click', () => {
     _closeWelcome(modal);
