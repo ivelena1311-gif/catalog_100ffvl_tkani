@@ -1363,7 +1363,42 @@ function setupEventListeners() {
 }
 
 /* ================================================================
-   8. ПРИМЕНЕНИЕ ТЕМЫ TELEGRAM
+   8. WELCOME-ЭКРАН
+   ================================================================ */
+
+const WELCOME_KEY = '100ff_welcome_shown';
+
+function showWelcome() {
+  if (localStorage.getItem(WELCOME_KEY)) return;
+
+  const modal = document.getElementById('welcome-modal');
+  if (!modal) return;
+
+  // Показываем с небольшой задержкой, чтобы CSS-анимация сработала
+  requestAnimationFrame(() => {
+    modal.classList.add('visible');
+  });
+
+  document.getElementById('welcome-open-btn')?.addEventListener('click', () => {
+    _closeWelcome(modal);
+    TG.HapticFeedback.impactOccurred('medium');
+  });
+
+  document.getElementById('welcome-skip-btn')?.addEventListener('click', () => {
+    _closeWelcome(modal);
+    TG.HapticFeedback.impactOccurred('light');
+  });
+}
+
+function _closeWelcome(modal) {
+  modal.classList.remove('visible');
+  localStorage.setItem(WELCOME_KEY, '1');
+  // Удаляем из DOM после завершения анимации
+  setTimeout(() => modal.remove(), 350);
+}
+
+/* ================================================================
+   8b. ПРИМЕНЕНИЕ ТЕМЫ TELEGRAM
    ================================================================ */
 
 function applyTheme() {
@@ -1408,10 +1443,13 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCatalog();
   renderProfile();
 
-  // 5. Обновляем бейдж корзины
+  // 5. Welcome-экран (только при первом открытии)
+  showWelcome();
+
+  // 6. Обновляем бейдж корзины
   updateCartBadge();
 
-  // 6. Обработчик изменения темы в рантайме
+  // 7. Обработчик изменения темы в рантайме
   window.addEventListener('themeChanged', applyTheme);
 
 });
