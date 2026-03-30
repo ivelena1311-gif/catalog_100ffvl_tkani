@@ -376,6 +376,44 @@ a { color: var(--accent); text-decoration: none; }
   flex: 1;
 }
 
+/* --- Шапка каталога с логотипом --- */
+.catalog-header {
+  background: #111111;
+  border-bottom-color: transparent;
+  padding: 8px 16px;
+}
+
+[data-theme="dark"] .catalog-header {
+  background: #0a0a0a;
+}
+
+.catalog-header .icon-btn {
+  color: #ffffff;
+  opacity: 0.85;
+}
+
+.catalog-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.catalog-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.catalog-header-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
 /* --- Кнопка-иконка в шапке --- */
 .icon-btn {
   width: 36px;
