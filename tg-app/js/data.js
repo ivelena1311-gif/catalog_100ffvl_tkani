@@ -32,7 +32,14 @@ const FABRICS = [
     colors: [
       { id: 'c1', hex: '#888888', name: 'Уточнить у менеджера', stock: 100, rolls: 2 },
     ],
-    thumb: 'linear-gradient(145deg, #7A7A8A 0%, #3A3A4A 100%)',
+    thumb: 'images/fabrics/Севилья_1.jpg',
+    photos: [
+      'images/fabrics/Севилья_1.jpg',
+      'images/fabrics/Севилья(8).jpg',
+      'images/fabrics/Севилья(7).jpg',
+      'images/fabrics/Севилья(4) (1).jpg',
+      'images/fabrics/Севилья_2.webp',
+    ],
   },
   {
     id: 2,

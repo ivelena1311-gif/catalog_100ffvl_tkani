@@ -323,15 +323,23 @@ function renderCatalog() {
   TG.MainButton.hide();
 }
 
+/** Возвращает style или img-тег для миниатюры ткани */
+function _thumbHTML(thumb, cssClass) {
+  if (thumb && !thumb.startsWith('linear-gradient') && !thumb.startsWith('radial-gradient')) {
+    return `<div class="${cssClass}" style="background:#f0f0f0;overflow:hidden">` +
+           `<img src="${thumb}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>`;
+  }
+  return `<div class="${cssClass}" style="background:${thumb || '#ccc'}"></div>`;
+}
+
 /** HTML одной карточки ткани */
 function _fabricCardHTML(fabric) {
   const firstColor  = getFirstAvailableColor(fabric);
   const stockInfo   = getStockStatus(firstColor.stock);
-  const thumbStyle  = `background:${fabric.thumb}`;
 
   return `
     <div class="fabric-card" data-fabric-id="${fabric.id}" role="button" tabindex="0">
-      <div class="fabric-thumb" style="${thumbStyle}"></div>
+      ${_thumbHTML(fabric.thumb, 'fabric-thumb')}
       <div class="fabric-card-body">
         <div class="fabric-card-name">${fabric.name}</div>
         <div class="fabric-card-composition">${fabric.composition}</div>
@@ -370,25 +378,37 @@ function _renderGallery(fabric, color) {
   const slidesEl = document.getElementById('gallery-slides');
   const dotsEl   = document.getElementById('gallery-dots');
 
-  // Создаём 3 слайда: три вариации одного цвета
-  const slides = [
-    `background:${color.hex}`,
-    `background: linear-gradient(160deg, ${_lighten(color.hex, 20)} 0%, ${color.hex} 50%, ${_darken(color.hex, 15)} 100%)`,
-    `background: ${color.hex}; background-image: repeating-linear-gradient(-30deg, transparent, transparent 8px, rgba(255,255,255,0.06) 8px, rgba(255,255,255,0.06) 9px)`,
-  ];
+  let slidesHTML;
+  let count;
 
-  slidesEl.innerHTML = slides.map((style, i) => `
-    <div class="gallery-slide" style="${style}" data-index="${i}"></div>
-  `).join('');
+  if (fabric.photos && fabric.photos.length) {
+    // Реальные фото
+    count = fabric.photos.length;
+    slidesHTML = fabric.photos.map((src, i) => `
+      <div class="gallery-slide" data-index="${i}" style="background:#111;overflow:hidden">
+        <img src="${src}" alt="${fabric.name}" style="width:100%;height:100%;object-fit:cover;display:block">
+      </div>
+    `).join('');
+  } else {
+    // Градиентные заглушки из цвета
+    const styles = [
+      `background:${color.hex}`,
+      `background:linear-gradient(160deg,${_lighten(color.hex,20)} 0%,${color.hex} 50%,${_darken(color.hex,15)} 100%)`,
+      `background:${color.hex};background-image:repeating-linear-gradient(-30deg,transparent,transparent 8px,rgba(255,255,255,0.06) 8px,rgba(255,255,255,0.06) 9px)`,
+    ];
+    count = styles.length;
+    slidesHTML = styles.map((style, i) => `
+      <div class="gallery-slide" style="${style}" data-index="${i}"></div>
+    `).join('');
+  }
 
-  dotsEl.innerHTML = slides.map((_, i) => `
+  slidesEl.innerHTML = slidesHTML;
+  dotsEl.innerHTML = Array.from({ length: count }, (_, i) => `
     <div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>
   `).join('');
 
   slidesEl.style.transform = 'translateX(0)';
-
-  // Touch-навигация по слайдам
-  _initGallerySwipe(slidesEl, dotsEl, slides.length);
+  _initGallerySwipe(slidesEl, dotsEl, count);
 }
 
 let _galleryIndex = 0;
@@ -721,7 +741,7 @@ function renderSearchContent(query) {
         const stock = getStockStatus(color.stock);
         return `
           <div class="search-result-item" data-fabric-id="${f.id}">
-            <div class="search-result-thumb" style="background:${f.thumb}"></div>
+            ${_thumbHTML(f.thumb, 'search-result-thumb')}
             <div class="search-result-info">
               <div class="search-result-name">${f.name}</div>
               <div class="search-result-sub">${f.composition} · ${f.width}&nbsp;см</div>
@@ -848,7 +868,7 @@ function _cartItemHTML(item) {
 
   return `
     <div class="cart-item" data-cart-item data-fabric-id="${fabric.id}" data-color-id="${item.colorId}">
-      <div class="cart-item-thumb" style="background:${fabric.thumb}"></div>
+      ${_thumbHTML(fabric.thumb, 'cart-item-thumb')}
       <div class="cart-item-info">
         <div class="cart-item-name">${fabric.name}</div>
         <div class="cart-item-sub">
