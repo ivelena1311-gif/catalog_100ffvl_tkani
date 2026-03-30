@@ -1019,6 +1019,11 @@ function renderProfile() {
       </button>
     </div>
 
+    <!-- Поделиться -->
+    <button class="share-btn" id="share-btn">
+      &#128257; Поделиться каталогом
+    </button>
+
     <!-- История заказов -->
     <div>
       <div class="orders-section-title">История заявок</div>
@@ -1067,6 +1072,18 @@ function renderProfile() {
       showToast('Позиции добавлены в заявку');
       Router.tab('cart');
     });
+  });
+
+  // Кнопка «Поделиться»
+  document.getElementById('share-btn')?.addEventListener('click', () => {
+    const shareText = 'Посмотри каталог тканей 100FF VL';
+    const shareUrl  = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/' + MANAGER.tgUsername)}&text=${encodeURIComponent(shareText)}`;
+    if (navigator.share) {
+      navigator.share({ title: shareText, url: shareUrl }).catch(() => {});
+    } else {
+      TG.openTelegramLink(shareUrl);
+    }
+    TG.HapticFeedback.impactOccurred('light');
   });
 
   // Скрываем MainButton
@@ -1394,8 +1411,13 @@ function showWelcome() {
   const modal = document.getElementById('welcome-modal');
   if (!modal) return;
 
-  // setTimeout нужен, чтобы браузер успел отрисовать начальное состояние
-  // (opacity:0) до того, как добавим класс .visible — иначе transition не сработает
+  // Персональное приветствие по имени из Telegram
+  const firstName = TG.initDataUnsafe?.user?.first_name;
+  const greetingEl = document.getElementById('welcome-greeting');
+  if (greetingEl && firstName) {
+    greetingEl.textContent = `Привет, ${firstName}!`;
+  }
+
   setTimeout(() => {
     modal.classList.add('visible');
   }, 50);

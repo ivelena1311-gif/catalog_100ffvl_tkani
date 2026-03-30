@@ -1855,7 +1855,14 @@ textarea {
 .welcome-emoji {
   font-size: 52px;
   line-height: 1;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+}
+
+.welcome-greeting {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 6px;
 }
 
 .welcome-title {
@@ -1932,3 +1939,27 @@ textarea {
 .welcome-skip:active {
   color: var(--tg-text);
 }
+
+/* ================================================================
+   19. КНОПКА ПОДЕЛИТЬСЯ
+   ================================================================ */
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: calc(100% - 32px);
+  margin: 0 16px 16px;
+  padding: 14px 16px;
+  background: var(--tg-secondary);
+  color: var(--tg-text);
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.share-btn:active { opacity: 0.7; }
