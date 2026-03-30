@@ -183,16 +183,12 @@ a { color: var(--accent); text-decoration: none; }
   left: 0;
   right: 0;
   height: var(--tab-height);
-  background: var(--tg-bg);
-  border-top: 1px solid rgba(0,0,0,0.08);
+  background: #111111;
+  border-top: 1px solid rgba(255,255,255,0.08);
   display: flex;
   align-items: stretch;
   z-index: 50;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-[data-theme="dark"] #tab-bar {
-  border-top-color: rgba(255,255,255,0.08);
 }
 
 .tab-item {
@@ -214,17 +210,22 @@ a { color: var(--accent); text-decoration: none; }
 .tab-icon {
   font-size: 22px;
   line-height: 1;
+  color: rgba(255,255,255,0.5);
+}
+
+.tab-item.active .tab-icon {
+  color: #ffffff;
 }
 
 .tab-label {
   font-size: 10px;
   font-weight: 500;
-  color: var(--tg-hint);
+  color: rgba(255,255,255,0.4);
   transition: color 0.15s;
 }
 
 .tab-item.active .tab-label {
-  color: var(--accent);
+  color: #ffffff;
 }
 
 /* Бейдж на иконке корзины */
