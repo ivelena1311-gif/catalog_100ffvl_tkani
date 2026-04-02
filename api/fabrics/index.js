@@ -3,22 +3,51 @@
 const { dbGet } = require('../../lib/db');
 
 /**
- * GET /api/fabrics
- * Query-параметры:
- *   ?category=3        — фильтр по category_id
- *   ?search=шелк       — поиск по названию, артикулу, составу (ILIKE)
- *   ?inStock=true      — только ткани у которых есть цвета с остатком > 0
+ * GET /api/fabrics          — список тканей (с фильтрами)
+ * GET /api/fabrics?id=1     — одна ткань с colors[] и photos[]
  *
- * Возвращает массив тканей с вложенным объектом category: { name }.
+ * Query-параметры (список):
+ *   ?category=3      — фильтр по category_id
+ *   ?search=шелк     — ILIKE по названию, артикулу, составу
+ *   ?inStock=true    — только с остатком > 0
  */
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   if (req.method !== 'GET') return res.status(405).end();
 
-  const { category, search, inStock } = req.query;
+  const { id, category, search, inStock } = req.query;
 
-  // Базовый SELECT: ткань + имя категории через join
+  // ── Детальная карточка ─────────────────────────────────────────
+  if (id !== undefined) {
+    const numId = Number(id);
+    if (!numId || !Number.isInteger(numId) || numId < 1) {
+      return res.status(400).json({ error: 'Некорректный id' });
+    }
+
+    try {
+      const [fabrics, colors, photos] = await Promise.all([
+        dbGet(`fabrics?select=*,categories(name)&id=eq.${numId}&is_active=eq.true`),
+        dbGet(`fabric_colors?select=id,hex,name,stock,rolls&fabric_id=eq.${numId}&order=id`),
+        dbGet(`fabric_photos?select=url&fabric_id=eq.${numId}&order=sort_order`),
+      ]);
+
+      if (!fabrics.length) {
+        return res.status(404).json({ error: 'Ткань не найдена' });
+      }
+
+      const fabric = fabrics[0];
+      fabric.colors = colors;
+      fabric.photos = photos.map((p) => p.url);
+
+      return res.status(200).json(fabric);
+    } catch (err) {
+      console.error(`[GET /api/fabrics?id=${numId}]`, err.message);
+      return res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  }
+
+  // ── Список тканей ──────────────────────────────────────────────
   let path =
     'fabrics' +
     '?select=id,name,article,category_id,composition,width,density,' +
@@ -27,12 +56,10 @@ module.exports = async function handler(req, res) {
     '&is_active=eq.true' +
     '&order=id';
 
-  // Фильтр по категории
   if (category) {
     path += `&category_id=eq.${encodeURIComponent(category)}`;
   }
 
-  // Полнотекстовый поиск через ILIKE по трём полям
   if (search && search.trim()) {
     const q = encodeURIComponent(`*${search.trim()}*`);
     path += `&or=(name.ilike.${q},article.ilike.${q},composition.ilike.${q})`;
@@ -41,7 +68,6 @@ module.exports = async function handler(req, res) {
   try {
     let fabrics = await dbGet(path);
 
-    // Фильтр "в наличии": убираем ткани без цветов со stock > 0
     if (inStock === 'true') {
       const fabricIds = fabrics.map((f) => f.id).join(',');
       if (fabricIds) {
