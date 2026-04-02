@@ -1,6 +1,6 @@
 'use strict';
 
-const { dbGet } = require('../lib/db');
+const { dbGet } = require('../../lib/db');
 
 /**
  * GET /api/fabrics
