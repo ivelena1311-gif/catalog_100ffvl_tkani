@@ -285,6 +285,9 @@ function renderCatalog() {
   const countEl    = document.getElementById('catalog-count');
   const catsBar    = document.getElementById('categories-bar');
 
+  // Пока данные не загружены — ничего не рендерим
+  if (!FABRICS.length && !fabrics.length) return;
+
   // Категории
   catsBar.innerHTML = CATEGORIES.map(cat => `
     <button
@@ -357,11 +360,28 @@ function _fabricCardHTML(fabric) {
 let _product = { fabric: null, colorId: null, meters: 0 };
 
 function renderProduct(fabricId, colorId) {
-  const fabric = getFabricById(fabricId);
-  if (!fabric) return;
+  // Показываем скелетон пока грузится детальная карточка
+  document.getElementById('product-info').innerHTML =
+    '<div style="padding:24px;text-align:center;color:var(--tg-hint)">Загрузка...</div>';
 
+  Catalog.fetchDetail(fabricId)
+    .then(fabric => {
+      // Обновляем кэш в FABRICS (цвета и фото из API)
+      const idx = FABRICS.findIndex(f => f.id === fabricId);
+      if (idx >= 0) FABRICS[idx] = fabric;
+
+      _doRenderProduct(fabric, colorId);
+    })
+    .catch(() => {
+      // Fallback на кэшированные данные без детального фото/цветов
+      const fabric = getFabricById(fabricId);
+      if (fabric) _doRenderProduct(fabric, colorId);
+    });
+}
+
+function _doRenderProduct(fabric, colorId) {
   // Восстанавливаем последний выбранный цвет или берём первый доступный
-  const savedColor = colorId || Store.getLastColor(fabricId);
+  const savedColor = colorId || Store.getLastColor(fabric.id);
   const initColor  = fabric.colors.find(c => c.id === savedColor) || getFirstAvailableColor(fabric);
 
   _product.fabric  = fabric;
@@ -477,19 +497,19 @@ function _renderProductInfo(fabric, color) {
 
     <!-- Цена -->
     <div class="price-block">
-      <div class="price-main" id="price-main">${formatPrice(price)}<span style="font-size:16px;font-weight:400">/м</span></div>
+      <div class="price-main" id="price-main">${formatPrice(price)}<span style="font-size:16px;font-weight:400">&nbsp;/м</span></div>
       <div class="price-meta">от ${fabric.minOrder}&nbsp;м · кратно ${fabric.step}&nbsp;м</div>
-      <div class="price-tiers-toggle" id="tiers-toggle">
-        &#9660; Скидки по объёму
-      </div>
-      <div class="price-tiers-table" id="tiers-table">
-        ${tiers.map(t => `
-          <div class="tier-row">
-            <span>${t.label}</span>
-            <span>${formatPrice(t.price)}/м</span>
-          </div>
-        `).join('')}
-      </div>
+      ${fabric.cutPrice ? `
+      <div class="price-tiers-table visible" id="tiers-table">
+        <div class="tier-row ${initMeters < 50 ? 'current' : ''}" data-tier="cut">
+          <span>до 50&nbsp;м · на отрез</span>
+          <span>${formatPrice(fabric.cutPrice)}</span>
+        </div>
+        <div class="tier-row ${initMeters >= 50 ? 'current' : ''}" data-tier="base">
+          <span>от 50&nbsp;м · оптовая</span>
+          <span>${formatPrice(fabric.basePricePerMeter)}</span>
+        </div>
+      </div>` : ''}
     </div>
 
     <!-- Остаток -->
@@ -592,13 +612,11 @@ function _bindProductEvents(fabric) {
     document.getElementById('counter-hint').textContent  =
       `${formatPrice(price)}/м · ${snapped}\u00A0м`;
 
-    // Подсвечиваем активный тариф
-    const tiers = getPriceTiers(fabric);
-    document.querySelectorAll('#tiers-table .tier-row').forEach((row, i) => {
-      const tier  = tiers[i];
-      const active = price === tier.price;
-      row.classList.toggle('current', active);
-    });
+    // Подсвечиваем активный блок цены (для двухценовой системы)
+    if (fabric.cutPrice) {
+      document.querySelector('#tiers-table [data-tier="cut"]')?.classList.toggle('current', snapped < 50);
+      document.querySelector('#tiers-table [data-tier="base"]')?.classList.toggle('current', snapped >= 50);
+    }
 
     _updateProductMainButton();
   }
@@ -617,13 +635,6 @@ function _bindProductEvents(fabric) {
 
   meterInput?.addEventListener('change', () => {
     updateMeters(parseInt(meterInput.value) || fabric.minOrder);
-  });
-
-  // Раскрытие тарифов
-  document.getElementById('tiers-toggle')?.addEventListener('click', () => {
-    const table = document.getElementById('tiers-table');
-    table?.classList.toggle('visible');
-    TG.HapticFeedback.selectionChanged();
   });
 
   // Запрос образца
@@ -1470,7 +1481,7 @@ function applyTheme() {
    9. ИНИЦИАЛИЗАЦИЯ
    ================================================================ */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
   // 1. Запускаем Telegram SDK
   TG.ready();
@@ -1482,17 +1493,43 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. Навешиваем события
   setupEventListeners();
 
-  // 4. Рендерим начальный экран
+  // 4. Показываем скелетон в каталоге пока данные грузятся
+  const grid = document.getElementById('catalog-grid');
+  if (grid) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--tg-hint)">
+        Загрузка каталога...
+      </div>`;
+  }
+
+  // 5. Загружаем каталог из API (Supabase)
+  try {
+    await Catalog.load();
+  } catch (err) {
+    console.error('[init] Ошибка загрузки каталога:', err);
+    if (grid) {
+      grid.innerHTML = `
+        <div style="grid-column:1/-1;padding:40px;text-align:center">
+          <div style="font-size:32px;margin-bottom:12px">&#9888;</div>
+          <div style="font-weight:600;margin-bottom:8px">Не удалось загрузить каталог</div>
+          <div style="color:var(--tg-hint);margin-bottom:16px;font-size:14px">Проверьте подключение к интернету</div>
+          <button class="btn-secondary" onclick="location.reload()">Обновить</button>
+        </div>`;
+    }
+    return;
+  }
+
+  // 6. Рендерим начальный экран с данными
   renderCatalog();
   renderProfile();
 
-  // 5. Welcome-экран (только при первом открытии)
+  // 7. Welcome-экран (только при первом открытии)
   showWelcome();
 
-  // 6. Обновляем бейдж корзины
+  // 8. Обновляем бейдж корзины
   updateCartBadge();
 
-  // 7. Обработчик изменения темы в рантайме
+  // 9. Обработчик изменения темы в рантайме
   window.addEventListener('themeChanged', applyTheme);
 
 });
