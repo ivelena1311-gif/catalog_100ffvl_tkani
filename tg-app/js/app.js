@@ -945,8 +945,11 @@ function renderCheckout() {
   TG.MainButton.disable(); // Пока телефон не введён
 }
 
-function _submitOrder() {
-  const phone = document.getElementById('field-phone')?.value || '';
+async function _submitOrder() {
+  const phone   = document.getElementById('field-phone')?.value || '';
+  const name    = document.getElementById('field-name')?.value  || '';
+  const comment = document.getElementById('field-comment')?.value || '';
+
   if (phone.replace(/\D/g, '').length < 10) {
     TG.showAlert('Введите корректный номер телефона');
     return;
@@ -955,15 +958,61 @@ function _submitOrder() {
   TG.MainButton.showProgress();
   TG.MainButton.disable();
 
-  // Имитируем отправку (в реальном проекте — fetch к API)
-  setTimeout(() => {
-    const orderNum = Math.floor(2850 + Math.random() * 100);
+  const user = TG.initDataUnsafe?.user || {};
+  const cart = Store.getCart();
+
+  // Собираем позиции со snapshot цены
+  const items = cart.map(item => {
+    const fabric = getFabricById(item.fabricId);
+    const price  = fabric ? getPriceForMeters(fabric, item.meters) : 0;
+    const type   = (fabric?.cutPrice && item.meters < 50) ? 'cut' : 'base';
+    return {
+      fabric_id:       item.fabricId,
+      fabric_name:     fabric?.name     || `Ткань #${item.fabricId}`,
+      color_id:        null,
+      color_name:      item.colorName   || 'Уточнить у менеджера',
+      meters:          item.meters,
+      price_per_meter: price,
+      price_type:      type,
+    };
+  });
+
+  try {
+    const res  = await fetch('/api/orders', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone,
+        name,
+        comment,
+        tg_user_id:  user.id        || null,
+        tg_username: user.username  || null,
+        first_name:  user.first_name || name || null,
+        items,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      TG.MainButton.hideProgress();
+      TG.MainButton.enable();
+      TG.showAlert(data.error || 'Ошибка отправки заявки. Попробуйте ещё раз.');
+      return;
+    }
+
     Store.clearCart();
     updateCartBadge();
     TG.MainButton.hideProgress();
-    Router.push('success', () => renderSuccess(orderNum));
+    Router.push('success', () => renderSuccess(data.order_number));
     TG.HapticFeedback.notificationOccurred('success');
-  }, 1200);
+
+  } catch (err) {
+    console.error('[_submitOrder]', err);
+    TG.MainButton.hideProgress();
+    TG.MainButton.enable();
+    TG.showAlert('Нет соединения с сервером. Проверьте интернет и попробуйте ещё раз.');
+  }
 }
 
 // ---- 4.6 ЭКРАН УСПЕХА ----
