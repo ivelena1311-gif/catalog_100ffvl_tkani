@@ -1255,15 +1255,20 @@ function openSampleSheet(fabric) {
       </div>
     </div>
 
-    <!-- Телефон -->
+    <!-- Контактные данные -->
     <div class="form-group" style="margin-bottom:12px">
+      <div class="form-field">
+        <div class="form-field-label">ФИО получателя *</div>
+        <input type="text" id="sample-recipient" placeholder="Иванова Мария Петровна"
+          value="${TG.initDataUnsafe?.user ? [TG.initDataUnsafe.user.first_name, TG.initDataUnsafe.user.last_name].filter(Boolean).join(' ') : ''}">
+      </div>
       <div class="form-field">
         <div class="form-field-label">Телефон *</div>
         <input type="tel" id="sample-phone" placeholder="+7 (___) ___-__-__">
       </div>
       <div class="form-field">
-        <div class="form-field-label">Адрес доставки *</div>
-        <input type="text" id="sample-address" placeholder="Москва, ул. Примерная, 1">
+        <div class="form-field-label">Адрес ПВЗ СДЭК *</div>
+        <input type="text" id="sample-address" placeholder="г. Москва, ул. Примерная, 1">
       </div>
     </div>
 
@@ -1283,20 +1288,72 @@ function openSampleSheet(fabric) {
     });
   });
 
-  document.getElementById('sample-submit-btn')?.addEventListener('click', () => {
-    const phone = document.getElementById('sample-phone')?.value || '';
-    const addr  = document.getElementById('sample-address')?.value || '';
+  document.getElementById('sample-submit-btn')?.addEventListener('click', async () => {
+    const recipient = document.getElementById('sample-recipient')?.value || '';
+    const phone     = document.getElementById('sample-phone')?.value    || '';
+    const addr      = document.getElementById('sample-address')?.value  || '';
+
+    if (!recipient.trim()) {
+      TG.showAlert('Введите ФИО получателя');
+      return;
+    }
     if (phone.replace(/\D/g, '').length < 10) {
       TG.showAlert('Введите корректный номер телефона');
       return;
     }
     if (!addr.trim()) {
-      TG.showAlert('Введите адрес доставки');
+      TG.showAlert('Введите адрес ПВЗ СДЭК');
       return;
     }
-    closeSheet('sample');
-    TG.HapticFeedback.notificationOccurred('success');
-    showToast('Запрос образца отправлен!');
+
+    const btn = document.getElementById('sample-submit-btn');
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    const activeColorEl = contentEl.querySelector('[data-sample-color].active');
+    const activeColorId = activeColorEl?.dataset.sampleColor || null;
+    const activeColor   = fabric.colors.find(c => c.id === activeColorId) || color;
+
+    const user = TG.initDataUnsafe?.user || {};
+
+    try {
+      const res = await fetch('/api/samples', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone,
+          recipient_name: recipient.trim(),
+          cdek_address:   addr.trim(),
+          tg_user_id:     user.id         || null,
+          tg_username:    user.username   || null,
+          first_name:     user.first_name || null,
+          items: [{
+            fabric_id:   fabric.id,
+            fabric_name: fabric.name,
+            color_id:    null,
+            color_name:  activeColor.name,
+          }],
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        btn.disabled = false;
+        btn.textContent = 'Запросить образец';
+        TG.showAlert(data.error || 'Ошибка отправки. Попробуйте ещё раз.');
+        return;
+      }
+
+      closeSheet('sample');
+      TG.HapticFeedback.notificationOccurred('success');
+      showToast(`Запрос образца #${data.request_number} отправлен!`);
+
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Запросить образец';
+      TG.showAlert('Нет соединения с сервером. Попробуйте ещё раз.');
+    }
   });
 
   showSheet('sample');
