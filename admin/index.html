@@ -6,175 +6,213 @@
   <title>Админ-панель — 100FF VL</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #f5f5f5;
-      --card: #fff;
-      --border: #e0e0e0;
-      --text: #1a1a1a;
-      --hint: #888;
-      --accent: #2AABEE;
-      --danger: #e53935;
-      --success: #43a047;
-      --warn: #fb8c00;
+      --bg: #f5f5f5; --card: #fff; --border: #e0e0e0;
+      --text: #1a1a1a; --hint: #888; --accent: #2AABEE;
+      --danger: #e53935; --success: #43a047; --warn: #fb8c00;
     }
-
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
            background: var(--bg); color: var(--text); min-height: 100vh; }
 
     /* ── Login ── */
-    #login-screen {
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; padding: 24px;
-    }
-    .login-card {
-      background: var(--card); border-radius: 16px; padding: 40px 32px;
-      width: 100%; max-width: 360px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-    }
-    .login-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-    .login-sub   { color: var(--hint); font-size: 14px; margin-bottom: 28px; }
-    .login-card input {
-      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
-      border-radius: 10px; font-size: 16px; outline: none;
-      transition: border-color 0.2s; margin-bottom: 12px;
-    }
-    .login-card input:focus { border-color: var(--accent); }
-    .login-error { color: var(--danger); font-size: 13px; margin-bottom: 12px; display: none; }
+    #login-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px; }
+    .login-card { background:var(--card); border-radius:16px; padding:40px 32px;
+                  width:100%; max-width:360px; box-shadow:0 4px 24px rgba(0,0,0,.08); }
+    .login-title { font-size:22px; font-weight:700; margin-bottom:8px; }
+    .login-sub   { color:var(--hint); font-size:14px; margin-bottom:28px; }
+    .login-card input { width:100%; padding:12px 14px; border:1.5px solid var(--border);
+      border-radius:10px; font-size:16px; outline:none; margin-bottom:12px; }
+    .login-card input:focus { border-color:var(--accent); }
+    .login-error { color:var(--danger); font-size:13px; margin-bottom:12px; display:none; }
 
     /* ── App ── */
-    #app-screen { display: none; }
+    #app-screen { display:none; }
+    header { background:var(--card); border-bottom:1px solid var(--border);
+             padding:0 24px; display:flex; align-items:center;
+             gap:16px; height:56px; position:sticky; top:0; z-index:100; }
+    .header-logo { font-weight:700; font-size:16px; margin-right:auto; }
+    nav { display:flex; gap:4px; }
+    .nav-btn { padding:6px 16px; border-radius:8px; border:none; cursor:pointer;
+               font-size:14px; font-weight:500; background:none; color:var(--hint); }
+    .nav-btn.active { background:var(--accent); color:#fff; }
+    .logout-btn { padding:6px 14px; border-radius:8px; border:1.5px solid var(--border);
+                  background:none; cursor:pointer; font-size:13px; color:var(--hint); }
+    .logout-btn:hover { border-color:var(--danger); color:var(--danger); }
+    main { padding:24px; max-width:1100px; margin:0 auto; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
 
-    header {
-      background: var(--card); border-bottom: 1px solid var(--border);
-      padding: 0 24px; display: flex; align-items: center;
-      gap: 24px; height: 56px; position: sticky; top: 0; z-index: 10;
-    }
-    .header-logo { font-weight: 700; font-size: 16px; margin-right: auto; }
-
-    nav { display: flex; gap: 4px; }
-    .nav-btn {
-      padding: 6px 16px; border-radius: 8px; border: none; cursor: pointer;
-      font-size: 14px; font-weight: 500; background: none; color: var(--hint);
-      transition: all 0.15s;
-    }
-    .nav-btn.active { background: var(--accent); color: #fff; }
-
-    .logout-btn {
-      padding: 6px 14px; border-radius: 8px; border: 1.5px solid var(--border);
-      background: none; cursor: pointer; font-size: 13px; color: var(--hint);
-    }
-    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
-
-    main { padding: 24px; max-width: 1100px; margin: 0 auto; }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    /* ── Cards ── */
-    .card {
-      background: var(--card); border-radius: 12px; padding: 20px;
-      margin-bottom: 16px; border: 1px solid var(--border);
-    }
-    .card-header {
-      display: flex; align-items: flex-start; justify-content: space-between;
-      gap: 12px; margin-bottom: 12px;
-    }
-    .card-num   { font-weight: 700; font-size: 16px; }
-    .card-date  { color: var(--hint); font-size: 13px; margin-top: 2px; }
-    .card-user  { font-size: 14px; margin-bottom: 4px; }
-    .card-phone { color: var(--hint); font-size: 13px; }
-
-    .badge {
-      display: inline-block; padding: 3px 10px; border-radius: 20px;
-      font-size: 12px; font-weight: 600; white-space: nowrap;
-    }
-    .badge-ok   { background: #e8f5e9; color: var(--success); }
-    .badge-warn { background: #fff3e0; color: var(--warn); }
-
-    .items-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
-    .items-table th, .items-table td {
-      text-align: left; padding: 6px 10px; font-size: 13px;
-      border-bottom: 1px solid var(--border);
-    }
-    .items-table th { color: var(--hint); font-weight: 500; }
-    .price-type-cut  { color: var(--warn); font-size: 11px; }
-    .price-type-base { color: var(--success); font-size: 11px; }
-
-    .card-total { font-weight: 700; font-size: 15px; text-align: right; }
-    .card-comment { font-size: 13px; color: var(--hint); margin-top: 8px;
-                    padding-top: 8px; border-top: 1px solid var(--border); }
+    /* ── Cards (orders/samples) ── */
+    .card { background:var(--card); border-radius:12px; padding:20px;
+            margin-bottom:16px; border:1px solid var(--border); }
+    .card-header { display:flex; align-items:flex-start; justify-content:space-between;
+                   gap:12px; margin-bottom:12px; }
+    .card-num  { font-weight:700; font-size:16px; }
+    .card-date { color:var(--hint); font-size:13px; margin-top:2px; }
+    .card-user { font-size:14px; margin-bottom:4px; }
+    .card-phone { color:var(--hint); font-size:13px; }
+    .badge { display:inline-block; padding:3px 10px; border-radius:20px;
+             font-size:12px; font-weight:600; white-space:nowrap; }
+    .badge-ok   { background:#e8f5e9; color:var(--success); }
+    .badge-warn { background:#fff3e0; color:var(--warn); }
+    .items-table { width:100%; border-collapse:collapse; margin:12px 0; }
+    .items-table th, .items-table td { text-align:left; padding:6px 10px;
+      font-size:13px; border-bottom:1px solid var(--border); }
+    .items-table th { color:var(--hint); font-weight:500; }
+    .price-type-cut  { color:var(--warn); font-size:11px; }
+    .price-type-base { color:var(--success); font-size:11px; }
+    .card-total { font-weight:700; font-size:15px; text-align:right; }
+    .card-comment { font-size:13px; color:var(--hint); margin-top:8px;
+                    padding-top:8px; border-top:1px solid var(--border); }
 
     /* ── Fabrics table ── */
-    .fabrics-table { width: 100%; border-collapse: collapse; }
-    .fabrics-table th, .fabrics-table td {
-      text-align: left; padding: 10px 12px; font-size: 13px;
-      border-bottom: 1px solid var(--border);
-    }
-    .fabrics-table th { color: var(--hint); font-weight: 500; position: sticky; top: 56px;
-                        background: var(--bg); }
-    .fabrics-table tr:hover td { background: #fafafa; }
-    .fabric-hidden td { opacity: 0.45; }
+    .fabrics-wrap { background:var(--card); border-radius:12px;
+                    border:1px solid var(--border); overflow:hidden; }
+    table.ft { width:100%; border-collapse:collapse; }
+    table.ft th, table.ft td { text-align:left; padding:10px 14px;
+      font-size:13px; border-bottom:1px solid var(--border); }
+    table.ft th { color:var(--hint); font-weight:500; background:var(--bg);
+                  position:sticky; top:56px; }
+    table.ft tr:last-child td { border-bottom:none; }
+    table.ft tr.hidden-row td { opacity:.45; }
+    table.ft tr:hover td { background:#fafafa; cursor:pointer; }
+    .price-tag { font-size:12px; color:var(--hint); }
 
-    .price-input {
-      width: 80px; padding: 4px 8px; border: 1.5px solid var(--border);
-      border-radius: 6px; font-size: 13px; text-align: right;
-    }
-    .price-input:focus { border-color: var(--accent); outline: none; }
-
-    .save-btn {
-      padding: 4px 12px; border-radius: 6px; border: none; cursor: pointer;
-      background: var(--accent); color: #fff; font-size: 12px;
-    }
-    .toggle-btn {
-      padding: 4px 12px; border-radius: 6px; border: 1.5px solid var(--border);
-      cursor: pointer; background: none; font-size: 12px; color: var(--hint);
-    }
-    .toggle-btn.active { border-color: var(--danger); color: var(--danger); }
-
-    /* ── Loading / empty ── */
-    .loading { text-align: center; padding: 60px; color: var(--hint); }
-    .empty   { text-align: center; padding: 60px; color: var(--hint); font-size: 15px; }
-
-    /* ── Stats bar ── */
-    .stats { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
-    .stat-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 12px; padding: 16px 20px; flex: 1; min-width: 140px;
-    }
-    .stat-val   { font-size: 28px; font-weight: 700; }
-    .stat-label { color: var(--hint); font-size: 13px; margin-top: 2px; }
-
-    /* ── Buttons ── */
-    .btn {
-      padding: 10px 20px; border-radius: 10px; border: none;
-      cursor: pointer; font-size: 14px; font-weight: 600;
-    }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { opacity: 0.9; }
-    .btn-primary:disabled { opacity: 0.5; cursor: default; }
+    /* ── Stats ── */
+    .stats { display:flex; gap:16px; margin-bottom:24px; flex-wrap:wrap; }
+    .stat-card { background:var(--card); border:1px solid var(--border);
+                 border-radius:12px; padding:16px 20px; flex:1; min-width:140px; }
+    .stat-val   { font-size:28px; font-weight:700; }
+    .stat-label { color:var(--hint); font-size:13px; margin-top:2px; }
 
     /* ── Search ── */
-    .search-bar {
-      display: flex; gap: 12px; margin-bottom: 20px; align-items: center;
-    }
-    .search-bar input {
-      flex: 1; padding: 10px 14px; border: 1.5px solid var(--border);
-      border-radius: 10px; font-size: 14px; outline: none;
-    }
-    .search-bar input:focus { border-color: var(--accent); }
+    .search-bar { display:flex; gap:12px; margin-bottom:20px; }
+    .search-bar input { flex:1; padding:10px 14px; border:1.5px solid var(--border);
+      border-radius:10px; font-size:14px; outline:none; }
+    .search-bar input:focus { border-color:var(--accent); }
 
-    @media (max-width: 600px) {
-      header { padding: 0 12px; gap: 8px; }
-      .nav-btn { padding: 5px 10px; font-size: 13px; }
-      main { padding: 12px; }
-      .fabrics-table th:nth-child(3),
-      .fabrics-table td:nth-child(3) { display: none; }
+    /* ── Buttons ── */
+    .btn { padding:10px 20px; border-radius:10px; border:none; cursor:pointer;
+           font-size:14px; font-weight:600; }
+    .btn-primary  { background:var(--accent); color:#fff; }
+    .btn-danger   { background:var(--danger); color:#fff; }
+    .btn-ghost    { background:none; border:1.5px solid var(--border); color:var(--hint); }
+    .btn:disabled { opacity:.5; cursor:default; }
+    .btn-sm { padding:5px 12px; font-size:12px; border-radius:7px; }
+
+    /* ═══════════════════════════════════════════
+       МОДАЛЬНЫЙ РЕДАКТОР КАРТОЧКИ
+    ═══════════════════════════════════════════ */
+    .modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+      z-index:200; overflow-y:auto; padding:20px;
+    }
+    .modal-overlay.open { display:flex; align-items:flex-start; justify-content:center; }
+    .modal {
+      background:var(--card); border-radius:16px; width:100%; max-width:640px;
+      padding:0; overflow:hidden; margin:auto; box-shadow:0 8px 40px rgba(0,0,0,.2);
+    }
+    .modal-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 24px; border-bottom:1px solid var(--border);
+      position:sticky; top:0; background:var(--card); z-index:10;
+    }
+    .modal-title { font-size:17px; font-weight:700; }
+    .modal-close { background:none; border:none; font-size:22px; cursor:pointer;
+                   color:var(--hint); line-height:1; padding:4px; }
+    .modal-close:hover { color:var(--text); }
+    .modal-body  { padding:24px; }
+    .modal-footer { padding:16px 24px; border-top:1px solid var(--border);
+                    display:flex; gap:12px; justify-content:flex-end; }
+
+    /* ── Form fields ── */
+    .form-section { margin-bottom:28px; }
+    .form-section-title {
+      font-size:13px; font-weight:600; text-transform:uppercase;
+      letter-spacing:.05em; color:var(--hint); margin-bottom:14px;
+    }
+    .field-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .field-grid.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+    .field-full { grid-column:1/-1; }
+    .field-label { font-size:12px; color:var(--hint); margin-bottom:5px; }
+    .field input, .field textarea, .field select {
+      width:100%; padding:9px 12px; border:1.5px solid var(--border);
+      border-radius:9px; font-size:14px; outline:none; font-family:inherit;
+      background:var(--card); color:var(--text);
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color:var(--accent); }
+    .field textarea { resize:vertical; min-height:90px; }
+
+    /* ── Visibility toggle ── */
+    .visibility-toggle {
+      display:flex; align-items:center; gap:12px; padding:12px 14px;
+      border:1.5px solid var(--border); border-radius:9px; cursor:pointer;
+    }
+    .toggle-track { width:40px; height:22px; border-radius:11px;
+                    background:var(--border); position:relative; transition:.2s; flex-shrink:0; }
+    .toggle-track.on { background:var(--accent); }
+    .toggle-thumb { width:18px; height:18px; border-radius:50%; background:#fff;
+                    position:absolute; top:2px; left:2px; transition:.2s; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+    .toggle-track.on .toggle-thumb { left:20px; }
+
+    /* ── Photos ── */
+    .photos-grid { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:14px; }
+    .photo-item { position:relative; width:90px; height:90px; border-radius:8px;
+                  overflow:hidden; border:1.5px solid var(--border); }
+    .photo-item img { width:100%; height:100%; object-fit:cover; display:block; }
+    .photo-item .photo-del {
+      position:absolute; top:3px; right:3px; background:rgba(0,0,0,.6);
+      border:none; color:#fff; width:22px; height:22px; border-radius:50%;
+      cursor:pointer; font-size:14px; line-height:1; display:flex;
+      align-items:center; justify-content:center;
+    }
+    .photo-item .photo-del:hover { background:var(--danger); }
+    .add-photo-row { display:flex; gap:8px; }
+    .add-photo-row input { flex:1; padding:9px 12px; border:1.5px solid var(--border);
+      border-radius:9px; font-size:13px; outline:none; }
+    .add-photo-row input:focus { border-color:var(--accent); }
+
+    /* ── Colors ── */
+    .colors-grid { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:16px; }
+    .color-item {
+      display:flex; flex-direction:column; align-items:center; gap:5px;
+      position:relative; cursor:default;
+    }
+    .color-swatch-admin {
+      width:52px; height:52px; border-radius:50%;
+      border:2px solid rgba(0,0,0,.1); flex-shrink:0;
+    }
+    .color-info { font-size:11px; color:var(--hint); text-align:center;
+                  max-width:70px; line-height:1.3; }
+    .color-del {
+      position:absolute; top:-4px; right:-4px;
+      background:var(--danger); color:#fff; border:none;
+      width:18px; height:18px; border-radius:50%; cursor:pointer;
+      font-size:12px; display:flex; align-items:center; justify-content:center;
+    }
+    .add-color-form { border:1.5px dashed var(--border); border-radius:10px; padding:14px; }
+    .add-color-form .field-grid { gap:8px; }
+    .color-preview-swatch { width:32px; height:32px; border-radius:50%;
+                             border:2px solid rgba(0,0,0,.1); flex-shrink:0;
+                             align-self:flex-end; margin-bottom:9px; }
+
+    /* ── Loading/empty ── */
+    .loading { text-align:center; padding:60px; color:var(--hint); }
+    .empty   { text-align:center; padding:60px; color:var(--hint); font-size:15px; }
+
+    @media(max-width:600px){
+      header { padding:0 12px; gap:8px; }
+      .nav-btn { padding:5px 10px; font-size:12px; }
+      main { padding:12px; }
+      .field-grid { grid-template-columns:1fr; }
+      .field-grid.cols-3 { grid-template-columns:1fr 1fr; }
+      table.ft th:nth-child(3), table.ft td:nth-child(3) { display:none; }
     }
   </style>
 </head>
 <body>
 
-<!-- ══ ЭКРАН ВХОДА ══════════════════════════════════════════════ -->
+<!-- ══ LOGIN ══════════════════════════════════════════════════════ -->
 <div id="login-screen">
   <div class="login-card">
     <div class="login-title">100FF VL</div>
@@ -185,7 +223,7 @@
   </div>
 </div>
 
-<!-- ══ ОСНОВНОЙ ЭКРАН ══════════════════════════════════════════ -->
+<!-- ══ APP ════════════════════════════════════════════════════════ -->
 <div id="app-screen">
   <header>
     <div class="header-logo">100FF VL Admin</div>
@@ -198,8 +236,7 @@
   </header>
 
   <main>
-
-    <!-- ── Заявки ── -->
+    <!-- Заявки -->
     <div class="tab-content active" id="tab-orders">
       <div class="stats" id="orders-stats"></div>
       <div class="search-bar">
@@ -208,341 +245,515 @@
       <div id="orders-list"><div class="loading">Загрузка...</div></div>
     </div>
 
-    <!-- ── Образцы ── -->
+    <!-- Образцы -->
     <div class="tab-content" id="tab-samples">
       <div class="stats" id="samples-stats"></div>
       <div id="samples-list"><div class="loading">Загрузка...</div></div>
     </div>
 
-    <!-- ── Каталог ── -->
+    <!-- Каталог -->
     <div class="tab-content" id="tab-fabrics">
       <div class="search-bar">
         <input type="text" id="fabrics-search" placeholder="Поиск по названию или артикулу...">
       </div>
-      <div class="card" style="padding:0;overflow:hidden">
+      <div class="fabrics-wrap">
         <div id="fabrics-table-wrap"><div class="loading">Загрузка...</div></div>
       </div>
     </div>
-
   </main>
+</div>
+
+<!-- ══ МОДАЛЬНЫЙ РЕДАКТОР КАРТОЧКИ ════════════════════════════════ -->
+<div class="modal-overlay" id="fabric-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-fabric-title">Редактирование ткани</div>
+      <button class="modal-close" id="modal-close-btn">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" id="modal-cancel-btn">Отмена</button>
+      <button class="btn btn-primary btn-sm" id="modal-save-btn">Сохранить изменения</button>
+    </div>
+  </div>
 </div>
 
 <script>
 'use strict';
 
 const API = '/api/admin';
-let _token = '';
-let _orders = [], _samples = [], _fabrics = [];
+let _token = '', _orders = [], _samples = [], _fabrics = [];
+let _editFabric = null; // текущая редактируемая ткань
 
-// ── Вход ─────────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════
+// ВХОД
+// ════════════════════════════════════════════════════════
 document.getElementById('login-btn').addEventListener('click', tryLogin);
-document.getElementById('login-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') tryLogin();
-});
+document.getElementById('login-input').addEventListener('keydown', e => { if(e.key==='Enter') tryLogin(); });
 
 async function tryLogin() {
   const pwd = document.getElementById('login-input').value.trim();
   if (!pwd) return;
-
-  // Проверяем пароль через API
-  const res = await fetch(`${API}/orders`, {
-    headers: { Authorization: `Bearer ${pwd}` }
-  });
-
-  if (res.status === 401) {
-    document.getElementById('login-error').style.display = 'block';
-    return;
-  }
-
+  const res = await fetch(`${API}/orders`, { headers: { Authorization: `Bearer ${pwd}` } });
+  if (res.status === 401) { document.getElementById('login-error').style.display = 'block'; return; }
   _token = pwd;
   sessionStorage.setItem('admin_token', pwd);
-  document.getElementById('login-error').style.display = 'none';
-
   _orders = await res.json();
   showApp();
 }
 
-// Восстановление сессии
 window.addEventListener('DOMContentLoaded', async () => {
   const saved = sessionStorage.getItem('admin_token');
   if (!saved) return;
-
-  const res = await fetch(`${API}/orders`, {
-    headers: { Authorization: `Bearer ${saved}` }
-  });
-  if (res.ok) {
-    _token = saved;
-    _orders = await res.json();
-    showApp();
-  }
+  const res = await fetch(`${API}/orders`, { headers: { Authorization: `Bearer ${saved}` } });
+  if (res.ok) { _token = saved; _orders = await res.json(); showApp(); }
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
-  sessionStorage.removeItem('admin_token');
-  location.reload();
+  sessionStorage.removeItem('admin_token'); location.reload();
 });
 
-// ── Показ приложения ──────────────────────────────────────────────
+// ════════════════════════════════════════════════════════
+// ПОКАЗ ПРИЛОЖЕНИЯ
+// ════════════════════════════════════════════════════════
 async function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
-
   renderOrders();
-
-  // Грузим остальные данные параллельно
-  const [samplesRes, fabricsRes] = await Promise.all([
-    fetch(`${API}/samples`, { headers: { Authorization: `Bearer ${_token}` } }),
-    fetch(`${API}/fabrics`, { headers: { Authorization: `Bearer ${_token}` } }),
+  const [sr, fr] = await Promise.all([
+    fetch(`${API}/samples`, { headers:{Authorization:`Bearer ${_token}`} }),
+    fetch(`${API}/fabrics`, { headers:{Authorization:`Bearer ${_token}`} }),
   ]);
-  _samples = await samplesRes.json();
-  _fabrics = await fabricsRes.json();
-
+  _samples = await sr.json();
+  _fabrics = await fr.json();
   renderSamples();
   renderFabrics();
 }
 
-// ── Навигация ─────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════
+// НАВИГАЦИЯ
+// ════════════════════════════════════════════════════════
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
   });
 });
 
-// ── Заявки ────────────────────────────────────────────────────────
-function renderOrders(filter = '') {
-  const list = document.getElementById('orders-list');
-  const stats = document.getElementById('orders-stats');
-
+// ════════════════════════════════════════════════════════
+// ЗАЯВКИ
+// ════════════════════════════════════════════════════════
+function renderOrders(filter='') {
   const q = filter.toLowerCase();
+  const list = document.getElementById('orders-list');
   const filtered = q ? _orders.filter(o =>
-    (o.order_number || '').toLowerCase().includes(q) ||
-    (o.first_name   || '').toLowerCase().includes(q) ||
-    (o.phone        || '').includes(q)
-  ) : _orders;
+    (o.order_number||'').toLowerCase().includes(q)||
+    (o.first_name||'').toLowerCase().includes(q)||
+    (o.phone||'').includes(q)) : _orders;
 
-  // Статистика
-  const totalUsd = _orders.reduce((s, o) => s + parseFloat(o.total_usd || 0), 0);
-  stats.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-val">${_orders.length}</div>
-      <div class="stat-label">Всего заявок</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">${_orders.filter(o => !o.notified).length}</div>
-      <div class="stat-label">Без уведомления</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">${totalUsd.toFixed(0)}&nbsp;$</div>
-      <div class="stat-label">Общая сумма</div>
-    </div>
-  `;
+  const totalUsd = _orders.reduce((s,o)=>s+parseFloat(o.total_usd||0),0);
+  document.getElementById('orders-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${_orders.length}</div><div class="stat-label">Всего заявок</div></div>
+    <div class="stat-card"><div class="stat-val">${_orders.filter(o=>!o.notified).length}</div><div class="stat-label">Без уведомления</div></div>
+    <div class="stat-card"><div class="stat-val">${totalUsd.toFixed(0)}&nbsp;$</div><div class="stat-label">Общая сумма</div></div>`;
 
-  if (!filtered.length) {
-    list.innerHTML = '<div class="empty">Заявок пока нет</div>';
-    return;
-  }
+  if (!filtered.length) { list.innerHTML='<div class="empty">Заявок пока нет</div>'; return; }
 
   list.innerHTML = filtered.map(o => {
-    const dt = new Date(o.created_at).toLocaleString('ru-RU', {
-      day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
-    });
-    const user = o.tg_username ? `${o.first_name || ''} @${o.tg_username}` : (o.first_name || 'Аноним');
-    const itemsHtml = (o.items || []).map(i => `
-      <tr>
-        <td>${i.fabric_name}</td>
-        <td>${i.color_name}</td>
-        <td>${i.meters}&nbsp;м</td>
-        <td>${parseFloat(i.price_per_meter).toFixed(2)}&nbsp;$/м</td>
-        <td><span class="price-type-${i.price_type}">${i.price_type === 'cut' ? 'отрез' : 'опт'}</span></td>
-      </tr>
-    `).join('');
-
-    return `
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-num">${o.order_number}</div>
-            <div class="card-date">${dt}</div>
-          </div>
-          <span class="badge ${o.notified ? 'badge-ok' : 'badge-warn'}">
-            ${o.notified ? '✓ Отправлено' : '⚠ Не отправлено'}
-          </span>
-        </div>
-        <div class="card-user">${escHtml(user)}</div>
-        <div class="card-phone">${escHtml(o.phone)}</div>
-        <table class="items-table">
-          <thead><tr>
-            <th>Ткань</th><th>Цвет</th><th>Метры</th><th>Цена</th><th>Тип</th>
-          </tr></thead>
-          <tbody>${itemsHtml}</tbody>
-        </table>
-        <div class="card-total">Итого: ${parseFloat(o.total_usd||0).toFixed(2)}&nbsp;$ · ${o.total_meters}&nbsp;м</div>
-        ${o.comment ? `<div class="card-comment">💬 ${escHtml(o.comment)}</div>` : ''}
+    const dt = fmtDate(o.created_at);
+    const user = o.tg_username ? `${o.first_name||''} @${o.tg_username}` : (o.first_name||'Аноним');
+    const rows = (o.items||[]).map(i=>`<tr>
+      <td>${esc(i.fabric_name)}</td><td>${esc(i.color_name)}</td>
+      <td>${i.meters}&nbsp;м</td>
+      <td>${parseFloat(i.price_per_meter).toFixed(2)}&nbsp;$/м</td>
+      <td><span class="price-type-${i.price_type}">${i.price_type==='cut'?'отрез':'опт'}</span></td>
+    </tr>`).join('');
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="card-num">${o.order_number}</div><div class="card-date">${dt}</div></div>
+        <span class="badge ${o.notified?'badge-ok':'badge-warn'}">${o.notified?'✓ Отправлено':'⚠ Не отправлено'}</span>
       </div>
-    `;
+      <div class="card-user">${esc(user)}</div>
+      <div class="card-phone">${esc(o.phone)}</div>
+      <table class="items-table"><thead><tr><th>Ткань</th><th>Цвет</th><th>Метры</th><th>Цена</th><th>Тип</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+      <div class="card-total">Итого: ${parseFloat(o.total_usd||0).toFixed(2)}&nbsp;$ · ${o.total_meters}&nbsp;м</div>
+      ${o.comment?`<div class="card-comment">💬 ${esc(o.comment)}</div>`:''}
+    </div>`;
   }).join('');
 }
+document.getElementById('orders-search').addEventListener('input', e => renderOrders(e.target.value));
 
-document.getElementById('orders-search').addEventListener('input', e => {
-  renderOrders(e.target.value);
-});
-
-// ── Образцы ───────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════
+// ОБРАЗЦЫ
+// ════════════════════════════════════════════════════════
 function renderSamples() {
-  const list  = document.getElementById('samples-list');
-  const stats = document.getElementById('samples-stats');
+  document.getElementById('samples-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-val">${_samples.length}</div><div class="stat-label">Всего запросов</div></div>
+    <div class="stat-card"><div class="stat-val">${_samples.filter(s=>!s.notified).length}</div><div class="stat-label">Без уведомления</div></div>`;
 
-  stats.innerHTML = `
-    <div class="stat-card">
-      <div class="stat-val">${_samples.length}</div>
-      <div class="stat-label">Всего запросов</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">${_samples.filter(s => !s.notified).length}</div>
-      <div class="stat-label">Без уведомления</div>
-    </div>
-  `;
-
-  if (!_samples.length) {
-    list.innerHTML = '<div class="empty">Запросов образцов пока нет</div>';
-    return;
-  }
+  const list = document.getElementById('samples-list');
+  if (!_samples.length) { list.innerHTML='<div class="empty">Запросов образцов пока нет</div>'; return; }
 
   list.innerHTML = _samples.map(s => {
-    const dt   = new Date(s.created_at).toLocaleString('ru-RU', {
-      day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
-    });
-    const user = s.tg_username ? `${s.first_name || ''} @${s.tg_username}` : (s.first_name || 'Аноним');
-    const fabrics = (s.items || []).map(i => `${i.fabric_name} (${i.color_name})`).join(', ');
-
-    return `
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-num">${s.request_number}</div>
-            <div class="card-date">${dt}</div>
-          </div>
-          <span class="badge ${s.notified ? 'badge-ok' : 'badge-warn'}">
-            ${s.notified ? '✓ Отправлено' : '⚠ Не отправлено'}
-          </span>
-        </div>
-        <div class="card-user">${escHtml(user)}</div>
-        <div class="card-phone">${escHtml(s.phone)}</div>
-        <div style="font-size:13px;margin-top:8px">
-          <strong>Получатель:</strong> ${escHtml(s.recipient_name)}<br>
-          <strong>ПВЗ СДЭК:</strong> ${escHtml(s.cdek_address)}<br>
-          <strong>Ткани:</strong> ${escHtml(fabrics)}
-        </div>
+    const user = s.tg_username ? `${s.first_name||''} @${s.tg_username}` : (s.first_name||'Аноним');
+    const fabrics = (s.items||[]).map(i=>`${i.fabric_name} (${i.color_name})`).join(', ');
+    return `<div class="card">
+      <div class="card-header">
+        <div><div class="card-num">${s.request_number}</div><div class="card-date">${fmtDate(s.created_at)}</div></div>
+        <span class="badge ${s.notified?'badge-ok':'badge-warn'}">${s.notified?'✓ Отправлено':'⚠ Не отправлено'}</span>
       </div>
-    `;
+      <div class="card-user">${esc(user)}</div>
+      <div class="card-phone">${esc(s.phone)}</div>
+      <div style="font-size:13px;margin-top:8px">
+        <strong>Получатель:</strong> ${esc(s.recipient_name)}<br>
+        <strong>ПВЗ СДЭК:</strong> ${esc(s.cdek_address)}<br>
+        <strong>Ткани:</strong> ${esc(fabrics)}
+      </div>
+    </div>`;
   }).join('');
 }
 
-// ── Каталог ───────────────────────────────────────────────────────
-function renderFabrics(filter = '') {
+// ════════════════════════════════════════════════════════
+// КАТАЛОГ — таблица
+// ════════════════════════════════════════════════════════
+function renderFabrics(filter='') {
   const wrap = document.getElementById('fabrics-table-wrap');
   const q = filter.toLowerCase();
-  const list = q ? _fabrics.filter(f =>
-    f.name.toLowerCase().includes(q) || (f.article || '').toLowerCase().includes(q)
-  ) : _fabrics;
+  const list = q ? _fabrics.filter(f=>
+    f.name.toLowerCase().includes(q)||(f.article||'').toLowerCase().includes(q)) : _fabrics;
 
-  if (!list.length) {
-    wrap.innerHTML = '<div class="empty">Ничего не найдено</div>';
-    return;
-  }
+  if (!list.length) { wrap.innerHTML='<div class="empty">Ничего не найдено</div>'; return; }
 
   const rows = list.map(f => `
-    <tr class="${f.is_active ? '' : 'fabric-hidden'}" data-id="${f.id}">
+    <tr class="${f.is_active?'':'hidden-row'}" data-fabric-id="${f.id}" onclick="openEditor(${f.id})">
       <td>${f.id}</td>
-      <td><strong>${escHtml(f.name)}</strong><br><span style="color:var(--hint);font-size:12px">${escHtml(f.article||'')}</span></td>
-      <td>${escHtml(f.categories?.name || '')}</td>
       <td>
-        <input class="price-input" type="number" step="0.01" min="0"
-          data-field="base_price" value="${parseFloat(f.base_price||0).toFixed(2)}">
+        <strong>${esc(f.name)}</strong><br>
+        <span class="price-tag">${esc(f.article||'')}</span>
       </td>
-      <td>
-        <input class="price-input" type="number" step="0.01" min="0"
-          data-field="cut_price" value="${f.cut_price ? parseFloat(f.cut_price).toFixed(2) : ''}"
-          placeholder="—">
-      </td>
-      <td>
-        <button class="save-btn" onclick="saveFabric(${f.id}, this)">Сохранить</button>
-      </td>
-      <td>
-        <button class="toggle-btn ${f.is_active ? 'active' : ''}"
-          onclick="toggleFabric(${f.id}, ${!f.is_active}, this)">
-          ${f.is_active ? 'Скрыть' : 'Показать'}
-        </button>
-      </td>
-    </tr>
-  `).join('');
+      <td>${esc(f.categories?.name||'')}</td>
+      <td>${parseFloat(f.base_price||0).toFixed(2)}&nbsp;$</td>
+      <td>${f.cut_price?parseFloat(f.cut_price).toFixed(2)+'&nbsp;$':'—'}</td>
+      <td><span class="badge ${f.is_active?'badge-ok':'badge-warn'}">${f.is_active?'Активна':'Скрыта'}</span></td>
+    </tr>`).join('');
 
-  wrap.innerHTML = `
-    <table class="fabrics-table">
-      <thead><tr>
-        <th>#</th>
-        <th>Название / Артикул</th>
-        <th>Категория</th>
-        <th>Цена опт $/м</th>
-        <th>Цена отрез $/м</th>
-        <th></th>
-        <th></th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
+  wrap.innerHTML = `<table class="ft">
+    <thead><tr>
+      <th>#</th><th>Название / Артикул</th><th>Категория</th>
+      <th>Цена опт</th><th>Цена отрез</th><th>Статус</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+document.getElementById('fabrics-search').addEventListener('input', e => renderFabrics(e.target.value));
+
+// ════════════════════════════════════════════════════════
+// РЕДАКТОР КАРТОЧКИ
+// ════════════════════════════════════════════════════════
+async function openEditor(fabricId) {
+  const modal = document.getElementById('fabric-modal');
+  const body  = document.getElementById('modal-body');
+  document.getElementById('modal-fabric-title').textContent = 'Загрузка...';
+  body.innerHTML = '<div class="loading">Загрузка...</div>';
+  modal.classList.add('open');
+
+  const res = await fetch(`${API}/fabrics?id=${fabricId}`, { headers:{Authorization:`Bearer ${_token}`} });
+  _editFabric = await res.json();
+  document.getElementById('modal-fabric-title').textContent = _editFabric.name;
+  renderEditor();
+}
+
+function renderEditor() {
+  const f = _editFabric;
+  const body = document.getElementById('modal-body');
+
+  body.innerHTML = `
+    <!-- Основные поля -->
+    <div class="form-section">
+      <div class="form-section-title">Основная информация</div>
+      <div class="field-grid">
+        <div class="field">
+          <div class="field-label">Название</div>
+          <input id="e-name" value="${esc(f.name||'')}">
+        </div>
+        <div class="field">
+          <div class="field-label">Артикул</div>
+          <input id="e-article" value="${esc(f.article||'')}">
+        </div>
+        <div class="field">
+          <div class="field-label">Состав</div>
+          <input id="e-composition" value="${esc(f.composition||'')}">
+        </div>
+        <div class="field">
+          <div class="field-label">Категория</div>
+          <input id="e-category-id" type="number" value="${f.category_id||''}">
+        </div>
+      </div>
+      <div class="field-grid cols-3" style="margin-top:12px">
+        <div class="field">
+          <div class="field-label">Ширина, см</div>
+          <input id="e-width" type="number" value="${f.width||''}">
+        </div>
+        <div class="field">
+          <div class="field-label">Плотность, г/м²</div>
+          <input id="e-density" type="number" value="${f.density||''}">
+        </div>
+        <div class="field">
+          <div class="field-label">Мин. заказ, м</div>
+          <input id="e-min-order" type="number" value="${f.min_order||''}">
+        </div>
+      </div>
+    </div>
+
+    <!-- Цены -->
+    <div class="form-section">
+      <div class="form-section-title">Цены</div>
+      <div class="field-grid">
+        <div class="field">
+          <div class="field-label">Оптовая цена (от 50м), $/м</div>
+          <input id="e-base-price" type="number" step="0.01" value="${parseFloat(f.base_price||0).toFixed(2)}">
+        </div>
+        <div class="field">
+          <div class="field-label">Цена на отрез (до 50м), $/м</div>
+          <input id="e-cut-price" type="number" step="0.01" value="${f.cut_price?parseFloat(f.cut_price).toFixed(2):''}" placeholder="Не задана">
+        </div>
+      </div>
+    </div>
+
+    <!-- Описание -->
+    <div class="form-section">
+      <div class="form-section-title">Описание</div>
+      <div class="field">
+        <textarea id="e-description">${esc(f.description||'')}</textarea>
+      </div>
+    </div>
+
+    <!-- Видимость -->
+    <div class="form-section">
+      <div class="form-section-title">Видимость в каталоге</div>
+      <div class="visibility-toggle" id="visibility-toggle" onclick="toggleVisibility()">
+        <div class="toggle-track ${f.is_active?'on':''}" id="toggle-track">
+          <div class="toggle-thumb"></div>
+        </div>
+        <span id="visibility-label">${f.is_active?'Ткань активна — видна покупателям':'Ткань скрыта — не видна покупателям'}</span>
+      </div>
+    </div>
+
+    <!-- Фотографии -->
+    <div class="form-section">
+      <div class="form-section-title">Фотографии</div>
+      <div class="photos-grid" id="photos-grid">${renderPhotosGrid()}</div>
+      <div class="add-photo-row">
+        <input type="text" id="new-photo-url" placeholder="URL фотографии (https://...)">
+        <button class="btn btn-primary btn-sm" onclick="addPhoto()">Добавить</button>
+      </div>
+      <div style="font-size:12px;color:var(--hint);margin-top:6px">
+        Вставьте ссылку на фото. Загрузить файл можно через Supabase Storage.
+      </div>
+    </div>
+
+    <!-- Цвета -->
+    <div class="form-section">
+      <div class="form-section-title">Цвета / остатки</div>
+      <div class="colors-grid" id="colors-grid">${renderColorsGrid()}</div>
+      <div class="add-color-form">
+        <div style="font-size:12px;font-weight:600;margin-bottom:10px;color:var(--hint)">Добавить цвет</div>
+        <div class="field-grid" style="align-items:flex-end">
+          <div style="display:flex;gap:8px;align-items:flex-end">
+            <div class="color-preview-swatch" id="color-preview" style="background:#888888"></div>
+            <div class="field" style="flex:1">
+              <div class="field-label">HEX-цвет</div>
+              <input id="new-color-hex" type="color" value="#888888"
+                style="height:38px;padding:2px 6px;cursor:pointer"
+                oninput="document.getElementById('color-preview').style.background=this.value">
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Название цвета</div>
+            <input id="new-color-name" placeholder="Бордо, Синий...">
+          </div>
+          <div class="field">
+            <div class="field-label">Остаток, м</div>
+            <input id="new-color-stock" type="number" value="0" min="0">
+          </div>
+          <div class="field">
+            <div class="field-label">Рулонов</div>
+            <input id="new-color-rolls" type="number" value="0" min="0">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addColor()">Добавить цвет</button>
+      </div>
+    </div>
   `;
 }
 
-document.getElementById('fabrics-search').addEventListener('input', e => {
-  renderFabrics(e.target.value);
+function renderPhotosGrid() {
+  const photos = _editFabric.photos || [];
+  if (!photos.length) return '<span style="color:var(--hint);font-size:13px">Фото не добавлены</span>';
+  return photos.map(p => `
+    <div class="photo-item" id="photo-${p.id}">
+      <img src="${esc(p.url)}" alt="" onerror="this.style.background='#eee';this.style.display='none'">
+      <button class="photo-del" onclick="deletePhoto(${p.id})">✕</button>
+    </div>`).join('');
+}
+
+function renderColorsGrid() {
+  const colors = _editFabric.colors || [];
+  if (!colors.length) return '<span style="color:var(--hint);font-size:13px">Цвета не добавлены</span>';
+  return colors.map(c => `
+    <div class="color-item" id="color-${c.id}">
+      <div class="color-swatch-admin" style="background:${esc(c.hex)}"></div>
+      <div class="color-info">
+        ${esc(c.name)}<br>
+        ${c.stock}&nbsp;м / ${c.rolls}&nbsp;рул.
+      </div>
+      <button class="color-del" onclick="deleteColor(${c.id})" title="Удалить">✕</button>
+    </div>`).join('');
+}
+
+// ── Видимость ──────────────────────────────────────────
+function toggleVisibility() {
+  _editFabric.is_active = !_editFabric.is_active;
+  document.getElementById('toggle-track').classList.toggle('on', _editFabric.is_active);
+  document.getElementById('visibility-label').textContent =
+    _editFabric.is_active ? 'Ткань активна — видна покупателям' : 'Ткань скрыта — не видна покупателям';
+}
+
+// ── Сохранить основные поля ────────────────────────────
+document.getElementById('modal-save-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('modal-save-btn');
+  btn.disabled = true; btn.textContent = '...';
+
+  const body = {
+    id:          _editFabric.id,
+    name:        document.getElementById('e-name')?.value || '',
+    article:     document.getElementById('e-article')?.value || '',
+    composition: document.getElementById('e-composition')?.value || '',
+    category_id: document.getElementById('e-category-id')?.value || null,
+    width:       document.getElementById('e-width')?.value || null,
+    density:     document.getElementById('e-density')?.value || null,
+    min_order:   document.getElementById('e-min-order')?.value || null,
+    base_price:  document.getElementById('e-base-price')?.value || 0,
+    cut_price:   document.getElementById('e-cut-price')?.value || null,
+    description: document.getElementById('e-description')?.value || '',
+    is_active:   _editFabric.is_active,
+  };
+
+  const res = await fetch(`${API}/fabrics`, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+    body: JSON.stringify(body),
+  });
+
+  btn.disabled = false;
+  if (res.ok) {
+    btn.textContent = '✓ Сохранено';
+    // Обновляем локальный кэш
+    const idx = _fabrics.findIndex(f => f.id === _editFabric.id);
+    if (idx >= 0) Object.assign(_fabrics[idx], body, { categories: _fabrics[idx].categories });
+    renderFabrics(document.getElementById('fabrics-search').value);
+    setTimeout(() => { btn.textContent = 'Сохранить изменения'; }, 1500);
+  } else {
+    btn.textContent = '✗ Ошибка';
+    setTimeout(() => { btn.textContent = 'Сохранить изменения'; }, 1500);
+  }
 });
 
-async function saveFabric(id, btn) {
-  const row        = btn.closest('tr');
-  const base_price = row.querySelector('[data-field="base_price"]').value;
-  const cut_price  = row.querySelector('[data-field="cut_price"]').value;
+// ── Фото: добавить ────────────────────────────────────
+async function addPhoto() {
+  const url = document.getElementById('new-photo-url').value.trim();
+  if (!url) return;
 
-  btn.disabled    = true;
-  btn.textContent = '...';
-
-  const res = await fetch(`${API}/fabrics`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${_token}` },
-    body: JSON.stringify({ id, base_price, cut_price: cut_price || null }),
-  });
-
-  btn.disabled    = false;
-  btn.textContent = res.ok ? '✓' : '✗';
-  setTimeout(() => { btn.textContent = 'Сохранить'; }, 1500);
-
-  if (res.ok) {
-    const f = _fabrics.find(f => f.id === id);
-    if (f) { f.base_price = base_price; f.cut_price = cut_price || null; }
-  }
-}
-
-async function toggleFabric(id, newActive, btn) {
-  btn.disabled = true;
-  const res = await fetch(`${API}/fabrics`, {
-    method:  'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${_token}` },
-    body: JSON.stringify({ id, is_active: newActive }),
+  const res = await fetch(`${API}/photos`, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+    body: JSON.stringify({ fabric_id: _editFabric.id, url,
+      sort_order: (_editFabric.photos||[]).length }),
   });
   if (res.ok) {
-    const f = _fabrics.find(f => f.id === id);
-    if (f) f.is_active = newActive;
-    renderFabrics(document.getElementById('fabrics-search').value);
+    const photo = await res.json();
+    _editFabric.photos = [...(_editFabric.photos||[]), photo];
+    document.getElementById('photos-grid').innerHTML = renderPhotosGrid();
+    document.getElementById('new-photo-url').value = '';
   } else {
-    btn.disabled = false;
+    alert('Ошибка при добавлении фото');
   }
 }
 
-// ── Утилиты ───────────────────────────────────────────────────────
-function escHtml(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+// ── Фото: удалить ────────────────────────────────────
+async function deletePhoto(id) {
+  if (!confirm('Удалить это фото?')) return;
+  const res = await fetch(`${API}/photos?id=${id}`, {
+    method: 'DELETE', headers: { Authorization:`Bearer ${_token}` }
+  });
+  if (res.ok) {
+    _editFabric.photos = _editFabric.photos.filter(p => p.id !== id);
+    document.getElementById('photos-grid').innerHTML = renderPhotosGrid();
+  }
+}
+
+// ── Цвет: добавить ───────────────────────────────────
+async function addColor() {
+  const hex   = document.getElementById('new-color-hex').value;
+  const name  = document.getElementById('new-color-name').value.trim();
+  const stock = document.getElementById('new-color-stock').value;
+  const rolls = document.getElementById('new-color-rolls').value;
+
+  if (!name) { alert('Введите название цвета'); return; }
+
+  const res = await fetch(`${API}/colors`, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+    body: JSON.stringify({ fabric_id: _editFabric.id, hex, name, stock, rolls }),
+  });
+  if (res.ok) {
+    const color = await res.json();
+    _editFabric.colors = [...(_editFabric.colors||[]), color];
+    document.getElementById('colors-grid').innerHTML = renderColorsGrid();
+    document.getElementById('new-color-name').value = '';
+    document.getElementById('new-color-stock').value = '0';
+    document.getElementById('new-color-rolls').value = '0';
+  } else {
+    alert('Ошибка при добавлении цвета');
+  }
+}
+
+// ── Цвет: удалить ────────────────────────────────────
+async function deleteColor(id) {
+  if (!confirm('Удалить этот цвет?')) return;
+  const res = await fetch(`${API}/colors?id=${id}`, {
+    method: 'DELETE', headers: { Authorization:`Bearer ${_token}` }
+  });
+  if (res.ok) {
+    _editFabric.colors = _editFabric.colors.filter(c => c.id !== id);
+    document.getElementById('colors-grid').innerHTML = renderColorsGrid();
+  }
+}
+
+// ── Закрытие модала ──────────────────────────────────
+document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+document.getElementById('fabric-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('fabric-modal')) closeModal();
+});
+function closeModal() {
+  document.getElementById('fabric-modal').classList.remove('open');
+  _editFabric = null;
+}
+
+// ════════════════════════════════════════════════════════
+// УТИЛИТЫ
+// ════════════════════════════════════════════════════════
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(iso) {
+  return new Date(iso).toLocaleString('ru-RU',{
+    day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'
+  });
 }
 </script>
 </body>

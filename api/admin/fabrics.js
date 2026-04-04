@@ -1,13 +1,18 @@
 'use strict';
 
 /**
- * GET  /api/admin/fabrics         — все ткани (включая скрытые)
- * POST /api/admin/fabrics         — обновить ткань (id в body)
- * Header: Authorization: Bearer <ADMIN_SECRET>
+ * GET  /api/admin/fabrics        — список всех тканей
+ * GET  /api/admin/fabrics?id=N   — одна ткань с colors[] и photos[]
+ * POST /api/admin/fabrics        — обновить поля ткани (id в body)
  */
 
 const { dbGet, dbPatch } = require('../../lib/db');
 const { checkAuth } = require('../../lib/admin-auth');
+
+const ALLOWED_FIELDS = [
+  'name', 'article', 'category_id', 'composition', 'width', 'density',
+  'description', 'thumb', 'base_price', 'cut_price', 'min_order', 'step', 'is_active',
+];
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,12 +21,36 @@ module.exports = async function handler(req, res) {
 
   if (!checkAuth(req, res)) return;
 
-  // ── GET: список всех тканей ───────────────────────────────────
+  // ── GET ───────────────────────────────────────────────────────
   if (req.method === 'GET') {
+    const { id } = req.query;
+
+    // Детальная карточка одной ткани
+    if (id) {
+      const numId = Number(id);
+      if (!numId) return res.status(400).json({ error: 'Некорректный id' });
+      try {
+        const [fabrics, colors, photos] = await Promise.all([
+          dbGet(`fabrics?select=*,categories(name)&id=eq.${numId}`),
+          dbGet(`fabric_colors?select=*&fabric_id=eq.${numId}&order=id`),
+          dbGet(`fabric_photos?select=*&fabric_id=eq.${numId}&order=sort_order`),
+        ]);
+        if (!fabrics.length) return res.status(404).json({ error: 'Не найдено' });
+        const fabric = fabrics[0];
+        fabric.colors = colors;
+        fabric.photos = photos;
+        return res.status(200).json(fabric);
+      } catch (err) {
+        console.error('[GET /api/admin/fabrics?id]', err.message);
+        return res.status(500).json({ error: 'Ошибка сервера' });
+      }
+    }
+
+    // Список всех тканей
     try {
       const fabrics = await dbGet(
-        'fabrics?select=id,name,article,category_id,base_price,cut_price,' +
-        'min_order,step,is_active,categories(name)&order=id'
+        'fabrics?select=id,name,article,category_id,composition,width,density,' +
+        'base_price,cut_price,min_order,step,is_active,description,thumb,categories(name)&order=id'
       );
       return res.status(200).json(fabrics);
     } catch (err) {
@@ -30,7 +59,7 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // ── POST: обновить поля ткани ─────────────────────────────────
+  // ── POST: обновить ткань ──────────────────────────────────────
   if (req.method === 'POST') {
     let body;
     try {
@@ -39,13 +68,23 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Некорректный JSON' });
     }
 
-    const { id, base_price, cut_price, is_active } = body || {};
+    const { id, ...rest } = body || {};
     if (!id) return res.status(400).json({ error: 'id обязателен' });
 
     const patch = {};
-    if (base_price !== undefined) patch.base_price = parseFloat(base_price);
-    if (cut_price  !== undefined) patch.cut_price  = cut_price ? parseFloat(cut_price) : null;
-    if (is_active  !== undefined) patch.is_active  = Boolean(is_active);
+    for (const field of ALLOWED_FIELDS) {
+      if (!(field in rest)) continue;
+      const val = rest[field];
+      if (field === 'base_price')   { patch.base_price  = parseFloat(val); continue; }
+      if (field === 'cut_price')    { patch.cut_price   = val ? parseFloat(val) : null; continue; }
+      if (field === 'width')        { patch.width       = val ? parseInt(val) : null; continue; }
+      if (field === 'density')      { patch.density     = val ? parseInt(val) : null; continue; }
+      if (field === 'min_order')    { patch.min_order   = val ? parseInt(val) : null; continue; }
+      if (field === 'step')         { patch.step        = val ? parseInt(val) : null; continue; }
+      if (field === 'category_id')  { patch.category_id = val ? parseInt(val) : null; continue; }
+      if (field === 'is_active')    { patch.is_active   = Boolean(val); continue; }
+      patch[field] = val ?? null;
+    }
 
     if (!Object.keys(patch).length) {
       return res.status(400).json({ error: 'Нет полей для обновления' });
