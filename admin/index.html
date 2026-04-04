@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админ-панель — 100FF VL</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f5f5;
+      --card: #fff;
+      --border: #e0e0e0;
+      --text: #1a1a1a;
+      --hint: #888;
+      --accent: #2AABEE;
+      --danger: #e53935;
+      --success: #43a047;
+      --warn: #fb8c00;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Login ── */
+    #login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .login-card {
+      background: var(--card); border-radius: 16px; padding: 40px 32px;
+      width: 100%; max-width: 360px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .login-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .login-sub   { color: var(--hint); font-size: 14px; margin-bottom: 28px; }
+    .login-card input {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 16px; outline: none;
+      transition: border-color 0.2s; margin-bottom: 12px;
+    }
+    .login-card input:focus { border-color: var(--accent); }
+    .login-error { color: var(--danger); font-size: 13px; margin-bottom: 12px; display: none; }
+
+    /* ── App ── */
+    #app-screen { display: none; }
+
+    header {
+      background: var(--card); border-bottom: 1px solid var(--border);
+      padding: 0 24px; display: flex; align-items: center;
+      gap: 24px; height: 56px; position: sticky; top: 0; z-index: 10;
+    }
+    .header-logo { font-weight: 700; font-size: 16px; margin-right: auto; }
+
+    nav { display: flex; gap: 4px; }
+    .nav-btn {
+      padding: 6px 16px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: 14px; font-weight: 500; background: none; color: var(--hint);
+      transition: all 0.15s;
+    }
+    .nav-btn.active { background: var(--accent); color: #fff; }
+
+    .logout-btn {
+      padding: 6px 14px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: none; cursor: pointer; font-size: 13px; color: var(--hint);
+    }
+    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    main { padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card); border-radius: 12px; padding: 20px;
+      margin-bottom: 16px; border: 1px solid var(--border);
+    }
+    .card-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 12px;
+    }
+    .card-num   { font-weight: 700; font-size: 16px; }
+    .card-date  { color: var(--hint); font-size: 13px; margin-top: 2px; }
+    .card-user  { font-size: 14px; margin-bottom: 4px; }
+    .card-phone { color: var(--hint); font-size: 13px; }
+
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
+    }
+    .badge-ok   { background: #e8f5e9; color: var(--success); }
+    .badge-warn { background: #fff3e0; color: var(--warn); }
+
+    .items-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    .items-table th, .items-table td {
+      text-align: left; padding: 6px 10px; font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .items-table th { color: var(--hint); font-weight: 500; }
+    .price-type-cut  { color: var(--warn); font-size: 11px; }
+    .price-type-base { color: var(--success); font-size: 11px; }
+
+    .card-total { font-weight: 700; font-size: 15px; text-align: right; }
+    .card-comment { font-size: 13px; color: var(--hint); margin-top: 8px;
+                    padding-top: 8px; border-top: 1px solid var(--border); }
+
+    /* ── Fabrics table ── */
+    .fabrics-table { width: 100%; border-collapse: collapse; }
+    .fabrics-table th, .fabrics-table td {
+      text-align: left; padding: 10px 12px; font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .fabrics-table th { color: var(--hint); font-weight: 500; position: sticky; top: 56px;
+                        background: var(--bg); }
+    .fabrics-table tr:hover td { background: #fafafa; }
+    .fabric-hidden td { opacity: 0.45; }
+
+    .price-input {
+      width: 80px; padding: 4px 8px; border: 1.5px solid var(--border);
+      border-radius: 6px; font-size: 13px; text-align: right;
+    }
+    .price-input:focus { border-color: var(--accent); outline: none; }
+
+    .save-btn {
+      padding: 4px 12px; border-radius: 6px; border: none; cursor: pointer;
+      background: var(--accent); color: #fff; font-size: 12px;
+    }
+    .toggle-btn {
+      padding: 4px 12px; border-radius: 6px; border: 1.5px solid var(--border);
+      cursor: pointer; background: none; font-size: 12px; color: var(--hint);
+    }
+    .toggle-btn.active { border-color: var(--danger); color: var(--danger); }
+
+    /* ── Loading / empty ── */
+    .loading { text-align: center; padding: 60px; color: var(--hint); }
+    .empty   { text-align: center; padding: 60px; color: var(--hint); font-size: 15px; }
+
+    /* ── Stats bar ── */
+    .stats { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px 20px; flex: 1; min-width: 140px;
+    }
+    .stat-val   { font-size: 28px; font-weight: 700; }
+    .stat-label { color: var(--hint); font-size: 13px; margin-top: 2px; }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 10px 20px; border-radius: 10px; border: none;
+      cursor: pointer; font-size: 14px; font-weight: 600;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+    /* ── Search ── */
+    .search-bar {
+      display: flex; gap: 12px; margin-bottom: 20px; align-items: center;
+    }
+    .search-bar input {
+      flex: 1; padding: 10px 14px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 14px; outline: none;
+    }
+    .search-bar input:focus { border-color: var(--accent); }
+
+    @media (max-width: 600px) {
+      header { padding: 0 12px; gap: 8px; }
+      .nav-btn { padding: 5px 10px; font-size: 13px; }
+      main { padding: 12px; }
+      .fabrics-table th:nth-child(3),
+      .fabrics-table td:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ ЭКРАН ВХОДА ══════════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-title">100FF VL</div>
+    <div class="login-sub">Панель управления каталогом</div>
+    <div class="login-error" id="login-error">Неверный пароль</div>
+    <input type="password" id="login-input" placeholder="Пароль" autofocus>
+    <button class="btn btn-primary" style="width:100%" id="login-btn">Войти</button>
+  </div>
+</div>
+
+<!-- ══ ОСНОВНОЙ ЭКРАН ══════════════════════════════════════════ -->
+<div id="app-screen">
+  <header>
+    <div class="header-logo">100FF VL Admin</div>
+    <nav>
+      <button class="nav-btn active" data-tab="orders">Заявки</button>
+      <button class="nav-btn" data-tab="samples">Образцы</button>
+      <button class="nav-btn" data-tab="fabrics">Каталог</button>
+    </nav>
+    <button class="logout-btn" id="logout-btn">Выйти</button>
+  </header>
+
+  <main>
+
+    <!-- ── Заявки ── -->
+    <div class="tab-content active" id="tab-orders">
+      <div class="stats" id="orders-stats"></div>
+      <div class="search-bar">
+        <input type="text" id="orders-search" placeholder="Поиск по имени, телефону, номеру...">
+      </div>
+      <div id="orders-list"><div class="loading">Загрузка...</div></div>
+    </div>
+
+    <!-- ── Образцы ── -->
+    <div class="tab-content" id="tab-samples">
+      <div class="stats" id="samples-stats"></div>
+      <div id="samples-list"><div class="loading">Загрузка...</div></div>
+    </div>
+
+    <!-- ── Каталог ── -->
+    <div class="tab-content" id="tab-fabrics">
+      <div class="search-bar">
+        <input type="text" id="fabrics-search" placeholder="Поиск по названию или артикулу...">
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div id="fabrics-table-wrap"><div class="loading">Загрузка...</div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+'use strict';
+
+const API = '/api/admin';
+let _token = '';
+let _orders = [], _samples = [], _fabrics = [];
+
+// ── Вход ─────────────────────────────────────────────────────────
+document.getElementById('login-btn').addEventListener('click', tryLogin);
+document.getElementById('login-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryLogin();
+});
+
+async function tryLogin() {
+  const pwd = document.getElementById('login-input').value.trim();
+  if (!pwd) return;
+
+  // Проверяем пароль через API
+  const res = await fetch(`${API}/orders`, {
+    headers: { Authorization: `Bearer ${pwd}` }
+  });
+
+  if (res.status === 401) {
+    document.getElementById('login-error').style.display = 'block';
+    return;
+  }
+
+  _token = pwd;
+  sessionStorage.setItem('admin_token', pwd);
+  document.getElementById('login-error').style.display = 'none';
+
+  _orders = await res.json();
+  showApp();
+}
+
+// Восстановление сессии
+window.addEventListener('DOMContentLoaded', async () => {
+  const saved = sessionStorage.getItem('admin_token');
+  if (!saved) return;
+
+  const res = await fetch(`${API}/orders`, {
+    headers: { Authorization: `Bearer ${saved}` }
+  });
+  if (res.ok) {
+    _token = saved;
+    _orders = await res.json();
+    showApp();
+  }
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  sessionStorage.removeItem('admin_token');
+  location.reload();
+});
+
+// ── Показ приложения ──────────────────────────────────────────────
+async function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+
+  renderOrders();
+
+  // Грузим остальные данные параллельно
+  const [samplesRes, fabricsRes] = await Promise.all([
+    fetch(`${API}/samples`, { headers: { Authorization: `Bearer ${_token}` } }),
+    fetch(`${API}/fabrics`, { headers: { Authorization: `Bearer ${_token}` } }),
+  ]);
+  _samples = await samplesRes.json();
+  _fabrics = await fabricsRes.json();
+
+  renderSamples();
+  renderFabrics();
+}
+
+// ── Навигация ─────────────────────────────────────────────────────
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── Заявки ────────────────────────────────────────────────────────
+function renderOrders(filter = '') {
+  const list = document.getElementById('orders-list');
+  const stats = document.getElementById('orders-stats');
+
+  const q = filter.toLowerCase();
+  const filtered = q ? _orders.filter(o =>
+    (o.order_number || '').toLowerCase().includes(q) ||
+    (o.first_name   || '').toLowerCase().includes(q) ||
+    (o.phone        || '').includes(q)
+  ) : _orders;
+
+  // Статистика
+  const totalUsd = _orders.reduce((s, o) => s + parseFloat(o.total_usd || 0), 0);
+  stats.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-val">${_orders.length}</div>
+      <div class="stat-label">Всего заявок</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${_orders.filter(o => !o.notified).length}</div>
+      <div class="stat-label">Без уведомления</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${totalUsd.toFixed(0)}&nbsp;$</div>
+      <div class="stat-label">Общая сумма</div>
+    </div>
+  `;
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">Заявок пока нет</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(o => {
+    const dt = new Date(o.created_at).toLocaleString('ru-RU', {
+      day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
+    });
+    const user = o.tg_username ? `${o.first_name || ''} @${o.tg_username}` : (o.first_name || 'Аноним');
+    const itemsHtml = (o.items || []).map(i => `
+      <tr>
+        <td>${i.fabric_name}</td>
+        <td>${i.color_name}</td>
+        <td>${i.meters}&nbsp;м</td>
+        <td>${parseFloat(i.price_per_meter).toFixed(2)}&nbsp;$/м</td>
+        <td><span class="price-type-${i.price_type}">${i.price_type === 'cut' ? 'отрез' : 'опт'}</span></td>
+      </tr>
+    `).join('');
+
+    return `
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-num">${o.order_number}</div>
+            <div class="card-date">${dt}</div>
+          </div>
+          <span class="badge ${o.notified ? 'badge-ok' : 'badge-warn'}">
+            ${o.notified ? '✓ Отправлено' : '⚠ Не отправлено'}
+          </span>
+        </div>
+        <div class="card-user">${escHtml(user)}</div>
+        <div class="card-phone">${escHtml(o.phone)}</div>
+        <table class="items-table">
+          <thead><tr>
+            <th>Ткань</th><th>Цвет</th><th>Метры</th><th>Цена</th><th>Тип</th>
+          </tr></thead>
+          <tbody>${itemsHtml}</tbody>
+        </table>
+        <div class="card-total">Итого: ${parseFloat(o.total_usd||0).toFixed(2)}&nbsp;$ · ${o.total_meters}&nbsp;м</div>
+        ${o.comment ? `<div class="card-comment">💬 ${escHtml(o.comment)}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+document.getElementById('orders-search').addEventListener('input', e => {
+  renderOrders(e.target.value);
+});
+
+// ── Образцы ───────────────────────────────────────────────────────
+function renderSamples() {
+  const list  = document.getElementById('samples-list');
+  const stats = document.getElementById('samples-stats');
+
+  stats.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-val">${_samples.length}</div>
+      <div class="stat-label">Всего запросов</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${_samples.filter(s => !s.notified).length}</div>
+      <div class="stat-label">Без уведомления</div>
+    </div>
+  `;
+
+  if (!_samples.length) {
+    list.innerHTML = '<div class="empty">Запросов образцов пока нет</div>';
+    return;
+  }
+
+  list.innerHTML = _samples.map(s => {
+    const dt   = new Date(s.created_at).toLocaleString('ru-RU', {
+      day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'
+    });
+    const user = s.tg_username ? `${s.first_name || ''} @${s.tg_username}` : (s.first_name || 'Аноним');
+    const fabrics = (s.items || []).map(i => `${i.fabric_name} (${i.color_name})`).join(', ');
+
+    return `
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-num">${s.request_number}</div>
+            <div class="card-date">${dt}</div>
+          </div>
+          <span class="badge ${s.notified ? 'badge-ok' : 'badge-warn'}">
+            ${s.notified ? '✓ Отправлено' : '⚠ Не отправлено'}
+          </span>
+        </div>
+        <div class="card-user">${escHtml(user)}</div>
+        <div class="card-phone">${escHtml(s.phone)}</div>
+        <div style="font-size:13px;margin-top:8px">
+          <strong>Получатель:</strong> ${escHtml(s.recipient_name)}<br>
+          <strong>ПВЗ СДЭК:</strong> ${escHtml(s.cdek_address)}<br>
+          <strong>Ткани:</strong> ${escHtml(fabrics)}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Каталог ───────────────────────────────────────────────────────
+function renderFabrics(filter = '') {
+  const wrap = document.getElementById('fabrics-table-wrap');
+  const q = filter.toLowerCase();
+  const list = q ? _fabrics.filter(f =>
+    f.name.toLowerCase().includes(q) || (f.article || '').toLowerCase().includes(q)
+  ) : _fabrics;
+
+  if (!list.length) {
+    wrap.innerHTML = '<div class="empty">Ничего не найдено</div>';
+    return;
+  }
+
+  const rows = list.map(f => `
+    <tr class="${f.is_active ? '' : 'fabric-hidden'}" data-id="${f.id}">
+      <td>${f.id}</td>
+      <td><strong>${escHtml(f.name)}</strong><br><span style="color:var(--hint);font-size:12px">${escHtml(f.article||'')}</span></td>
+      <td>${escHtml(f.categories?.name || '')}</td>
+      <td>
+        <input class="price-input" type="number" step="0.01" min="0"
+          data-field="base_price" value="${parseFloat(f.base_price||0).toFixed(2)}">
+      </td>
+      <td>
+        <input class="price-input" type="number" step="0.01" min="0"
+          data-field="cut_price" value="${f.cut_price ? parseFloat(f.cut_price).toFixed(2) : ''}"
+          placeholder="—">
+      </td>
+      <td>
+        <button class="save-btn" onclick="saveFabric(${f.id}, this)">Сохранить</button>
+      </td>
+      <td>
+        <button class="toggle-btn ${f.is_active ? 'active' : ''}"
+          onclick="toggleFabric(${f.id}, ${!f.is_active}, this)">
+          ${f.is_active ? 'Скрыть' : 'Показать'}
+        </button>
+      </td>
+    </tr>
+  `).join('');
+
+  wrap.innerHTML = `
+    <table class="fabrics-table">
+      <thead><tr>
+        <th>#</th>
+        <th>Название / Артикул</th>
+        <th>Категория</th>
+        <th>Цена опт $/м</th>
+        <th>Цена отрез $/м</th>
+        <th></th>
+        <th></th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+document.getElementById('fabrics-search').addEventListener('input', e => {
+  renderFabrics(e.target.value);
+});
+
+async function saveFabric(id, btn) {
+  const row        = btn.closest('tr');
+  const base_price = row.querySelector('[data-field="base_price"]').value;
+  const cut_price  = row.querySelector('[data-field="cut_price"]').value;
+
+  btn.disabled    = true;
+  btn.textContent = '...';
+
+  const res = await fetch(`${API}/fabrics`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${_token}` },
+    body: JSON.stringify({ id, base_price, cut_price: cut_price || null }),
+  });
+
+  btn.disabled    = false;
+  btn.textContent = res.ok ? '✓' : '✗';
+  setTimeout(() => { btn.textContent = 'Сохранить'; }, 1500);
+
+  if (res.ok) {
+    const f = _fabrics.find(f => f.id === id);
+    if (f) { f.base_price = base_price; f.cut_price = cut_price || null; }
+  }
+}
+
+async function toggleFabric(id, newActive, btn) {
+  btn.disabled = true;
+  const res = await fetch(`${API}/fabrics`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${_token}` },
+    body: JSON.stringify({ id, is_active: newActive }),
+  });
+  if (res.ok) {
+    const f = _fabrics.find(f => f.id === id);
+    if (f) f.is_active = newActive;
+    renderFabrics(document.getElementById('fabrics-search').value);
+  } else {
+    btn.disabled = false;
+  }
+}
+
+// ── Утилиты ───────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>
