@@ -1,11 +1,12 @@
 'use strict';
 
 /**
- * GET /api/admin/samples — Список запросов образцов с позициями
+ * GET   /api/admin/samples        — Список запросов образцов с позициями
+ * PATCH /api/admin/samples?id=N   — Отметить запрос обработанным
  * Header: Authorization: Bearer <ADMIN_SECRET>
  */
 
-const { dbGet } = require('../../lib/db');
+const { dbGet, dbPatch } = require('../../lib/db');
 const { checkAuth } = require('../../lib/admin-auth');
 
 module.exports = async function handler(req, res) {
@@ -14,12 +15,26 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (!checkAuth(req, res)) return;
+
+  // ── PATCH: отметить обработанным ─────────────────────────────
+  if (req.method === 'PATCH') {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: 'id обязателен' });
+    try {
+      await dbPatch(`sample_requests?id=eq.${Number(id)}`, { processed: true });
+      return res.status(200).json({ ok: true });
+    } catch (err) {
+      console.error('[PATCH /api/admin/samples]', err.message);
+      return res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  }
+
   if (req.method !== 'GET') return res.status(405).end();
 
   try {
     const requests = await dbGet(
       'sample_requests?select=id,request_number,first_name,tg_username,' +
-      'recipient_name,phone,cdek_address,notified,created_at' +
+      'recipient_name,phone,cdek_address,notified,processed,created_at' +
       '&order=created_at.desc&limit=200'
     );
 

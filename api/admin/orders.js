@@ -5,7 +5,7 @@
  * Header: Authorization: Bearer <ADMIN_SECRET>
  */
 
-const { dbGet } = require('../../lib/db');
+const { dbGet, dbPatch } = require('../../lib/db');
 const { checkAuth } = require('../../lib/admin-auth');
 
 module.exports = async function handler(req, res) {
@@ -14,12 +14,26 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (!checkAuth(req, res)) return;
+
+  // ── PATCH: отметить заявку обработанной ──────────────────────
+  if (req.method === 'PATCH') {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: 'id обязателен' });
+    try {
+      await dbPatch(`orders?id=eq.${Number(id)}`, { processed: true });
+      return res.status(200).json({ ok: true });
+    } catch (err) {
+      console.error('[PATCH /api/admin/orders]', err.message);
+      return res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  }
+
   if (req.method !== 'GET') return res.status(405).end();
 
   try {
     const orders = await dbGet(
       'orders?select=id,order_number,first_name,tg_username,phone,comment,' +
-      'total_meters,total_usd,notified,created_at' +
+      'total_meters,total_usd,notified,processed,created_at' +
       '&order=created_at.desc&limit=200'
     );
 

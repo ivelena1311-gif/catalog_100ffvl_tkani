@@ -4,9 +4,10 @@
  * GET  /api/admin/fabrics        — список всех тканей
  * GET  /api/admin/fabrics?id=N   — одна ткань с colors[] и photos[]
  * POST /api/admin/fabrics        — обновить поля ткани (id в body)
+ * PUT  /api/admin/fabrics        — создать новую ткань
  */
 
-const { dbGet, dbPatch } = require('../../lib/db');
+const { dbGet, dbPost, dbPatch } = require('../../lib/db');
 const { checkAuth } = require('../../lib/admin-auth');
 
 const ALLOWED_FIELDS = [
@@ -95,6 +96,43 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true });
     } catch (err) {
       console.error('[POST /api/admin/fabrics]', err.message);
+      return res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  }
+
+  // ── PUT: создать новую ткань ──────────────────────────────────
+  if (req.method === 'PUT') {
+    let body;
+    try {
+      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } catch {
+      return res.status(400).json({ error: 'Некорректный JSON' });
+    }
+
+    const { name, base_price, ...rest } = body || {};
+    if (!name || !name.trim()) return res.status(400).json({ error: 'name обязателен' });
+    if (!base_price) return res.status(400).json({ error: 'base_price обязателен' });
+
+    const newFabric = {
+      name:        name.trim(),
+      base_price:  parseFloat(base_price),
+      is_active:   true,
+      article:     rest.article?.trim() || null,
+      category_id: rest.category_id ? parseInt(rest.category_id) : null,
+      composition: rest.composition?.trim() || null,
+      width:       rest.width ? parseInt(rest.width) : null,
+      density:     rest.density ? parseInt(rest.density) : null,
+      description: rest.description?.trim() || null,
+      cut_price:   rest.cut_price ? parseFloat(rest.cut_price) : null,
+      min_order:   rest.min_order ? parseInt(rest.min_order) : null,
+      step:        rest.step ? parseInt(rest.step) : null,
+    };
+
+    try {
+      const [fabric] = await dbPost('fabrics', newFabric);
+      return res.status(201).json(fabric);
+    } catch (err) {
+      console.error('[PUT /api/admin/fabrics]', err.message);
       return res.status(500).json({ error: 'Ошибка сервера' });
     }
   }

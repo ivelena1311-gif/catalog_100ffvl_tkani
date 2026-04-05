@@ -32,11 +32,11 @@
              gap:16px; height:56px; position:sticky; top:0; z-index:100; }
     .header-logo { font-weight:700; font-size:16px; margin-right:auto; }
     nav { display:flex; gap:4px; }
-    .nav-btn { padding:6px 16px; border-radius:8px; border:none; cursor:pointer;
-               font-size:14px; font-weight:500; background:none; color:var(--hint); }
+    .nav-btn { padding:6px 13px; border-radius:8px; border:none; cursor:pointer;
+               font-size:13px; font-weight:500; background:none; color:var(--hint); }
     .nav-btn.active { background:var(--accent); color:#fff; }
     .logout-btn { padding:6px 14px; border-radius:8px; border:1.5px solid var(--border);
-                  background:none; cursor:pointer; font-size:13px; color:var(--hint); }
+                  background:none; cursor:pointer; font-size:13px; color:var(--hint); white-space:nowrap; }
     .logout-btn:hover { border-color:var(--danger); color:var(--danger); }
     main { padding:24px; max-width:1100px; margin:0 auto; }
     .tab-content { display:none; }
@@ -44,9 +44,10 @@
 
     /* ── Cards (orders/samples) ── */
     .card { background:var(--card); border-radius:12px; padding:20px;
-            margin-bottom:16px; border:1px solid var(--border); }
+            margin-bottom:16px; border:1px solid var(--border); transition:opacity .2s; }
+    .card.processed-card { opacity:.5; }
     .card-header { display:flex; align-items:flex-start; justify-content:space-between;
-                   gap:12px; margin-bottom:12px; }
+                   gap:12px; margin-bottom:12px; flex-wrap:wrap; }
     .card-num  { font-weight:700; font-size:16px; }
     .card-date { color:var(--hint); font-size:13px; margin-top:2px; }
     .card-user { font-size:14px; margin-bottom:4px; }
@@ -55,6 +56,7 @@
              font-size:12px; font-weight:600; white-space:nowrap; }
     .badge-ok   { background:#e8f5e9; color:var(--success); }
     .badge-warn { background:#fff3e0; color:var(--warn); }
+    .badge-done { background:#eeeeee; color:#999; }
     .items-table { width:100%; border-collapse:collapse; margin:12px 0; }
     .items-table th, .items-table td { text-align:left; padding:6px 10px;
       font-size:13px; border-bottom:1px solid var(--border); }
@@ -64,6 +66,8 @@
     .card-total { font-weight:700; font-size:15px; text-align:right; }
     .card-comment { font-size:13px; color:var(--hint); margin-top:8px;
                     padding-top:8px; border-top:1px solid var(--border); }
+    .card-footer { display:flex; justify-content:flex-end; margin-top:12px;
+                   padding-top:12px; border-top:1px solid var(--border); }
 
     /* ── Fabrics table ── */
     .fabrics-wrap { background:var(--card); border-radius:12px;
@@ -85,20 +89,23 @@
     .stat-val   { font-size:28px; font-weight:700; }
     .stat-label { color:var(--hint); font-size:13px; margin-top:2px; }
 
-    /* ── Search ── */
-    .search-bar { display:flex; gap:12px; margin-bottom:20px; }
-    .search-bar input { flex:1; padding:10px 14px; border:1.5px solid var(--border);
-      border-radius:10px; font-size:14px; outline:none; }
-    .search-bar input:focus { border-color:var(--accent); }
+    /* ── Toolbar ── */
+    .toolbar { display:flex; gap:12px; margin-bottom:20px; align-items:center; flex-wrap:wrap; }
+    .toolbar input[type=text] { flex:1; min-width:160px; padding:10px 14px;
+      border:1.5px solid var(--border); border-radius:10px; font-size:14px; outline:none; }
+    .toolbar input[type=text]:focus { border-color:var(--accent); }
+    .toolbar label { display:flex; align-items:center; gap:6px; font-size:13px;
+                     color:var(--hint); cursor:pointer; white-space:nowrap; }
 
     /* ── Buttons ── */
     .btn { padding:10px 20px; border-radius:10px; border:none; cursor:pointer;
            font-size:14px; font-weight:600; }
-    .btn-primary  { background:var(--accent); color:#fff; }
-    .btn-danger   { background:var(--danger); color:#fff; }
-    .btn-ghost    { background:none; border:1.5px solid var(--border); color:var(--hint); }
+    .btn-primary { background:var(--accent); color:#fff; }
+    .btn-danger  { background:var(--danger); color:#fff; }
+    .btn-success { background:var(--success); color:#fff; }
+    .btn-ghost   { background:none; border:1.5px solid var(--border); color:var(--hint); }
     .btn:disabled { opacity:.5; cursor:default; }
-    .btn-sm { padding:5px 12px; font-size:12px; border-radius:7px; }
+    .btn-sm { padding:6px 14px; font-size:12px; border-radius:7px; }
 
     /* ═══════════════════════════════════════════
        МОДАЛЬНЫЙ РЕДАКТОР КАРТОЧКИ
@@ -109,7 +116,7 @@
     }
     .modal-overlay.open { display:flex; align-items:flex-start; justify-content:center; }
     .modal {
-      background:var(--card); border-radius:16px; width:100%; max-width:640px;
+      background:var(--card); border-radius:16px; width:100%; max-width:660px;
       padding:0; overflow:hidden; margin:auto; box-shadow:0 8px 40px rgba(0,0,0,.2);
     }
     .modal-header {
@@ -160,49 +167,64 @@
     .photo-item { position:relative; width:90px; height:90px; border-radius:8px;
                   overflow:hidden; border:1.5px solid var(--border); }
     .photo-item img { width:100%; height:100%; object-fit:cover; display:block; }
-    .photo-item .photo-del {
+    .photo-del {
       position:absolute; top:3px; right:3px; background:rgba(0,0,0,.6);
       border:none; color:#fff; width:22px; height:22px; border-radius:50%;
       cursor:pointer; font-size:14px; line-height:1; display:flex;
       align-items:center; justify-content:center;
     }
-    .photo-item .photo-del:hover { background:var(--danger); }
-    .add-photo-row { display:flex; gap:8px; }
+    .photo-del:hover { background:var(--danger); }
+    .add-photo-row { display:flex; gap:8px; margin-bottom:8px; }
     .add-photo-row input { flex:1; padding:9px 12px; border:1.5px solid var(--border);
       border-radius:9px; font-size:13px; outline:none; }
     .add-photo-row input:focus { border-color:var(--accent); }
+    .upload-row { display:flex; gap:8px; align-items:center; margin-top:4px; }
+    .upload-label { display:inline-flex; align-items:center; gap:6px; padding:7px 14px;
+      background:var(--bg); border:1.5px solid var(--border); border-radius:9px;
+      cursor:pointer; font-size:13px; color:var(--hint); }
+    .upload-label:hover { border-color:var(--accent); color:var(--accent); }
+    #photo-file-input { display:none; }
+    #upload-status { font-size:12px; color:var(--hint); }
 
     /* ── Colors ── */
     .colors-grid { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:16px; }
-    .color-item {
-      display:flex; flex-direction:column; align-items:center; gap:5px;
-      position:relative; cursor:default;
-    }
-    .color-swatch-admin {
-      width:52px; height:52px; border-radius:50%;
-      border:2px solid rgba(0,0,0,.1); flex-shrink:0;
-    }
+    .color-item { display:flex; flex-direction:column; align-items:center; gap:5px;
+                  position:relative; }
+    .color-swatch-admin { width:52px; height:52px; border-radius:50%;
+                          border:2px solid rgba(0,0,0,.1); flex-shrink:0; }
     .color-info { font-size:11px; color:var(--hint); text-align:center;
                   max-width:70px; line-height:1.3; }
-    .color-del {
-      position:absolute; top:-4px; right:-4px;
+    .color-del { position:absolute; top:-4px; right:-4px;
       background:var(--danger); color:#fff; border:none;
       width:18px; height:18px; border-radius:50%; cursor:pointer;
-      font-size:12px; display:flex; align-items:center; justify-content:center;
-    }
+      font-size:12px; display:flex; align-items:center; justify-content:center; }
     .add-color-form { border:1.5px dashed var(--border); border-radius:10px; padding:14px; }
-    .add-color-form .field-grid { gap:8px; }
     .color-preview-swatch { width:32px; height:32px; border-radius:50%;
-                             border:2px solid rgba(0,0,0,.1); flex-shrink:0;
-                             align-self:flex-end; margin-bottom:9px; }
+      border:2px solid rgba(0,0,0,.1); flex-shrink:0; align-self:flex-end; margin-bottom:9px; }
+
+    /* ── Categories tab ── */
+    .cat-list { background:var(--card); border-radius:12px; border:1px solid var(--border); overflow:hidden; }
+    .cat-item { display:flex; align-items:center; gap:12px; padding:14px 18px;
+                border-bottom:1px solid var(--border); }
+    .cat-item:last-child { border-bottom:none; }
+    .cat-id   { color:var(--hint); font-size:12px; min-width:28px; }
+    .cat-name { flex:1; font-size:15px; }
+    .cat-actions { display:flex; gap:8px; }
+    .add-cat-form { background:var(--card); border-radius:12px; border:1px solid var(--border);
+                    padding:20px; margin-top:20px; display:flex; gap:12px; align-items:flex-end; }
+    .add-cat-form .field { flex:1; }
+    .add-cat-form .field label { font-size:12px; color:var(--hint); display:block; margin-bottom:5px; }
+    .add-cat-form .field input { width:100%; padding:9px 12px; border:1.5px solid var(--border);
+                                  border-radius:9px; font-size:14px; outline:none; }
+    .add-cat-form .field input:focus { border-color:var(--accent); }
 
     /* ── Loading/empty ── */
     .loading { text-align:center; padding:60px; color:var(--hint); }
     .empty   { text-align:center; padding:60px; color:var(--hint); font-size:15px; }
 
-    @media(max-width:600px){
+    @media(max-width:640px){
       header { padding:0 12px; gap:8px; }
-      .nav-btn { padding:5px 10px; font-size:12px; }
+      .nav-btn { padding:5px 8px; font-size:11px; }
       main { padding:12px; }
       .field-grid { grid-template-columns:1fr; }
       .field-grid.cols-3 { grid-template-columns:1fr 1fr; }
@@ -231,6 +253,7 @@
       <button class="nav-btn active" data-tab="orders">Заявки</button>
       <button class="nav-btn" data-tab="samples">Образцы</button>
       <button class="nav-btn" data-tab="fabrics">Каталог</button>
+      <button class="nav-btn" data-tab="categories">Категории</button>
     </nav>
     <button class="logout-btn" id="logout-btn">Выйти</button>
   </header>
@@ -239,8 +262,9 @@
     <!-- Заявки -->
     <div class="tab-content active" id="tab-orders">
       <div class="stats" id="orders-stats"></div>
-      <div class="search-bar">
+      <div class="toolbar">
         <input type="text" id="orders-search" placeholder="Поиск по имени, телефону, номеру...">
+        <label><input type="checkbox" id="orders-hide-processed"> Скрыть обработанные</label>
       </div>
       <div id="orders-list"><div class="loading">Загрузка...</div></div>
     </div>
@@ -248,16 +272,33 @@
     <!-- Образцы -->
     <div class="tab-content" id="tab-samples">
       <div class="stats" id="samples-stats"></div>
+      <div class="toolbar">
+        <div style="flex:1"></div>
+        <label><input type="checkbox" id="samples-hide-processed"> Скрыть обработанные</label>
+      </div>
       <div id="samples-list"><div class="loading">Загрузка...</div></div>
     </div>
 
     <!-- Каталог -->
     <div class="tab-content" id="tab-fabrics">
-      <div class="search-bar">
+      <div class="toolbar">
         <input type="text" id="fabrics-search" placeholder="Поиск по названию или артикулу...">
+        <button class="btn btn-primary btn-sm" onclick="openCreateEditor()">+ Добавить ткань</button>
       </div>
       <div class="fabrics-wrap">
         <div id="fabrics-table-wrap"><div class="loading">Загрузка...</div></div>
+      </div>
+    </div>
+
+    <!-- Категории -->
+    <div class="tab-content" id="tab-categories">
+      <div id="categories-list"><div class="loading">Загрузка...</div></div>
+      <div class="add-cat-form">
+        <div class="field">
+          <label>Название новой категории</label>
+          <input type="text" id="new-cat-name" placeholder="Хлопок, Лён, Трикотаж...">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addCategory()">Добавить</button>
       </div>
     </div>
   </main>
@@ -282,14 +323,15 @@
 'use strict';
 
 const API = '/api/admin';
-let _token = '', _orders = [], _samples = [], _fabrics = [];
-let _editFabric = null; // текущая редактируемая ткань
+let _token = '', _orders = [], _samples = [], _fabrics = [], _categories = [];
+let _editFabric = null;
+let _editMode = 'edit'; // 'edit' | 'create'
 
 // ════════════════════════════════════════════════════════
 // ВХОД
 // ════════════════════════════════════════════════════════
 document.getElementById('login-btn').addEventListener('click', tryLogin);
-document.getElementById('login-input').addEventListener('keydown', e => { if(e.key==='Enter') tryLogin(); });
+document.getElementById('login-input').addEventListener('keydown', e => { if (e.key==='Enter') tryLogin(); });
 
 async function tryLogin() {
   const pwd = document.getElementById('login-input').value.trim();
@@ -320,14 +362,17 @@ async function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
   renderOrders();
-  const [sr, fr] = await Promise.all([
-    fetch(`${API}/samples`, { headers:{Authorization:`Bearer ${_token}`} }),
-    fetch(`${API}/fabrics`, { headers:{Authorization:`Bearer ${_token}`} }),
+  const [sr, fr, cr] = await Promise.all([
+    fetch(`${API}/samples`,    { headers: { Authorization: `Bearer ${_token}` } }),
+    fetch(`${API}/fabrics`,    { headers: { Authorization: `Bearer ${_token}` } }),
+    fetch(`${API}/categories`, { headers: { Authorization: `Bearer ${_token}` } }),
   ]);
-  _samples = await sr.json();
-  _fabrics = await fr.json();
+  _samples    = await sr.json();
+  _fabrics    = await fr.json();
+  _categories = await cr.json();
   renderSamples();
   renderFabrics();
+  renderCategories();
 }
 
 // ════════════════════════════════════════════════════════
@@ -338,72 +383,107 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
   });
 });
 
 // ════════════════════════════════════════════════════════
 // ЗАЯВКИ
 // ════════════════════════════════════════════════════════
-function renderOrders(filter='') {
-  const q = filter.toLowerCase();
-  const list = document.getElementById('orders-list');
-  const filtered = q ? _orders.filter(o =>
-    (o.order_number||'').toLowerCase().includes(q)||
-    (o.first_name||'').toLowerCase().includes(q)||
-    (o.phone||'').includes(q)) : _orders;
+function renderOrders(filter) {
+  filter = filter || '';
+  const q        = filter.toLowerCase();
+  const hideProc = document.getElementById('orders-hide-processed').checked;
+  const list     = document.getElementById('orders-list');
 
-  const totalUsd = _orders.reduce((s,o)=>s+parseFloat(o.total_usd||0),0);
-  document.getElementById('orders-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val">${_orders.length}</div><div class="stat-label">Всего заявок</div></div>
-    <div class="stat-card"><div class="stat-val">${_orders.filter(o=>!o.notified).length}</div><div class="stat-label">Без уведомления</div></div>
-    <div class="stat-card"><div class="stat-val">${totalUsd.toFixed(0)}&nbsp;$</div><div class="stat-label">Общая сумма</div></div>`;
+  let filtered = q
+    ? _orders.filter(o =>
+        (o.order_number||'').toLowerCase().includes(q) ||
+        (o.first_name||'').toLowerCase().includes(q) ||
+        (o.phone||'').includes(q))
+    : _orders.slice();
+  if (hideProc) filtered = filtered.filter(o => !o.processed);
 
-  if (!filtered.length) { list.innerHTML='<div class="empty">Заявок пока нет</div>'; return; }
+  const newCount = _orders.filter(o => !o.processed).length;
+  const totalUsd = _orders.reduce((s, o) => s + parseFloat(o.total_usd || 0), 0);
+  document.getElementById('orders-stats').innerHTML =
+    stat(_orders.length, 'Всего заявок') +
+    stat(newCount, 'Не обработано') +
+    stat(totalUsd.toFixed(0) + '&nbsp;$', 'Общая сумма');
+
+  if (!filtered.length) { list.innerHTML = '<div class="empty">Заявок нет</div>'; return; }
 
   list.innerHTML = filtered.map(o => {
-    const dt = fmtDate(o.created_at);
-    const user = o.tg_username ? `${o.first_name||''} @${o.tg_username}` : (o.first_name||'Аноним');
-    const rows = (o.items||[]).map(i=>`<tr>
+    const dt   = fmtDate(o.created_at);
+    const user = o.tg_username ? `${o.first_name||''} @${o.tg_username}` : (o.first_name || 'Аноним');
+    const rows = (o.items||[]).map(i => `<tr>
       <td>${esc(i.fabric_name)}</td><td>${esc(i.color_name)}</td>
       <td>${i.meters}&nbsp;м</td>
       <td>${parseFloat(i.price_per_meter).toFixed(2)}&nbsp;$/м</td>
       <td><span class="price-type-${i.price_type}">${i.price_type==='cut'?'отрез':'опт'}</span></td>
     </tr>`).join('');
-    return `<div class="card">
+    const statusBadge = o.processed
+      ? '<span class="badge badge-done">✓ Обработано</span>'
+      : '<span class="badge badge-warn">Новая</span>';
+    const tgBadge = o.notified ? '' : '<span class="badge badge-warn" title="TG не доставлено">⚠ TG</span>';
+    return `<div class="card${o.processed?' processed-card':''}" id="order-card-${o.id}">
       <div class="card-header">
         <div><div class="card-num">${o.order_number}</div><div class="card-date">${dt}</div></div>
-        <span class="badge ${o.notified?'badge-ok':'badge-warn'}">${o.notified?'✓ Отправлено':'⚠ Не отправлено'}</span>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${statusBadge}${tgBadge}</div>
       </div>
       <div class="card-user">${esc(user)}</div>
       <div class="card-phone">${esc(o.phone)}</div>
       <table class="items-table"><thead><tr><th>Ткань</th><th>Цвет</th><th>Метры</th><th>Цена</th><th>Тип</th></tr></thead>
       <tbody>${rows}</tbody></table>
       <div class="card-total">Итого: ${parseFloat(o.total_usd||0).toFixed(2)}&nbsp;$ · ${o.total_meters}&nbsp;м</div>
-      ${o.comment?`<div class="card-comment">💬 ${esc(o.comment)}</div>`:''}
+      ${o.comment ? `<div class="card-comment">💬 ${esc(o.comment)}</div>` : ''}
+      ${o.processed ? '' : `<div class="card-footer">
+        <button class="btn btn-success btn-sm" onclick="markOrderProcessed(${o.id})">✓ Обработано</button>
+      </div>`}
     </div>`;
   }).join('');
 }
+
 document.getElementById('orders-search').addEventListener('input', e => renderOrders(e.target.value));
+document.getElementById('orders-hide-processed').addEventListener('change', () =>
+  renderOrders(document.getElementById('orders-search').value));
+
+async function markOrderProcessed(id) {
+  const res = await fetch(`${API}/orders?id=${id}`, {
+    method: 'PATCH', headers: { Authorization: `Bearer ${_token}` }
+  });
+  if (res.ok) {
+    const o = _orders.find(x => x.id === id);
+    if (o) o.processed = true;
+    renderOrders(document.getElementById('orders-search').value);
+  }
+}
 
 // ════════════════════════════════════════════════════════
 // ОБРАЗЦЫ
 // ════════════════════════════════════════════════════════
 function renderSamples() {
-  document.getElementById('samples-stats').innerHTML = `
-    <div class="stat-card"><div class="stat-val">${_samples.length}</div><div class="stat-label">Всего запросов</div></div>
-    <div class="stat-card"><div class="stat-val">${_samples.filter(s=>!s.notified).length}</div><div class="stat-label">Без уведомления</div></div>`;
+  const hideProc = document.getElementById('samples-hide-processed').checked;
+  const newCount = _samples.filter(s => !s.processed).length;
+  document.getElementById('samples-stats').innerHTML =
+    stat(_samples.length, 'Всего запросов') +
+    stat(newCount, 'Не обработано');
 
+  let filtered = hideProc ? _samples.filter(s => !s.processed) : _samples.slice();
   const list = document.getElementById('samples-list');
-  if (!_samples.length) { list.innerHTML='<div class="empty">Запросов образцов пока нет</div>'; return; }
+  if (!filtered.length) { list.innerHTML = '<div class="empty">Запросов образцов нет</div>'; return; }
 
-  list.innerHTML = _samples.map(s => {
-    const user = s.tg_username ? `${s.first_name||''} @${s.tg_username}` : (s.first_name||'Аноним');
-    const fabrics = (s.items||[]).map(i=>`${i.fabric_name} (${i.color_name})`).join(', ');
-    return `<div class="card">
+  list.innerHTML = filtered.map(s => {
+    const user    = s.tg_username ? `${s.first_name||''} @${s.tg_username}` : (s.first_name || 'Аноним');
+    const fabrics = (s.items||[]).map(i => `${i.fabric_name} (${i.color_name})`).join(', ');
+    const statusBadge = s.processed
+      ? '<span class="badge badge-done">✓ Обработано</span>'
+      : '<span class="badge badge-warn">Новый</span>';
+    const tgBadge = s.notified ? '' : '<span class="badge badge-warn" title="TG не доставлено">⚠ TG</span>';
+    return `<div class="card${s.processed?' processed-card':''}" id="sample-card-${s.id}">
       <div class="card-header">
         <div><div class="card-num">${s.request_number}</div><div class="card-date">${fmtDate(s.created_at)}</div></div>
-        <span class="badge ${s.notified?'badge-ok':'badge-warn'}">${s.notified?'✓ Отправлено':'⚠ Не отправлено'}</span>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${statusBadge}${tgBadge}</div>
       </div>
       <div class="card-user">${esc(user)}</div>
       <div class="card-phone">${esc(s.phone)}</div>
@@ -412,51 +492,146 @@ function renderSamples() {
         <strong>ПВЗ СДЭК:</strong> ${esc(s.cdek_address)}<br>
         <strong>Ткани:</strong> ${esc(fabrics)}
       </div>
+      ${s.processed ? '' : `<div class="card-footer">
+        <button class="btn btn-success btn-sm" onclick="markSampleProcessed(${s.id})">✓ Обработано</button>
+      </div>`}
     </div>`;
   }).join('');
+}
+
+document.getElementById('samples-hide-processed').addEventListener('change', renderSamples);
+
+async function markSampleProcessed(id) {
+  const res = await fetch(`${API}/samples?id=${id}`, {
+    method: 'PATCH', headers: { Authorization: `Bearer ${_token}` }
+  });
+  if (res.ok) {
+    const s = _samples.find(x => x.id === id);
+    if (s) s.processed = true;
+    renderSamples();
+  }
 }
 
 // ════════════════════════════════════════════════════════
 // КАТАЛОГ — таблица
 // ════════════════════════════════════════════════════════
-function renderFabrics(filter='') {
+function renderFabrics(filter) {
+  filter = filter || '';
   const wrap = document.getElementById('fabrics-table-wrap');
-  const q = filter.toLowerCase();
-  const list = q ? _fabrics.filter(f=>
-    f.name.toLowerCase().includes(q)||(f.article||'').toLowerCase().includes(q)) : _fabrics;
+  const q    = filter.toLowerCase();
+  const list = q
+    ? _fabrics.filter(f => f.name.toLowerCase().includes(q) || (f.article||'').toLowerCase().includes(q))
+    : _fabrics;
 
-  if (!list.length) { wrap.innerHTML='<div class="empty">Ничего не найдено</div>'; return; }
+  if (!list.length) { wrap.innerHTML = '<div class="empty">Ничего не найдено</div>'; return; }
 
   const rows = list.map(f => `
-    <tr class="${f.is_active?'':'hidden-row'}" data-fabric-id="${f.id}" onclick="openEditor(${f.id})">
+    <tr class="${f.is_active?'':'hidden-row'}" onclick="openEditor(${f.id})">
       <td>${f.id}</td>
-      <td>
-        <strong>${esc(f.name)}</strong><br>
-        <span class="price-tag">${esc(f.article||'')}</span>
-      </td>
+      <td><strong>${esc(f.name)}</strong><br><span class="price-tag">${esc(f.article||'')}</span></td>
       <td>${esc(f.categories?.name||'')}</td>
       <td>${parseFloat(f.base_price||0).toFixed(2)}&nbsp;$</td>
-      <td>${f.cut_price?parseFloat(f.cut_price).toFixed(2)+'&nbsp;$':'—'}</td>
+      <td>${f.cut_price ? parseFloat(f.cut_price).toFixed(2)+'&nbsp;$' : '—'}</td>
       <td><span class="badge ${f.is_active?'badge-ok':'badge-warn'}">${f.is_active?'Активна':'Скрыта'}</span></td>
     </tr>`).join('');
 
   wrap.innerHTML = `<table class="ft">
-    <thead><tr>
-      <th>#</th><th>Название / Артикул</th><th>Категория</th>
-      <th>Цена опт</th><th>Цена отрез</th><th>Статус</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
+    <thead><tr><th>#</th><th>Название / Артикул</th><th>Категория</th>
+    <th>Цена опт</th><th>Цена отрез</th><th>Статус</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
 }
 document.getElementById('fabrics-search').addEventListener('input', e => renderFabrics(e.target.value));
 
 // ════════════════════════════════════════════════════════
-// РЕДАКТОР КАРТОЧКИ
+// КАТЕГОРИИ
+// ════════════════════════════════════════════════════════
+function renderCategories() {
+  const el = document.getElementById('categories-list');
+  if (!_categories.length) { el.innerHTML = '<div class="empty">Категорий нет</div>'; return; }
+  el.innerHTML = `<div class="cat-list">${_categories.map(c => `
+    <div class="cat-item" id="cat-${c.id}">
+      <span class="cat-id">#${c.id}</span>
+      <span class="cat-name">${esc(c.name)}</span>
+      <div class="cat-actions">
+        <button class="btn btn-ghost btn-sm" onclick="renameCategory(${c.id})">✏ Переименовать</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCategory(${c.id})">Удалить</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+async function addCategory() {
+  const input = document.getElementById('new-cat-name');
+  const name  = input.value.trim();
+  if (!name) return;
+  const res = await fetch(`${API}/categories`, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+    body: JSON.stringify({ name }),
+  });
+  if (res.ok) {
+    const cat = await res.json();
+    _categories.push(cat);
+    input.value = '';
+    renderCategories();
+  } else {
+    alert('Ошибка при добавлении категории');
+  }
+}
+
+async function renameCategory(id) {
+  const cat = _categories.find(c => c.id === id);
+  const newName = prompt('Новое название:', cat ? cat.name : '');
+  if (!newName || !newName.trim()) return;
+  const res = await fetch(`${API}/categories?id=${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+    body: JSON.stringify({ name: newName.trim() }),
+  });
+  if (res.ok) {
+    if (cat) cat.name = newName.trim();
+    renderCategories();
+  } else {
+    alert('Ошибка при переименовании');
+  }
+}
+
+async function deleteCategory(id) {
+  if (!confirm('Удалить категорию? Ткани этой категории останутся без категории.')) return;
+  const res = await fetch(`${API}/categories?id=${id}`, {
+    method: 'DELETE', headers: { Authorization:`Bearer ${_token}` }
+  });
+  if (res.ok) {
+    _categories = _categories.filter(c => c.id !== id);
+    renderCategories();
+  } else {
+    alert('Ошибка при удалении');
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// СОЗДАТЬ НОВУЮ ТКАНЬ
+// ════════════════════════════════════════════════════════
+function openCreateEditor() {
+  _editMode   = 'create';
+  _editFabric = { id:null, name:'', article:'', composition:'', category_id:null,
+    width:null, density:null, min_order:null, base_price:0, cut_price:null,
+    description:'', is_active:true, colors:[], photos:[] };
+  document.getElementById('modal-fabric-title').textContent = 'Новая ткань';
+  document.getElementById('modal-save-btn').textContent = 'Создать ткань';
+  document.getElementById('modal-body').innerHTML = '';
+  renderEditor();
+  document.getElementById('fabric-modal').classList.add('open');
+}
+
+// ════════════════════════════════════════════════════════
+// РЕДАКТОР СУЩЕСТВУЮЩЕЙ ТКАНИ
 // ════════════════════════════════════════════════════════
 async function openEditor(fabricId) {
+  _editMode = 'edit';
   const modal = document.getElementById('fabric-modal');
   const body  = document.getElementById('modal-body');
   document.getElementById('modal-fabric-title').textContent = 'Загрузка...';
+  document.getElementById('modal-save-btn').textContent = 'Сохранить изменения';
   body.innerHTML = '<div class="loading">Загрузка...</div>';
   modal.classList.add('open');
 
@@ -466,96 +641,80 @@ async function openEditor(fabricId) {
   renderEditor();
 }
 
+function catOptions(selected) {
+  return `<option value="">— не указана —</option>` +
+    _categories.map(c =>
+      `<option value="${c.id}"${selected == c.id?' selected':''}>${esc(c.name)}</option>`
+    ).join('');
+}
+
 function renderEditor() {
-  const f = _editFabric;
+  const f    = _editFabric;
   const body = document.getElementById('modal-body');
 
   body.innerHTML = `
-    <!-- Основные поля -->
     <div class="form-section">
       <div class="form-section-title">Основная информация</div>
       <div class="field-grid">
-        <div class="field">
-          <div class="field-label">Название</div>
-          <input id="e-name" value="${esc(f.name||'')}">
-        </div>
-        <div class="field">
-          <div class="field-label">Артикул</div>
-          <input id="e-article" value="${esc(f.article||'')}">
-        </div>
-        <div class="field">
-          <div class="field-label">Состав</div>
-          <input id="e-composition" value="${esc(f.composition||'')}">
-        </div>
-        <div class="field">
-          <div class="field-label">Категория</div>
-          <input id="e-category-id" type="number" value="${f.category_id||''}">
-        </div>
+        <div class="field"><div class="field-label">Название *</div>
+          <input id="e-name" value="${esc(f.name||'')}"></div>
+        <div class="field"><div class="field-label">Артикул</div>
+          <input id="e-article" value="${esc(f.article||'')}"></div>
+        <div class="field"><div class="field-label">Состав</div>
+          <input id="e-composition" value="${esc(f.composition||'')}"></div>
+        <div class="field"><div class="field-label">Категория</div>
+          <select id="e-category-id">${catOptions(f.category_id)}</select></div>
       </div>
       <div class="field-grid cols-3" style="margin-top:12px">
-        <div class="field">
-          <div class="field-label">Ширина, см</div>
-          <input id="e-width" type="number" value="${f.width||''}">
-        </div>
-        <div class="field">
-          <div class="field-label">Плотность, г/м²</div>
-          <input id="e-density" type="number" value="${f.density||''}">
-        </div>
-        <div class="field">
-          <div class="field-label">Мин. заказ, м</div>
-          <input id="e-min-order" type="number" value="${f.min_order||''}">
-        </div>
+        <div class="field"><div class="field-label">Ширина, см</div>
+          <input id="e-width" type="number" value="${f.width||''}"></div>
+        <div class="field"><div class="field-label">Плотность, г/м²</div>
+          <input id="e-density" type="number" value="${f.density||''}"></div>
+        <div class="field"><div class="field-label">Мин. заказ, м</div>
+          <input id="e-min-order" type="number" value="${f.min_order||''}"></div>
       </div>
     </div>
 
-    <!-- Цены -->
     <div class="form-section">
       <div class="form-section-title">Цены</div>
       <div class="field-grid">
-        <div class="field">
-          <div class="field-label">Оптовая цена (от 50м), $/м</div>
-          <input id="e-base-price" type="number" step="0.01" value="${parseFloat(f.base_price||0).toFixed(2)}">
-        </div>
-        <div class="field">
-          <div class="field-label">Цена на отрез (до 50м), $/м</div>
-          <input id="e-cut-price" type="number" step="0.01" value="${f.cut_price?parseFloat(f.cut_price).toFixed(2):''}" placeholder="Не задана">
-        </div>
+        <div class="field"><div class="field-label">Оптовая цена (от 50м), $/м *</div>
+          <input id="e-base-price" type="number" step="0.01" value="${parseFloat(f.base_price||0).toFixed(2)}"></div>
+        <div class="field"><div class="field-label">Цена на отрез (до 50м), $/м</div>
+          <input id="e-cut-price" type="number" step="0.01" value="${f.cut_price?parseFloat(f.cut_price).toFixed(2):''}" placeholder="Не задана"></div>
       </div>
     </div>
 
-    <!-- Описание -->
     <div class="form-section">
       <div class="form-section-title">Описание</div>
-      <div class="field">
-        <textarea id="e-description">${esc(f.description||'')}</textarea>
-      </div>
+      <div class="field"><textarea id="e-description">${esc(f.description||'')}</textarea></div>
     </div>
 
-    <!-- Видимость -->
     <div class="form-section">
       <div class="form-section-title">Видимость в каталоге</div>
-      <div class="visibility-toggle" id="visibility-toggle" onclick="toggleVisibility()">
-        <div class="toggle-track ${f.is_active?'on':''}" id="toggle-track">
-          <div class="toggle-thumb"></div>
-        </div>
+      <div class="visibility-toggle" onclick="toggleVisibility()">
+        <div class="toggle-track${f.is_active?' on':''}" id="toggle-track"><div class="toggle-thumb"></div></div>
         <span id="visibility-label">${f.is_active?'Ткань активна — видна покупателям':'Ткань скрыта — не видна покупателям'}</span>
       </div>
     </div>
 
-    <!-- Фотографии -->
+    ${_editMode === 'create' ? '<p style="color:var(--hint);font-size:13px">Фото и цвета можно добавить после создания ткани.</p>' : `
     <div class="form-section">
       <div class="form-section-title">Фотографии</div>
       <div class="photos-grid" id="photos-grid">${renderPhotosGrid()}</div>
       <div class="add-photo-row">
-        <input type="text" id="new-photo-url" placeholder="URL фотографии (https://...)">
-        <button class="btn btn-primary btn-sm" onclick="addPhoto()">Добавить</button>
+        <input type="text" id="new-photo-url" placeholder="Вставить URL фото (https://...)">
+        <button class="btn btn-primary btn-sm" onclick="addPhotoByUrl()">Добавить</button>
       </div>
-      <div style="font-size:12px;color:var(--hint);margin-top:6px">
-        Вставьте ссылку на фото. Загрузить файл можно через Supabase Storage.
+      <div class="upload-row">
+        <label class="upload-label">
+          📎 Загрузить файл
+          <input type="file" id="photo-file-input" accept="image/*" onchange="addPhotoByFile()">
+        </label>
+        <span id="upload-status"></span>
       </div>
     </div>
 
-    <!-- Цвета -->
     <div class="form-section">
       <div class="form-section-title">Цвета / остатки</div>
       <div class="colors-grid" id="colors-grid">${renderColorsGrid()}</div>
@@ -564,29 +723,22 @@ function renderEditor() {
         <div class="field-grid" style="align-items:flex-end">
           <div style="display:flex;gap:8px;align-items:flex-end">
             <div class="color-preview-swatch" id="color-preview" style="background:#888888"></div>
-            <div class="field" style="flex:1">
-              <div class="field-label">HEX-цвет</div>
+            <div class="field" style="flex:1"><div class="field-label">HEX-цвет</div>
               <input id="new-color-hex" type="color" value="#888888"
                 style="height:38px;padding:2px 6px;cursor:pointer"
                 oninput="document.getElementById('color-preview').style.background=this.value">
             </div>
           </div>
-          <div class="field">
-            <div class="field-label">Название цвета</div>
-            <input id="new-color-name" placeholder="Бордо, Синий...">
-          </div>
-          <div class="field">
-            <div class="field-label">Остаток, м</div>
-            <input id="new-color-stock" type="number" value="0" min="0">
-          </div>
-          <div class="field">
-            <div class="field-label">Рулонов</div>
-            <input id="new-color-rolls" type="number" value="0" min="0">
-          </div>
+          <div class="field"><div class="field-label">Название</div>
+            <input id="new-color-name" placeholder="Бордо, Синий..."></div>
+          <div class="field"><div class="field-label">Остаток, м</div>
+            <input id="new-color-stock" type="number" value="0" min="0"></div>
+          <div class="field"><div class="field-label">Рулонов</div>
+            <input id="new-color-rolls" type="number" value="0" min="0"></div>
         </div>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addColor()">Добавить цвет</button>
       </div>
-    </div>
+    </div>`}
   `;
 }
 
@@ -595,7 +747,7 @@ function renderPhotosGrid() {
   if (!photos.length) return '<span style="color:var(--hint);font-size:13px">Фото не добавлены</span>';
   return photos.map(p => `
     <div class="photo-item" id="photo-${p.id}">
-      <img src="${esc(p.url)}" alt="" onerror="this.style.background='#eee';this.style.display='none'">
+      <img src="${esc(p.url)}" alt="" onerror="this.parentElement.style.background='#eee'">
       <button class="photo-del" onclick="deletePhoto(${p.id})">✕</button>
     </div>`).join('');
 }
@@ -606,15 +758,11 @@ function renderColorsGrid() {
   return colors.map(c => `
     <div class="color-item" id="color-${c.id}">
       <div class="color-swatch-admin" style="background:${esc(c.hex)}"></div>
-      <div class="color-info">
-        ${esc(c.name)}<br>
-        ${c.stock}&nbsp;м / ${c.rolls}&nbsp;рул.
-      </div>
+      <div class="color-info">${esc(c.name)}<br>${c.stock}&nbsp;м / ${c.rolls}&nbsp;рул.</div>
       <button class="color-del" onclick="deleteColor(${c.id})" title="Удалить">✕</button>
     </div>`).join('');
 }
 
-// ── Видимость ──────────────────────────────────────────
 function toggleVisibility() {
   _editFabric.is_active = !_editFabric.is_active;
   document.getElementById('toggle-track').classList.toggle('on', _editFabric.is_active);
@@ -622,14 +770,13 @@ function toggleVisibility() {
     _editFabric.is_active ? 'Ткань активна — видна покупателям' : 'Ткань скрыта — не видна покупателям';
 }
 
-// ── Сохранить основные поля ────────────────────────────
+// ── Сохранить / Создать ────────────────────────────────
 document.getElementById('modal-save-btn').addEventListener('click', async () => {
   const btn = document.getElementById('modal-save-btn');
   btn.disabled = true; btn.textContent = '...';
 
-  const body = {
-    id:          _editFabric.id,
-    name:        document.getElementById('e-name')?.value || '',
+  const fields = {
+    name:        (document.getElementById('e-name')?.value || '').trim(),
     article:     document.getElementById('e-article')?.value || '',
     composition: document.getElementById('e-composition')?.value || '',
     category_id: document.getElementById('e-category-id')?.value || null,
@@ -642,36 +789,58 @@ document.getElementById('modal-save-btn').addEventListener('click', async () => 
     is_active:   _editFabric.is_active,
   };
 
-  const res = await fetch(`${API}/fabrics`, {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
-    body: JSON.stringify(body),
-  });
+  if (!fields.name) {
+    alert('Введите название ткани');
+    btn.disabled = false;
+    btn.textContent = _editMode === 'create' ? 'Создать ткань' : 'Сохранить изменения';
+    return;
+  }
 
-  btn.disabled = false;
-  if (res.ok) {
-    btn.textContent = '✓ Сохранено';
-    // Обновляем локальный кэш
-    const idx = _fabrics.findIndex(f => f.id === _editFabric.id);
-    if (idx >= 0) Object.assign(_fabrics[idx], body, { categories: _fabrics[idx].categories });
-    renderFabrics(document.getElementById('fabrics-search').value);
-    setTimeout(() => { btn.textContent = 'Сохранить изменения'; }, 1500);
+  if (_editMode === 'create') {
+    const res = await fetch(`${API}/fabrics`, {
+      method: 'PUT',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+      body: JSON.stringify(fields),
+    });
+    if (res.ok) {
+      const newFabric = await res.json();
+      _fabrics.unshift(newFabric);
+      renderFabrics(document.getElementById('fabrics-search').value);
+      closeModal();
+      setTimeout(() => openEditor(newFabric.id), 150);
+    } else {
+      btn.textContent = '✗ Ошибка';
+      btn.disabled = false;
+      setTimeout(() => { btn.textContent = 'Создать ткань'; }, 1500);
+    }
   } else {
-    btn.textContent = '✗ Ошибка';
-    setTimeout(() => { btn.textContent = 'Сохранить изменения'; }, 1500);
+    const res = await fetch(`${API}/fabrics`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+      body: JSON.stringify({ id: _editFabric.id, ...fields }),
+    });
+    btn.disabled = false;
+    if (res.ok) {
+      btn.textContent = '✓ Сохранено';
+      const idx = _fabrics.findIndex(f => f.id === _editFabric.id);
+      if (idx >= 0) Object.assign(_fabrics[idx], fields, { categories: _fabrics[idx].categories });
+      renderFabrics(document.getElementById('fabrics-search').value);
+      setTimeout(() => { btn.textContent = 'Сохранить изменения'; }, 1500);
+    } else {
+      btn.textContent = '✗ Ошибка';
+      setTimeout(() => { btn.textContent = 'Сохранить изменения'; }, 1500);
+    }
   }
 });
 
-// ── Фото: добавить ────────────────────────────────────
-async function addPhoto() {
+// ── Фото: добавить по URL ─────────────────────────────
+async function addPhotoByUrl() {
   const url = document.getElementById('new-photo-url').value.trim();
   if (!url) return;
-
   const res = await fetch(`${API}/photos`, {
     method: 'POST',
     headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
-    body: JSON.stringify({ fabric_id: _editFabric.id, url,
-      sort_order: (_editFabric.photos||[]).length }),
+    body: JSON.stringify({ fabric_id: _editFabric.id, url, sort_order: (_editFabric.photos||[]).length }),
   });
   if (res.ok) {
     const photo = await res.json();
@@ -681,6 +850,54 @@ async function addPhoto() {
   } else {
     alert('Ошибка при добавлении фото');
   }
+}
+
+// ── Фото: загрузить файл ──────────────────────────────
+async function addPhotoByFile() {
+  const input  = document.getElementById('photo-file-input');
+  const status = document.getElementById('upload-status');
+  const file   = input.files[0];
+  if (!file) return;
+
+  status.textContent = 'Загружаю...';
+  try {
+    const base64 = await fileToBase64(file);
+    const r1 = await fetch(`${API}/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+      body: JSON.stringify({ filename: file.name, base64, contentType: file.type }),
+    });
+    if (!r1.ok) { const e = await r1.json(); throw new Error(e.error || r1.status); }
+    const { url } = await r1.json();
+
+    status.textContent = 'Сохраняю...';
+    const r2 = await fetch(`${API}/photos`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+      body: JSON.stringify({ fabric_id: _editFabric.id, url, sort_order: (_editFabric.photos||[]).length }),
+    });
+    if (r2.ok) {
+      const photo = await r2.json();
+      _editFabric.photos = [...(_editFabric.photos||[]), photo];
+      document.getElementById('photos-grid').innerHTML = renderPhotosGrid();
+      status.textContent = '✓ Загружено';
+    } else {
+      status.textContent = '✗ Ошибка сохранения';
+    }
+  } catch(e) {
+    status.textContent = '✗ ' + e.message;
+  }
+  input.value = '';
+  setTimeout(() => { status.textContent = ''; }, 3000);
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 // ── Фото: удалить ────────────────────────────────────
@@ -701,9 +918,7 @@ async function addColor() {
   const name  = document.getElementById('new-color-name').value.trim();
   const stock = document.getElementById('new-color-stock').value;
   const rolls = document.getElementById('new-color-rolls').value;
-
   if (!name) { alert('Введите название цвета'); return; }
-
   const res = await fetch(`${API}/colors`, {
     method: 'POST',
     headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
@@ -742,18 +957,20 @@ document.getElementById('fabric-modal').addEventListener('click', e => {
 function closeModal() {
   document.getElementById('fabric-modal').classList.remove('open');
   _editFabric = null;
+  _editMode = 'edit';
 }
 
 // ════════════════════════════════════════════════════════
 // УТИЛИТЫ
 // ════════════════════════════════════════════════════════
+function stat(val, label) {
+  return `<div class="stat-card"><div class="stat-val">${val}</div><div class="stat-label">${label}</div></div>`;
+}
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function fmtDate(iso) {
-  return new Date(iso).toLocaleString('ru-RU',{
-    day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'
-  });
+  return new Date(iso).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
 }
 </script>
 </body>
