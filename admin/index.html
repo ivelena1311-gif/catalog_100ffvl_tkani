@@ -70,20 +70,20 @@
                    padding-top:12px; border-top:1px solid var(--border); }
 
     /* ── Fabrics table ── */
+    /* overflow:clip — клипает скруглённые углы, но НЕ ломает position:sticky внутри */
     .fabrics-wrap { background:var(--card); border-radius:12px;
-                    border:1px solid var(--border); overflow:visible; }
-    table.ft { width:100%; border-collapse:collapse; border-radius:12px; overflow:hidden; }
+                    border:1px solid var(--border); overflow:clip; }
+    table.ft { width:100%; border-collapse:collapse; }
     table.ft th, table.ft td { text-align:left; padding:10px 14px;
       font-size:13px; border-bottom:1px solid var(--border); }
-    table.ft th { color:var(--hint); font-weight:500; background:var(--bg);
-                  position:sticky; top:128px; z-index:10; }
+    table.ft th { color:var(--hint); font-weight:500; background:var(--bg); }
     table.ft tr:last-child td { border-bottom:none; }
     table.ft tr.hidden-row td { opacity:.45; }
 
-    /* ── Sticky catalog toolbar ── */
+    /* ── Sticky toolbar каталога: поиск всегда виден при прокрутке ── */
     #tab-fabrics .toolbar {
       position: sticky;
-      top: 56px;
+      top: 56px;        /* высота главного header */
       z-index: 20;
       background: var(--bg);
       padding: 16px 0;
