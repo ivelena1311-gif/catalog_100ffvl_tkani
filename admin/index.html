@@ -254,6 +254,7 @@
       <button class="nav-btn" data-tab="samples">Образцы</button>
       <button class="nav-btn" data-tab="fabrics">Каталог</button>
       <button class="nav-btn" data-tab="categories">Категории</button>
+      <button class="nav-btn" data-tab="analytics">Аналитика</button>
     </nav>
     <button class="logout-btn" id="logout-btn">Выйти</button>
   </header>
@@ -300,6 +301,11 @@
         </div>
         <button class="btn btn-primary btn-sm" onclick="addCategory()">Добавить</button>
       </div>
+    </div>
+
+    <!-- Аналитика -->
+    <div class="tab-content" id="tab-analytics">
+      <div id="analytics-content"><div class="loading">Загрузка...</div></div>
     </div>
   </main>
 </div>
@@ -384,6 +390,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'analytics') loadAnalytics();
   });
 });
 
@@ -958,6 +965,83 @@ function closeModal() {
   document.getElementById('fabric-modal').classList.remove('open');
   _editFabric = null;
   _editMode = 'edit';
+}
+
+// ════════════════════════════════════════════════════════
+// АНАЛИТИКА
+// ════════════════════════════════════════════════════════
+async function loadAnalytics() {
+  const el = document.getElementById('analytics-content');
+  el.innerHTML = '<div class="loading">Загрузка...</div>';
+  try {
+    const res = await fetch(`${API}/analytics`, { headers: { Authorization: `Bearer ${_token}` } });
+    if (!res.ok) throw new Error(res.status);
+    const d = await res.json();
+    el.innerHTML = renderAnalytics(d);
+  } catch (err) {
+    el.innerHTML = `<div class="empty">Ошибка загрузки аналитики: ${err.message}</div>`;
+  }
+}
+
+function renderAnalytics(d) {
+  const topRows = d.topFabrics.map((f, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${esc(f.name)}</td>
+      <td style="color:var(--hint);font-size:12px">${esc(f.article)}</td>
+      <td><strong>${f.views}</strong></td>
+    </tr>`).join('');
+
+  const chartMax = Math.max(...d.ordersByDay.map(o => o.count), 1);
+  const chartBars = d.ordersByDay.map(o => {
+    const h = Math.round((o.count / chartMax) * 80);
+    const label = o.date.slice(5); // MM-DD
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:28px">
+      <div style="font-size:11px;color:var(--hint)">${o.count}</div>
+      <div style="background:var(--accent);width:100%;height:${h}px;border-radius:3px 3px 0 0;min-height:2px"></div>
+      <div style="font-size:10px;color:var(--hint);transform:rotate(-45deg);transform-origin:top left;margin-top:6px;white-space:nowrap">${label}</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="stats" style="margin-bottom:20px">
+      ${stat(d.totalOrders,   'Всего заявок')}
+      ${stat(d.totalSamples,  'Запросов образцов')}
+      ${stat(d.totalUsers,    'Пользователей')}
+      ${stat(d.newUsersMonth, 'Новых за 30 дней')}
+      ${stat(d.totalViews30d, 'Просмотров за 30 дней')}
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+      <!-- Топ тканей -->
+      <div class="fabrics-wrap" style="border-radius:12px">
+        <div style="padding:16px 18px;font-weight:600;border-bottom:1px solid var(--border)">
+          Топ-10 тканей за 30 дней
+        </div>
+        ${d.topFabrics.length ? `
+        <table class="ft">
+          <thead><tr>
+            <th>#</th><th>Ткань</th><th>Артикул</th><th>Просмотры</th>
+          </tr></thead>
+          <tbody>${topRows}</tbody>
+        </table>` : '<div class="empty" style="padding:30px">Нет данных — просмотры ещё не записывались</div>'}
+      </div>
+
+      <!-- График заявок -->
+      <div class="fabrics-wrap" style="border-radius:12px">
+        <div style="padding:16px 18px;font-weight:600;border-bottom:1px solid var(--border)">
+          Заявки по дням (30 дней)
+        </div>
+        ${d.ordersByDay.length ? `
+        <div style="padding:20px 16px 32px">
+          <div style="display:flex;align-items:flex-end;gap:4px;height:100px">
+            ${chartBars}
+          </div>
+        </div>` : '<div class="empty" style="padding:30px">Заявок пока нет</div>'}
+      </div>
+
+    </div>`;
 }
 
 // ════════════════════════════════════════════════════════

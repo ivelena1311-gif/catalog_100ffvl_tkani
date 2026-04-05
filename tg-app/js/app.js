@@ -359,10 +359,23 @@ function _fabricCardHTML(fabric) {
 /** Текущее состояние экрана продукта */
 let _product = { fabric: null, colorId: null, meters: 0 };
 
+/** Фиксируем просмотр ткани (fire-and-forget) */
+function _trackView(fabricId) {
+  const user = TG.initDataUnsafe?.user;
+  fetch('/api/analytics/view', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fabric_id: fabricId, tg_user_id: user?.id || null }),
+  }).catch(() => {});
+}
+
 function renderProduct(fabricId, colorId) {
   // Показываем скелетон пока грузится детальная карточка
   document.getElementById('product-info').innerHTML =
     '<div style="padding:24px;text-align:center;color:var(--tg-hint)">Загрузка...</div>';
+
+  // Фиксируем просмотр
+  _trackView(fabricId);
 
   Catalog.fetchDetail(fabricId)
     .then(fabric => {
@@ -1631,6 +1644,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // 7. Welcome-экран (только при первом открытии)
   showWelcome();
+
+  // 7b. Регистрируем/обновляем пользователя в аналитике (fire-and-forget)
+  const _tgUser = TG.initDataUnsafe?.user;
+  if (_tgUser?.id) {
+    fetch('/api/analytics/user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tg_user_id: _tgUser.id,
+        first_name: _tgUser.first_name || null,
+        username:   _tgUser.username   || null,
+      }),
+    }).catch(() => {});
+  }
 
   // 8. Обновляем бейдж корзины
   updateCartBadge();
