@@ -362,7 +362,7 @@ let _product = { fabric: null, colorId: null, meters: 0 };
 /** Фиксируем просмотр ткани (fire-and-forget) */
 function _trackView(fabricId) {
   const user = TG.initDataUnsafe?.user;
-  fetch('/api/analytics/view', {
+  fetch('/api/analytics?type=view', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ fabric_id: fabricId, tg_user_id: user?.id || null }),
@@ -1648,7 +1648,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 7b. Регистрируем/обновляем пользователя в аналитике (fire-and-forget)
   const _tgUser = TG.initDataUnsafe?.user;
   if (_tgUser?.id) {
-    fetch('/api/analytics/user', {
+    fetch('/api/analytics?type=user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

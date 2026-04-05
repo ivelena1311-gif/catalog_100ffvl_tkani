@@ -71,14 +71,24 @@
 
     /* ── Fabrics table ── */
     .fabrics-wrap { background:var(--card); border-radius:12px;
-                    border:1px solid var(--border); overflow:hidden; }
-    table.ft { width:100%; border-collapse:collapse; }
+                    border:1px solid var(--border); overflow:visible; }
+    table.ft { width:100%; border-collapse:collapse; border-radius:12px; overflow:hidden; }
     table.ft th, table.ft td { text-align:left; padding:10px 14px;
       font-size:13px; border-bottom:1px solid var(--border); }
     table.ft th { color:var(--hint); font-weight:500; background:var(--bg);
-                  position:sticky; top:56px; }
+                  position:sticky; top:128px; z-index:10; }
     table.ft tr:last-child td { border-bottom:none; }
     table.ft tr.hidden-row td { opacity:.45; }
+
+    /* ── Sticky catalog toolbar ── */
+    #tab-fabrics .toolbar {
+      position: sticky;
+      top: 56px;
+      z-index: 20;
+      background: var(--bg);
+      padding: 16px 0;
+      margin-bottom: 4px;
+    }
     table.ft tr:hover td { background:#fafafa; cursor:pointer; }
     .price-tag { font-size:12px; color:var(--hint); }
 
@@ -974,7 +984,7 @@ async function loadAnalytics() {
   const el = document.getElementById('analytics-content');
   el.innerHTML = '<div class="loading">Загрузка...</div>';
   try {
-    const res = await fetch(`${API}/analytics`, { headers: { Authorization: `Bearer ${_token}` } });
+    const res = await fetch(`/api/analytics`, { headers: { Authorization: `Bearer ${_token}` } });
     if (!res.ok) throw new Error(res.status);
     const d = await res.json();
     el.innerHTML = renderAnalytics(d);
