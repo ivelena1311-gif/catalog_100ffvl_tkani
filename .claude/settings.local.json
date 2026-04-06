@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -X POST https://api.supabase.com/v1/projects/oelnxgxerwbfjtjoaqjp/database/query -H 'Authorization: Bearer sbp_19b076101169a655b3499f2a04469567d1b646ae' -H 'Content-Type: application/json' -d '{\"query\": \"ALTER TABLE fabrics ALTER COLUMN step TYPE NUMERIC\\(10,2\\); ALTER TABLE fabrics ALTER COLUMN min_order TYPE NUMERIC\\(10,2\\);\"}')"
+    ]
+  }
+}

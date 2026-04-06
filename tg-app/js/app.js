@@ -613,19 +613,19 @@ function _bindProductEvents(fabric) {
   }
 
   minusBtn?.addEventListener('click', () => {
-    const cur = parseInt(meterInput.value) || fabric.minOrder;
+    const cur = parseFloat(meterInput.value) || fabric.minOrder;
     updateMeters(cur - fabric.step);
     TG.HapticFeedback.impactOccurred('light');
   });
 
   plusBtn?.addEventListener('click', () => {
-    const cur = parseInt(meterInput.value) || fabric.minOrder;
+    const cur = parseFloat(meterInput.value) || fabric.minOrder;
     updateMeters(cur + fabric.step);
     TG.HapticFeedback.impactOccurred('light');
   });
 
   meterInput?.addEventListener('change', () => {
-    updateMeters(parseInt(meterInput.value) || fabric.minOrder);
+    updateMeters(parseFloat(meterInput.value) || fabric.minOrder);
   });
 
   // Запрос образца

@@ -80,8 +80,8 @@ module.exports = async function handler(req, res) {
       if (field === 'cut_price')    { patch.cut_price   = val ? parseFloat(val) : null; continue; }
       if (field === 'width')        { patch.width       = val ? parseInt(val) : null; continue; }
       if (field === 'density')      { patch.density     = val ? parseInt(val) : null; continue; }
-      if (field === 'min_order')    { patch.min_order   = val ? parseInt(val) : null; continue; }
-      if (field === 'step')         { patch.step        = val ? parseInt(val) : null; continue; }
+      if (field === 'min_order')    { patch.min_order   = val ? parseFloat(val) : null; continue; }
+      if (field === 'step')         { patch.step        = val ? parseFloat(val) : null; continue; }
       if (field === 'unit')         { patch.unit        = val === 'кг' ? 'кг' : 'м'; continue; }
       if (field === 'category_id')  { patch.category_id = val ? parseInt(val) : null; continue; }
       if (field === 'is_active')    { patch.is_active   = Boolean(val); continue; }
@@ -125,8 +125,8 @@ module.exports = async function handler(req, res) {
       density:     rest.density ? parseInt(rest.density) : null,
       description: rest.description?.trim() || null,
       cut_price:   rest.cut_price ? parseFloat(rest.cut_price) : null,
-      min_order:   rest.min_order ? parseInt(rest.min_order) : null,
-      step:        rest.step ? parseInt(rest.step) : null,
+      min_order:   rest.min_order ? parseFloat(rest.min_order) : null,
+      step:        rest.step ? parseFloat(rest.step) : null,
       unit:        rest.unit === 'кг' ? 'кг' : 'м',
     };
 

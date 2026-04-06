@@ -92,10 +92,14 @@ function formatPrice(num, unit) {
   return str + '\u00A0уе./' + (unit || 'м');
 }
 
-/** Округление до кратного, не меньше minOrder */
+/** Округление до кратного, не меньше minOrder (поддерживает дроби, напр. 0.5) */
 function snapToStep(value, minOrder, step) {
-  const snapped = Math.round(value / step) * step;
-  return Math.max(minOrder, snapped);
+  const s = parseFloat(step) || 1;
+  const m = parseFloat(minOrder) || s;
+  const snapped = Math.round(value / s) * s;
+  // Убираем floating-point артефакты (0.1+0.2=0.30000000004)
+  const precision = (s.toString().split('.')[1] || '').length;
+  return Math.max(m, parseFloat(snapped.toFixed(precision)));
 }
 
 /** Получить ткань по id */

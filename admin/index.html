@@ -682,13 +682,15 @@ function renderEditor() {
         <div class="field"><div class="field-label">Категория</div>
           <select id="e-category-id">${catOptions(f.category_id)}</select></div>
       </div>
-      <div class="field-grid cols-3" style="margin-top:12px">
+      <div class="field-grid" style="margin-top:12px;grid-template-columns:1fr 1fr 1fr 1fr">
         <div class="field"><div class="field-label">Ширина, см</div>
           <input id="e-width" type="number" value="${f.width||''}"></div>
         <div class="field"><div class="field-label">Плотность, г/м²</div>
           <input id="e-density" type="number" value="${f.density||''}"></div>
-        <div class="field"><div class="field-label">Мин. заказ, м</div>
-          <input id="e-min-order" type="number" value="${f.min_order||''}"></div>
+        <div class="field"><div class="field-label">Мин. заказ</div>
+          <input id="e-min-order" type="number" step="0.5" value="${f.min_order||''}"></div>
+        <div class="field"><div class="field-label">Кратность (шаг)</div>
+          <input id="e-step" type="number" step="0.5" value="${f.step||''}"></div>
       </div>
     </div>
 
@@ -810,6 +812,7 @@ document.getElementById('modal-save-btn').addEventListener('click', async () => 
     width:       document.getElementById('e-width')?.value || null,
     density:     document.getElementById('e-density')?.value || null,
     min_order:   document.getElementById('e-min-order')?.value || null,
+    step:        document.getElementById('e-step')?.value || null,
     unit:        document.querySelector('input[name="e-unit"]:checked')?.value || 'м',
     base_price:  document.getElementById('e-base-price')?.value || 0,
     cut_price:   document.getElementById('e-cut-price')?.value || null,
