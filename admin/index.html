@@ -426,7 +426,7 @@ function renderOrders(filter) {
   document.getElementById('orders-stats').innerHTML =
     stat(_orders.length, 'Всего заявок') +
     stat(newCount, 'Не обработано') +
-    stat(totalUsd.toFixed(0) + '&nbsp;$', 'Общая сумма');
+    stat(totalUsd.toFixed(0) + '&nbsp;уе', 'Общая сумма');
 
   if (!filtered.length) { list.innerHTML = '<div class="empty">Заявок нет</div>'; return; }
 
@@ -452,7 +452,7 @@ function renderOrders(filter) {
       <div class="card-phone">${esc(o.phone)}</div>
       <table class="items-table"><thead><tr><th>Ткань</th><th>Цвет</th><th>Метры</th><th>Цена</th><th>Тип</th></tr></thead>
       <tbody>${rows}</tbody></table>
-      <div class="card-total">Итого: ${parseFloat(o.total_usd||0).toFixed(2)}&nbsp;$ · ${o.total_meters}&nbsp;м</div>
+      <div class="card-total">Итого: ${parseFloat(o.total_usd||0).toFixed(2)}&nbsp;уе · ${o.total_meters}&nbsp;м</div>
       ${o.comment ? `<div class="card-comment">💬 ${esc(o.comment)}</div>` : ''}
       ${o.processed ? '' : `<div class="card-footer">
         <button class="btn btn-success btn-sm" onclick="markOrderProcessed(${o.id})">✓ Обработано</button>
