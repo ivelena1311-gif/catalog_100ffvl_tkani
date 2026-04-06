@@ -85,11 +85,11 @@ function getPriceForMeters(fabric, meters) {
   return fabric.basePricePerMeter;
 }
 
-/** Форматирует цену: «4,95 уе/м» */
+/** Форматирует цену: «4,95 уе./м» */
 function formatPrice(num) {
   const n = parseFloat(num);
   const str = Number.isInteger(n) ? String(n) : n.toFixed(2).replace('.', ',');
-  return str + '\u00A0уе/м';
+  return str + '\u00A0уе./м';
 }
 
 /** Округление до кратного, не меньше minOrder */

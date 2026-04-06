@@ -344,7 +344,7 @@ function _fabricCardHTML(fabric) {
         <div class="fabric-card-name">${fabric.name}</div>
         <div class="fabric-card-composition">${fabric.composition}</div>
         <div class="fabric-card-params">${fabric.width}&nbsp;см · ${fabric.density}&nbsp;г/м²</div>
-        <div class="fabric-card-price">${formatPrice(fabric.basePricePerMeter)}/м</div>
+        <div class="fabric-card-price">${formatPrice(fabric.basePricePerMeter)}</div>
       </div>
     </div>
   `;
@@ -505,7 +505,7 @@ function _renderProductInfo(fabric, color) {
 
     <!-- Цена -->
     <div class="price-block">
-      <div class="price-main" id="price-main">${formatPrice(price)}<span style="font-size:16px;font-weight:400">&nbsp;/м</span></div>
+      <div class="price-main" id="price-main">${formatPrice(price)}</div>
       <div class="price-meta">от ${fabric.minOrder}&nbsp;м · кратно ${fabric.step}&nbsp;м</div>
       ${fabric.cutPrice ? `
       <div class="price-tiers-table visible" id="tiers-table">
@@ -538,7 +538,7 @@ function _renderProductInfo(fabric, color) {
       </div>
       <div class="counter-total" id="counter-total">${formatPrice(total)}</div>
       <div class="counter-hint" id="counter-hint">
-        ${formatPrice(price)}/м · ${initMeters}&nbsp;м
+        ${formatPrice(price)} · ${initMeters}&nbsp;м
       </div>
     </div>
 
@@ -598,10 +598,10 @@ function _bindProductEvents(fabric) {
     const total = price * snapped;
 
     document.getElementById('price-main').innerHTML =
-      `${formatPrice(price)}<span style="font-size:16px;font-weight:400">/м</span>`;
+      `${formatPrice(price)}`;
     document.getElementById('counter-total').textContent = formatPrice(total);
     document.getElementById('counter-hint').textContent  =
-      `${formatPrice(price)}/м · ${snapped}\u00A0м`;
+      `${formatPrice(price)} · ${snapped}\u00A0м`;
 
     // Подсвечиваем активный блок цены (для двухценовой системы)
     if (fabric.cutPrice) {
@@ -739,7 +739,7 @@ function renderSearchContent(query) {
               <div class="search-result-name">${f.name}</div>
               <div class="search-result-sub">${f.composition} · ${f.width}&nbsp;см</div>
             </div>
-            <div class="search-result-price">${formatPrice(f.basePricePerMeter)}/м</div>
+            <div class="search-result-price">${formatPrice(f.basePricePerMeter)}</div>
           </div>
         `;
       }).join('')}
