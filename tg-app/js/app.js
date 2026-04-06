@@ -344,7 +344,7 @@ function _fabricCardHTML(fabric) {
         <div class="fabric-card-name">${fabric.name}</div>
         <div class="fabric-card-composition">${fabric.composition}</div>
         <div class="fabric-card-params">${fabric.width}&nbsp;см · ${fabric.density}&nbsp;г/м²</div>
-        <div class="fabric-card-price">${formatPrice(fabric.basePricePerMeter)}</div>
+        <div class="fabric-card-price">${formatPrice(fabric.basePricePerMeter, fabric.unit)}</div>
       </div>
     </div>
   `;
@@ -505,24 +505,24 @@ function _renderProductInfo(fabric, color) {
 
     <!-- Цена -->
     <div class="price-block">
-      <div class="price-main" id="price-main">${formatPrice(price)}</div>
-      <div class="price-meta">от ${fabric.minOrder}&nbsp;м · кратно ${fabric.step}&nbsp;м</div>
+      <div class="price-main" id="price-main">${formatPrice(price, fabric.unit)}</div>
+      <div class="price-meta">от ${fabric.minOrder}&nbsp;${fabric.unit} · кратно ${fabric.step}&nbsp;${fabric.unit}</div>
       ${fabric.cutPrice ? `
       <div class="price-tiers-table visible" id="tiers-table">
         <div class="tier-row ${initMeters < 50 ? 'current' : ''}" data-tier="cut">
-          <span>до 50&nbsp;м · на отрез</span>
-          <span>${formatPrice(fabric.cutPrice)}</span>
+          <span>до 50&nbsp;${fabric.unit} · на отрез</span>
+          <span>${formatPrice(fabric.cutPrice, fabric.unit)}</span>
         </div>
         <div class="tier-row ${initMeters >= 50 ? 'current' : ''}" data-tier="base">
-          <span>от 50&nbsp;м · оптовая</span>
-          <span>${formatPrice(fabric.basePricePerMeter)}</span>
+          <span>от 50&nbsp;${fabric.unit} · оптовая</span>
+          <span>${formatPrice(fabric.basePricePerMeter, fabric.unit)}</span>
         </div>
       </div>` : ''}
     </div>
 
-    <!-- Счётчик метража -->
+    <!-- Счётчик количества -->
     <div>
-      <div class="color-section-title">Метраж</div>
+      <div class="color-section-title">${fabric.unit === 'кг' ? 'Количество, кг' : 'Метраж'}</div>
       <div class="meter-counter">
         <button class="counter-btn" id="meter-minus">&#8722;</button>
         <input
@@ -538,7 +538,7 @@ function _renderProductInfo(fabric, color) {
       </div>
       <div class="counter-total" id="counter-total">${formatPrice(total)}</div>
       <div class="counter-hint" id="counter-hint">
-        ${formatPrice(price)} · ${initMeters}&nbsp;м
+        ${formatPrice(price, fabric.unit)} · ${initMeters}&nbsp;${fabric.unit}
       </div>
     </div>
 
@@ -598,10 +598,10 @@ function _bindProductEvents(fabric) {
     const total = price * snapped;
 
     document.getElementById('price-main').innerHTML =
-      `${formatPrice(price)}`;
-    document.getElementById('counter-total').textContent = formatPrice(total);
+      `${formatPrice(price, fabric.unit)}`;
+    document.getElementById('counter-total').textContent = formatPrice(total, fabric.unit);
     document.getElementById('counter-hint').textContent  =
-      `${formatPrice(price)} · ${snapped}\u00A0м`;
+      `${formatPrice(price, fabric.unit)} · ${snapped}\u00A0${fabric.unit}`;
 
     // Подсвечиваем активный блок цены (для двухценовой системы)
     if (fabric.cutPrice) {
@@ -739,7 +739,7 @@ function renderSearchContent(query) {
               <div class="search-result-name">${f.name}</div>
               <div class="search-result-sub">${f.composition} · ${f.width}&nbsp;см</div>
             </div>
-            <div class="search-result-price">${formatPrice(f.basePricePerMeter)}</div>
+            <div class="search-result-price">${formatPrice(f.basePricePerMeter, f.unit)}</div>
           </div>
         `;
       }).join('')}
@@ -800,7 +800,7 @@ function renderCart() {
         <span>Позиций</span><span>${cart.length}</span>
       </div>
       <div class="cart-total-row">
-        <span>Общий метраж</span><span>${totalMeters}&nbsp;м</span>
+        <span>Общий объём</span><span>${totalMeters}</span>
       </div>
       <div class="cart-total-row main">
         <span>Итого</span>
@@ -871,12 +871,12 @@ function _cartItemHTML(item) {
         <div class="cart-counter">
           <button class="cart-counter-btn" data-dir="minus">&#8722;</button>
           <span class="cart-counter-val">${item.meters}</span>
-          <span style="font-size:12px;color:var(--tg-hint)">м</span>
+          <span style="font-size:12px;color:var(--tg-hint)">${fabric.unit}</span>
           <button class="cart-counter-btn" data-dir="plus">&#43;</button>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
-        <div class="cart-item-price">${formatPrice(total)}</div>
+        <div class="cart-item-price">${formatPrice(total, fabric.unit)}</div>
         <button class="cart-item-delete" aria-label="Удалить">&#128465;</button>
       </div>
     </div>

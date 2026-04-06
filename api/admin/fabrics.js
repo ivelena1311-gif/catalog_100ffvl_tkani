@@ -12,7 +12,7 @@ const { checkAuth } = require('../../lib/admin-auth');
 
 const ALLOWED_FIELDS = [
   'name', 'article', 'category_id', 'composition', 'width', 'density',
-  'description', 'thumb', 'base_price', 'cut_price', 'min_order', 'step', 'is_active',
+  'description', 'thumb', 'base_price', 'cut_price', 'min_order', 'step', 'is_active', 'unit',
 ];
 
 module.exports = async function handler(req, res) {
@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
     try {
       const fabrics = await dbGet(
         'fabrics?select=id,name,article,category_id,composition,width,density,' +
-        'base_price,cut_price,min_order,step,is_active,description,thumb,categories(name)&order=id'
+        'base_price,cut_price,min_order,step,unit,is_active,description,thumb,categories(name)&order=id'
       );
       return res.status(200).json(fabrics);
     } catch (err) {
@@ -82,6 +82,7 @@ module.exports = async function handler(req, res) {
       if (field === 'density')      { patch.density     = val ? parseInt(val) : null; continue; }
       if (field === 'min_order')    { patch.min_order   = val ? parseInt(val) : null; continue; }
       if (field === 'step')         { patch.step        = val ? parseInt(val) : null; continue; }
+      if (field === 'unit')         { patch.unit        = val === 'кг' ? 'кг' : 'м'; continue; }
       if (field === 'category_id')  { patch.category_id = val ? parseInt(val) : null; continue; }
       if (field === 'is_active')    { patch.is_active   = Boolean(val); continue; }
       patch[field] = val ?? null;
@@ -126,6 +127,7 @@ module.exports = async function handler(req, res) {
       cut_price:   rest.cut_price ? parseFloat(rest.cut_price) : null,
       min_order:   rest.min_order ? parseInt(rest.min_order) : null,
       step:        rest.step ? parseInt(rest.step) : null,
+      unit:        rest.unit === 'кг' ? 'кг' : 'м',
     };
 
     try {

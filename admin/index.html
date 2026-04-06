@@ -547,8 +547,8 @@ function renderFabrics(filter) {
       <td>${f.id}</td>
       <td><strong>${esc(f.name)}</strong><br><span class="price-tag">${esc(f.article||'')}</span></td>
       <td>${esc(f.categories?.name||'')}</td>
-      <td>${parseFloat(f.base_price||0).toFixed(2)}&nbsp;$</td>
-      <td>${f.cut_price ? parseFloat(f.cut_price).toFixed(2)+'&nbsp;$' : '—'}</td>
+      <td>${parseFloat(f.base_price||0).toFixed(2)}&nbsp;уе.</td>
+      <td>${f.cut_price ? parseFloat(f.cut_price).toFixed(2)+'&nbsp;уе.' : '—'}</td>
       <td><span class="badge ${f.is_active?'badge-ok':'badge-warn'}">${f.is_active?'Активна':'Скрыта'}</span></td>
     </tr>`).join('');
 
@@ -631,7 +631,7 @@ async function deleteCategory(id) {
 function openCreateEditor() {
   _editMode   = 'create';
   _editFabric = { id:null, name:'', article:'', composition:'', category_id:null,
-    width:null, density:null, min_order:null, base_price:0, cut_price:null,
+    width:null, density:null, min_order:null, unit:'м', base_price:0, cut_price:null,
     description:'', is_active:true, colors:[], photos:[] };
   document.getElementById('modal-fabric-title').textContent = 'Новая ткань';
   document.getElementById('modal-save-btn').textContent = 'Создать ткань';
@@ -693,11 +693,25 @@ function renderEditor() {
     </div>
 
     <div class="form-section">
+      <div class="form-section-title">Единица измерения</div>
+      <div style="display:flex;gap:12px">
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:14px">
+          <input type="radio" name="e-unit" value="м" ${(f.unit||'м')==='м'?'checked':''}>
+          Метры (м)
+        </label>
+        <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:14px">
+          <input type="radio" name="e-unit" value="кг" ${f.unit==='кг'?'checked':''}>
+          Килограммы (кг)
+        </label>
+      </div>
+    </div>
+
+    <div class="form-section">
       <div class="form-section-title">Цены</div>
       <div class="field-grid">
-        <div class="field"><div class="field-label">Оптовая цена (от 50м), $/м *</div>
+        <div class="field"><div class="field-label">Оптовая цена (от 50 ед.), уе./ед. *</div>
           <input id="e-base-price" type="number" step="0.01" value="${parseFloat(f.base_price||0).toFixed(2)}"></div>
-        <div class="field"><div class="field-label">Цена на отрез (до 50м), $/м</div>
+        <div class="field"><div class="field-label">Цена на отрез (до 50 ед.), уе./ед.</div>
           <input id="e-cut-price" type="number" step="0.01" value="${f.cut_price?parseFloat(f.cut_price).toFixed(2):''}" placeholder="Не задана"></div>
       </div>
     </div>
@@ -796,6 +810,7 @@ document.getElementById('modal-save-btn').addEventListener('click', async () => 
     width:       document.getElementById('e-width')?.value || null,
     density:     document.getElementById('e-density')?.value || null,
     min_order:   document.getElementById('e-min-order')?.value || null,
+    unit:        document.querySelector('input[name="e-unit"]:checked')?.value || 'м',
     base_price:  document.getElementById('e-base-price')?.value || 0,
     cut_price:   document.getElementById('e-cut-price')?.value || null,
     description: document.getElementById('e-description')?.value || '',

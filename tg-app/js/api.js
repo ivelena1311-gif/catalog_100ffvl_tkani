@@ -37,6 +37,7 @@ const Catalog = (() => {
       cutPrice:          f.cut_price ? parseFloat(f.cut_price) : null,
       minOrder:          f.min_order,
       step:              f.step,
+      unit:              f.unit || 'м',
       thumb:             f.thumb || 'linear-gradient(145deg,#ccc,#999)',
       description:       f.description || '',
       // colors и photos — только в ответе детального запроса (?id=N)
