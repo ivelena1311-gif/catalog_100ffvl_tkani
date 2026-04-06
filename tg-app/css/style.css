@@ -38,7 +38,7 @@
   /* Акцентные цвета (поверх темы) */
   --accent:        #2AABEE;
   --accent-dark:   #1A8BC4;
-  --price-color:   #E53935;
+  --price-color:   var(--tg-text);
   --stock-ok:      #43A047;
   --stock-low:     #FB8C00;
   --stock-none:    #9E9E9E;
@@ -596,8 +596,8 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .fabric-card-price {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--price-color);
   margin-top: 2px;
 }
@@ -867,8 +867,8 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .price-main {
-  font-size: 26px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--price-color);
 }
 
