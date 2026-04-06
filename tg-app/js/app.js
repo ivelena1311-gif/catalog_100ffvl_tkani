@@ -337,9 +337,6 @@ function _thumbHTML(thumb, cssClass) {
 
 /** HTML одной карточки ткани */
 function _fabricCardHTML(fabric) {
-  const firstColor  = getFirstAvailableColor(fabric);
-  const stockInfo   = getStockStatus(firstColor.stock);
-
   return `
     <div class="fabric-card" data-fabric-id="${fabric.id}" role="button" tabindex="0">
       ${_thumbHTML(fabric.thumb, 'fabric-thumb')}
@@ -348,7 +345,6 @@ function _fabricCardHTML(fabric) {
         <div class="fabric-card-composition">${fabric.composition}</div>
         <div class="fabric-card-params">${fabric.width}&nbsp;см · ${fabric.density}&nbsp;г/м²</div>
         <div class="fabric-card-price">${formatPrice(fabric.basePricePerMeter)}/м</div>
-        <div class="fabric-card-stock ${stockInfo.cls}">${stockInfo.label}</div>
       </div>
     </div>
   `;
@@ -476,7 +472,6 @@ function _renderProductInfo(fabric, color) {
   const initMeters = cartItem ? cartItem.meters : _product.meters;
   const price     = getPriceForMeters(fabric, initMeters);
   const total     = price * initMeters;
-  const stock     = getStockStatus(color.stock);
 
   infoEl.innerHTML = `
     <!-- Название и артикул -->
@@ -498,14 +493,14 @@ function _renderProductInfo(fabric, color) {
       <div class="color-swatches">
         ${fabric.colors.map(c => `
           <div
-            class="color-swatch ${c.id === color.id ? 'active' : ''} ${c.stock === 0 ? 'out-of-stock' : ''}"
+            class="color-swatch ${c.id === color.id ? 'active' : ''}"
             data-color-id="${c.id}"
             style="background:${c.hex}"
             title="${c.name}"
           ></div>
         `).join('')}
       </div>
-      <div class="color-name" id="color-name-label">${color.name}${color.stock === 0 ? ' — нет в наличии' : ''}</div>
+      <div class="color-name" id="color-name-label">${color.name}</div>
     </div>
 
     <!-- Цена -->
@@ -523,13 +518,6 @@ function _renderProductInfo(fabric, color) {
           <span>${formatPrice(fabric.basePricePerMeter)}</span>
         </div>
       </div>` : ''}
-    </div>
-
-    <!-- Остаток -->
-    <div class="stock-block ${stock.cls}">
-      ${color.stock > 0
-        ? `&#9989; ${color.stock}&nbsp;м в наличии / ${getColorById(fabric, color.id).rolls || 0}&nbsp;рул.`
-        : '&#10060; Нет в наличии'}
     </div>
 
     <!-- Счётчик метража -->
@@ -588,17 +576,7 @@ function _bindProductEvents(fabric) {
 
       // Обновляем название цвета
       const label = document.getElementById('color-name-label');
-      if (label) label.textContent = color.name + (color.stock === 0 ? ' — нет в наличии' : '');
-
-      // Обновляем остаток
-      const stockBlock = document.querySelector('#product-info .stock-block');
-      if (stockBlock) {
-        const s = getStockStatus(color.stock);
-        stockBlock.className = `stock-block ${s.cls}`;
-        stockBlock.innerHTML = color.stock > 0
-          ? `&#9989; ${color.stock}&nbsp;м в наличии / ${color.rolls || 0}&nbsp;рул.`
-          : '&#10060; Нет в наличии';
-      }
+      if (label) label.textContent = color.name;
 
       _updateProductMainButton();
       TG.HapticFeedback.selectionChanged();
@@ -661,14 +639,7 @@ function _updateProductMainButton() {
   const { fabric, colorId, meters } = _product;
   if (!fabric) return;
 
-  const color   = getColorById(fabric, colorId);
   const inCart  = Store.findCartItem(fabric.id, colorId);
-  const noStock = color.stock === 0;
-
-  if (noStock) {
-    setMainButton('Нет в наличии', null, { disabled: true });
-    return;
-  }
 
   if (inCart) {
     setMainButton(`В заявке ✓ · Перейти`, () => {
@@ -761,15 +732,12 @@ function renderSearchContent(query) {
     <div class="search-results">
       <div class="search-section-title">Найдено: ${results.length}</div>
       ${results.map(f => {
-        const color = getFirstAvailableColor(f);
-        const stock = getStockStatus(color.stock);
         return `
           <div class="search-result-item" data-fabric-id="${f.id}">
             ${_thumbHTML(f.thumb, 'search-result-thumb')}
             <div class="search-result-info">
               <div class="search-result-name">${f.name}</div>
               <div class="search-result-sub">${f.composition} · ${f.width}&nbsp;см</div>
-              <div class="search-result-sub ${stock.cls}">${stock.label}</div>
             </div>
             <div class="search-result-price">${formatPrice(f.basePricePerMeter)}/м</div>
           </div>
@@ -1186,14 +1154,6 @@ function openFiltersSheet() {
         `).join('')}
       </div>
     </div>
-
-    <!-- Только в наличии -->
-    <div class="filter-section">
-      <div class="filter-toggle" id="stock-toggle">
-        <span class="filter-toggle-label">Только в наличии</span>
-        <div class="toggle-switch ${filters.inStock ? 'on' : ''}" id="stock-toggle-switch"></div>
-      </div>
-    </div>
   `;
 
   // Слушатели фильтров
@@ -1205,15 +1165,6 @@ function openFiltersSheet() {
       TG.HapticFeedback.selectionChanged();
       _updateFiltersApplyBtn();
     });
-  });
-
-  document.getElementById('stock-toggle')?.addEventListener('click', () => {
-    const sw = document.getElementById('stock-toggle-switch');
-    const newVal = !Store.getFilters().inStock;
-    Store.setInStock(newVal);
-    sw?.classList.toggle('on', newVal);
-    TG.HapticFeedback.selectionChanged();
-    _updateFiltersApplyBtn();
   });
 
   document.getElementById('filters-reset-btn')?.addEventListener('click', () => {
@@ -1257,7 +1208,7 @@ function openSampleSheet(fabric) {
     <div style="margin-bottom:16px">
       <div class="color-section-title">Цвет образца</div>
       <div class="color-swatches" id="sample-colors">
-        ${fabric.colors.filter(c => c.stock > 0).map(c => `
+        ${fabric.colors.map(c => `
           <div
             class="color-swatch ${c.id === color.id ? 'active' : ''}"
             data-sample-color="${c.id}"

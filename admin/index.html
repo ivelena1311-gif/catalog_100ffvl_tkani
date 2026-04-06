@@ -748,10 +748,6 @@ function renderEditor() {
           </div>
           <div class="field"><div class="field-label">Название</div>
             <input id="new-color-name" placeholder="Бордо, Синий..."></div>
-          <div class="field"><div class="field-label">Остаток, м</div>
-            <input id="new-color-stock" type="number" value="0" min="0"></div>
-          <div class="field"><div class="field-label">Рулонов</div>
-            <input id="new-color-rolls" type="number" value="0" min="0"></div>
         </div>
         <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addColor()">Добавить цвет</button>
       </div>
@@ -775,7 +771,7 @@ function renderColorsGrid() {
   return colors.map(c => `
     <div class="color-item" id="color-${c.id}">
       <div class="color-swatch-admin" style="background:${esc(c.hex)}"></div>
-      <div class="color-info">${esc(c.name)}<br>${c.stock}&nbsp;м / ${c.rolls}&nbsp;рул.</div>
+      <div class="color-info">${esc(c.name)}</div>
       <button class="color-del" onclick="deleteColor(${c.id})" title="Удалить">✕</button>
     </div>`).join('');
 }
@@ -931,23 +927,19 @@ async function deletePhoto(id) {
 
 // ── Цвет: добавить ───────────────────────────────────
 async function addColor() {
-  const hex   = document.getElementById('new-color-hex').value;
-  const name  = document.getElementById('new-color-name').value.trim();
-  const stock = document.getElementById('new-color-stock').value;
-  const rolls = document.getElementById('new-color-rolls').value;
+  const hex  = document.getElementById('new-color-hex').value;
+  const name = document.getElementById('new-color-name').value.trim();
   if (!name) { alert('Введите название цвета'); return; }
   const res = await fetch(`${API}/colors`, {
     method: 'POST',
     headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
-    body: JSON.stringify({ fabric_id: _editFabric.id, hex, name, stock, rolls }),
+    body: JSON.stringify({ fabric_id: _editFabric.id, hex, name }),
   });
   if (res.ok) {
     const color = await res.json();
     _editFabric.colors = [...(_editFabric.colors||[]), color];
     document.getElementById('colors-grid').innerHTML = renderColorsGrid();
     document.getElementById('new-color-name').value = '';
-    document.getElementById('new-color-stock').value = '0';
-    document.getElementById('new-color-rolls').value = '0';
   } else {
     alert('Ошибка при добавлении цвета');
   }

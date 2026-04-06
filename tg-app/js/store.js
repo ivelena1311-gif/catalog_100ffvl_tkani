@@ -23,7 +23,6 @@ const Store = (() => {
     // Активные фильтры каталога
     filters: {
       category: 'Все',   // активная категория
-      inStock: false,    // только в наличии
     },
     // Последний активный цвет на экране товара {fabricId: colorId}
     lastSelectedColor: {},
@@ -201,13 +200,8 @@ const Store = (() => {
     save();
   }
 
-  function setInStock(value) {
-    state.filters.inStock = value;
-    save();
-  }
-
   function resetFilters() {
-    state.filters = { category: 'Все', inStock: false };
+    state.filters = { category: 'Все' };
     save();
   }
 
@@ -233,16 +227,11 @@ const Store = (() => {
    */
   function getFilteredFabrics(searchQuery) {
     let result = [...FABRICS];
-    const { category, inStock } = state.filters;
+    const { category } = state.filters;
 
     // Фильтр по категории
     if (category && category !== 'Все') {
       result = result.filter(f => f.category === category);
-    }
-
-    // Фильтр "только в наличии"
-    if (inStock) {
-      result = result.filter(f => f.colors.some(c => c.stock > 0));
     }
 
     // Поиск (по названию, артикулу, составу)
@@ -291,7 +280,6 @@ const Store = (() => {
     // Фильтры
     getFilters,
     setCategory,
-    setInStock,
     resetFilters,
     getFilteredFabrics,
 

@@ -92,13 +92,6 @@ function formatPrice(num) {
   return str + '\u00A0$/м';
 }
 
-/** Статус остатка */
-function getStockStatus(stock) {
-  if (stock === 0) return { label: 'Нет в наличии', cls: 'stock-none' };
-  if (stock < 50)  return { label: `${stock}\u00A0м ⚠`, cls: 'stock-low' };
-  return               { label: 'В наличии',           cls: 'stock-ok'  };
-}
-
 /** Округление до кратного, не меньше minOrder */
 function snapToStep(value, minOrder, step) {
   const snapped = Math.round(value / step) * step;
@@ -115,9 +108,9 @@ function getColorById(fabric, colorId) {
   return fabric.colors.find(c => c.id === colorId) || fabric.colors[0];
 }
 
-/** Первый доступный цвет */
+/** Первый цвет */
 function getFirstAvailableColor(fabric) {
-  return fabric.colors.find(c => c.stock > 0) || fabric.colors[0];
+  return fabric.colors[0];
 }
 
 /** Метка статуса заказа */

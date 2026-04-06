@@ -24,7 +24,7 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Некорректный JSON' });
     }
 
-    const { fabric_id, hex, name, stock, rolls } = body || {};
+    const { fabric_id, hex, name } = body || {};
     if (!fabric_id) return res.status(400).json({ error: 'fabric_id обязателен' });
     if (!hex)       return res.status(400).json({ error: 'hex обязателен' });
     if (!name)      return res.status(400).json({ error: 'name обязателен' });
@@ -32,10 +32,8 @@ module.exports = async function handler(req, res) {
     try {
       const [color] = await dbPost('fabric_colors', {
         fabric_id: Number(fabric_id),
-        hex:   hex.trim(),
-        name:  name.trim(),
-        stock: stock !== undefined ? Number(stock) : 0,
-        rolls: rolls !== undefined ? Number(rolls) : 0,
+        hex:  hex.trim(),
+        name: name.trim(),
       });
       return res.status(201).json(color);
     } catch (err) {
