@@ -97,7 +97,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true });
     } catch (err) {
       console.error('[POST /api/admin/fabrics]', err.message);
-      return res.status(500).json({ error: 'Ошибка сервера' });
+      return res.status(500).json({ error: err.message });
     }
   }
 
