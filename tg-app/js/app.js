@@ -1146,14 +1146,15 @@ async function _submitOrder() {
 function renderSuccess(orderNum) {
   const el = document.getElementById('success-content');
   el.innerHTML = `
-    <div class="success-icon">&#9989;</div>
-    <div class="success-title">Заявка отправлена!</div>
+    <div class="success-icon">&#10003;</div>
+    <div class="success-line"></div>
+    <div class="success-title">Заявка отправлена</div>
     <div class="success-text">
       ${MANAGER.name} свяжется с вами до&nbsp;18:00 по московскому времени
     </div>
-    <div class="success-order-num">Номер заявки: #${orderNum}</div>
+    <div class="success-order-num">Заявка&nbsp;№&nbsp;${orderNum}</div>
     <button class="success-manager-btn" id="contact-manager-btn">
-      &#128172; Написать менеджеру сейчас
+      Написать менеджеру
     </button>
   `;
 
