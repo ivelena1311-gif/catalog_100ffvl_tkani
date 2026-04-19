@@ -278,12 +278,116 @@ function setMainButton(text, handler, options = {}) {
 
 // ---- 4.1 КАТАЛОГ ----
 
+/** Баннер-слайдер: инициализируется один раз, повторный вызов игнорируется */
+let _bannersInited = false;
+
+function renderBanners() {
+  const wrap = document.getElementById('catalog-banners');
+  if (!wrap || !BANNERS.length) return;
+
+  // Если баннер один — скрываем точки, не нужен слайдер
+  if (BANNERS.length === 1) {
+    wrap.innerHTML = _bannerSlideHTML(BANNERS[0]);
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div class="banners-track" id="banners-track">
+      ${BANNERS.map(b => _bannerSlideHTML(b)).join('')}
+    </div>
+    <div class="banners-dots" id="banners-dots">
+      ${BANNERS.map((_, i) => `<div class="banner-dot ${i === 0 ? 'active' : ''}" data-banner-i="${i}"></div>`).join('')}
+    </div>
+  `;
+
+  if (_bannersInited) return;
+  _bannersInited = true;
+  _initBannerSlider();
+}
+
+function _bannerSlideHTML(banner) {
+  const bg = banner.image
+    ? `<img class="banner-bg" src="${banner.image}" alt="${banner.title}" loading="lazy">`
+    : `<div class="banner-bg" style="background:${banner.gradient}"></div>`;
+  return `
+    <div class="banner-slide"${banner.action ? ` data-banner-action='${JSON.stringify(banner.action)}'` : ''}>
+      ${bg}
+      <div class="banner-overlay"></div>
+      <div class="banner-content">
+        ${banner.label ? `<p class="banner-label">${banner.label}</p>` : ''}
+        <h2 class="banner-title">${banner.title}</h2>
+        ${banner.subtitle ? `<p class="banner-subtitle">${banner.subtitle}</p>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function _initBannerSlider() {
+  const wrap  = document.getElementById('catalog-banners');
+  if (!wrap) return;
+
+  let current = 0;
+  let timer   = null;
+  let touchX  = null;
+
+  function goTo(i) {
+    const track = document.getElementById('banners-track');
+    const dots  = document.querySelectorAll('.banner-dot');
+    if (!track) return;
+    current = (i + BANNERS.length) % BANNERS.length;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d, idx) => d.classList.toggle('active', idx === current));
+  }
+
+  function next() { goTo(current + 1); }
+
+  function startAuto() {
+    clearInterval(timer);
+    timer = setInterval(next, 4000);
+  }
+
+  startAuto();
+
+  // Нажатие на точку
+  wrap.addEventListener('click', e => {
+    const dot = e.target.closest('.banner-dot');
+    if (dot) { goTo(parseInt(dot.dataset.bannerI)); startAuto(); return; }
+
+    // Нажатие на баннер с action
+    const slide = e.target.closest('[data-banner-action]');
+    if (slide) {
+      try {
+        const action = JSON.parse(slide.dataset.bannerAction);
+        if (action.type === 'category') {
+          Store.setCategory(action.value);
+          renderCatalog();
+          TG.HapticFeedback.selectionChanged();
+        }
+      } catch (_) {}
+    }
+  });
+
+  // Touch-свайп
+  wrap.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  wrap.addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) < 30) return;
+    goTo(dx < 0 ? current + 1 : current - 1);
+    startAuto();
+  }, { passive: true });
+}
+
 function renderCatalog() {
   const filters    = Store.getFilters();
   const fabrics    = Store.getFilteredFabrics();
   const grid       = document.getElementById('catalog-grid');
   const countEl    = document.getElementById('catalog-count');
   const catsBar    = document.getElementById('categories-bar');
+
+  // Баннеры (рендерятся один раз независимо от фильтров)
+  renderBanners();
 
   // Пока данные не загружены — ничего не рендерим
   if (!FABRICS.length && !fabrics.length) return;
