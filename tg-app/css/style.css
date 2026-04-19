@@ -1,3 +1,6 @@
+/* Шрифты: Cormorant Garamond (display/заголовки) + Outfit (body/интерфейс) */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Outfit:wght@200;300;400;500;600&display=swap');
+
 /**
  * style.css — Все стили Telegram Mini App
  *
@@ -19,6 +22,10 @@
  * 15. Экран: Профиль
  * 16. Фильтры
  * 17. Утилиты
+ * 18. Welcome-экран
+ * 19. Кнопка поделиться
+ * 20. Анимации (editorial)
+ * 21. Утилиты типографики
  */
 
 /* ================================================================
@@ -44,6 +51,16 @@
   --stock-none:    #9E9E9E;
   --success:       #43A047;
   --danger:        #E53935;
+
+  /* Editorial-палитра из Lovable */
+  --gold:          hsl(38, 50%, 55%);     /* золотой акцент */
+  --gold-muted:    hsl(38, 20%, 30%);
+  --gold-dim:      hsla(38, 50%, 55%, 0.4);
+  --cream:         hsl(40, 25%, 85%);
+
+  /* Типографика */
+  --font-display:  'Cormorant Garamond', Georgia, serif;
+  --font-body:     'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* Геометрия */
   --radius-card:   14px;
@@ -84,12 +101,13 @@ html, body {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.4;
   background: var(--tg-bg);
   color: var(--tg-text);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   user-select: none;
 }
 
@@ -211,21 +229,26 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 22px;
   line-height: 1;
   color: rgba(255,255,255,0.5);
-}
-
-.tab-item.active .tab-icon {
-  color: #ffffff;
+  transition: color 0.2s;
 }
 
 .tab-label {
-  font-size: 10px;
-  font-weight: 500;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: rgba(255,255,255,0.4);
-  transition: color 0.15s;
+  transition: color 0.2s;
 }
 
 .tab-item.active .tab-label {
-  color: #ffffff;
+  color: var(--gold);
+  font-weight: 400;
+}
+
+.tab-item.active .tab-icon {
+  color: var(--gold);
 }
 
 /* Бейдж на иконке корзины */
@@ -372,9 +395,12 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .screen-title {
-  font-size: 18px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  font-style: italic;
   flex: 1;
+  letter-spacing: 0.01em;
 }
 
 /* --- Шапка каталога с логотипом --- */
@@ -409,10 +435,13 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .catalog-header-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
   color: #ffffff;
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
 }
 
 /* --- Кнопка-иконка в шапке --- */
@@ -498,24 +527,29 @@ a { color: var(--accent); text-decoration: none; }
 .chip {
   display: inline-flex;
   align-items: center;
-  padding: 5px 12px;
-  border-radius: var(--radius-chip);
-  font-size: 13px;
-  font-weight: 500;
-  background: var(--tg-secondary);
-  color: var(--tg-text);
+  padding: 4px 2px;
+  border-radius: 0;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--tg-hint);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s, border-color 0.3s;
   white-space: nowrap;
   min-height: 32px;
 }
 
 .chip.active {
-  background: var(--accent);
-  color: #fff;
+  color: var(--tg-text);
+  border-bottom-color: var(--gold-dim);
+  background: transparent;
 }
 
-.chip:active { opacity: 0.8; }
+.chip:active { opacity: 0.7; }
 
 /* --- Карточка товара в сетке --- */
 .fabric-card {
@@ -575,9 +609,11 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .fabric-card-name {
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.3;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.2;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -585,20 +621,29 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .fabric-card-composition {
-  font-size: 11px;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
   color: var(--tg-hint);
-  line-height: 1.3;
+  line-height: 1.4;
 }
 
 .fabric-card-params {
-  font-size: 11px;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
   color: var(--tg-hint);
 }
 
 .fabric-card-price {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--price-color);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--gold);
   margin-top: 2px;
 }
 
@@ -772,15 +817,22 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .product-name {
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 1.3;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
 }
 
 .product-article {
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
   color: var(--tg-hint);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 /* Параметры (состав, ширина, плотность) */
@@ -867,9 +919,11 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .price-main {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--price-color);
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--gold);
 }
 
 .price-meta {
@@ -1963,3 +2017,85 @@ textarea {
 }
 
 .share-btn:active { opacity: 0.7; }
+
+/* ================================================================
+   20. АНИМАЦИИ (Editorial — из Lovable)
+   ================================================================ */
+
+/* Медленный кинематографический зум — для hero-фото и галереи */
+@keyframes hero-zoom {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+/* Появление снизу */
+@keyframes fade-up {
+  0%   { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Простое появление */
+@keyframes fade-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Появление с лёгким масштабом */
+@keyframes scale-in {
+  0%   { opacity: 0; transform: scale(0.94); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Медленный дрейф (фоновые элементы) */
+@keyframes slow-drift {
+  0%   { transform: scale(1) translateY(0); }
+  50%  { transform: scale(1.03) translateY(-6px); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+/* Разворачивание горизонтальной линии */
+@keyframes reveal-line {
+  0%   { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+/* ================================================================
+   21. УТИЛИТЫ ТИПОГРАФИКИ
+   ================================================================ */
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* Надпись в стиле Lovable: мелкий трекинг, uppercase */
+.label-caps {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+}
+
+.text-gold  { color: var(--gold); }
+.text-cream { color: var(--cream); }
+
+/* Декоративная горизонтальная линия с gold-цветом */
+.gold-line {
+  display: block;
+  height: 1px;
+  background: var(--gold-dim);
+  transform-origin: left;
+}
+
+/* Анимированное появление снизу для любого элемента */
+.anim-fade-up {
+  animation: fade-up 0.8s ease-out both;
+}
+
+.anim-fade-up-delay-1 { animation: fade-up 0.8s ease-out 0.1s both; }
+.anim-fade-up-delay-2 { animation: fade-up 0.8s ease-out 0.2s both; }
+.anim-fade-up-delay-3 { animation: fade-up 0.8s ease-out 0.3s both; }
