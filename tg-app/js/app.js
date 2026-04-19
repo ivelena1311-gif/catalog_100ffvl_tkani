@@ -526,22 +526,21 @@ function _doRenderProduct(fabric, colorId) {
 }
 
 function _renderGallery(fabric, color) {
-  const slidesEl = document.getElementById('gallery-slides');
-  const dotsEl   = document.getElementById('gallery-dots');
+  const slidesEl  = document.getElementById('gallery-slides');
+  const dotsEl    = document.getElementById('gallery-dots');
+  const galleryEl = document.getElementById('product-gallery');
 
   let slidesHTML;
   let count;
 
   if (fabric.photos && fabric.photos.length) {
-    // Реальные фото
     count = fabric.photos.length;
     slidesHTML = fabric.photos.map((src, i) => `
-      <div class="gallery-slide" data-index="${i}" style="background:#111;overflow:hidden">
-        <img src="${src}" alt="${fabric.name}" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div class="gallery-slide" data-index="${i}">
+        <img src="${src}" alt="${fabric.name}" class="gallery-slide-img ${i === 0 ? 'hero-zoom' : ''}">
       </div>
     `).join('');
   } else {
-    // Градиентные заглушки из цвета
     const styles = [
       `background:${color.hex}`,
       `background:linear-gradient(160deg,${_lighten(color.hex,20)} 0%,${color.hex} 50%,${_darken(color.hex,15)} 100%)`,
@@ -554,9 +553,24 @@ function _renderGallery(fabric, color) {
   }
 
   slidesEl.innerHTML = slidesHTML;
+
+  // Pill-точки
   dotsEl.innerHTML = Array.from({ length: count }, (_, i) => `
     <div class="gallery-dot ${i === 0 ? 'active' : ''}"></div>
   `).join('');
+
+  // Overlay с названием ткани (поверх галереи, снизу)
+  let overlay = document.getElementById('gallery-hero-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'gallery-hero-overlay';
+    overlay.className = 'gallery-hero-overlay';
+    galleryEl.insertBefore(overlay, dotsEl);
+  }
+  overlay.innerHTML = `
+    <p class="gallery-hero-label">${fabric.category}</p>
+    <h1 class="gallery-hero-name">${fabric.name}</h1>
+  `;
 
   slidesEl.style.transform = 'translateX(0)';
   _initGallerySwipe(slidesEl, dotsEl, count);
@@ -596,34 +610,47 @@ function _renderProductInfo(fabric, color) {
   const total     = price * initMeters;
 
   infoEl.innerHTML = `
-    <!-- Название и артикул -->
-    <div>
-      <div class="product-name">${fabric.name}</div>
-      <div class="product-article">Арт. ${fabric.article}</div>
-    </div>
 
-    <!-- Параметры -->
-    <div class="product-params">
-      <span class="param-chip">${fabric.composition}</span>
-      <span class="param-chip">&#8596; ${fabric.width}&nbsp;см</span>
-      <span class="param-chip">${fabric.density}&nbsp;г/м²</span>
-    </div>
+    <!-- Артикул -->
+    <p class="product-article">Арт.&nbsp;${fabric.article}</p>
+
+    <!-- Разделитель -->
+    <div class="product-divider"></div>
+
+    <!-- Характеристики -->
+    <dl class="product-specs">
+      <div class="spec-row">
+        <dt>Состав</dt><dd>${fabric.composition}</dd>
+      </div>
+      <div class="spec-row">
+        <dt>Ширина</dt><dd>${fabric.width}&nbsp;см</dd>
+      </div>
+      <div class="spec-row">
+        <dt>Плотность</dt><dd>${fabric.density}&nbsp;г/м²</dd>
+      </div>
+    </dl>
+
+    <!-- Разделитель -->
+    <div class="product-divider"></div>
 
     <!-- Цвета -->
-    <div>
-      <div class="color-section-title">Цвет</div>
+    <div class="product-colors-section">
+      <p class="product-section-label">Цвет</p>
       <div class="color-swatches">
         ${fabric.colors.map(c => `
           <div
-            class="color-swatch ${c.id === color.id ? 'active' : ''}"
+            class="color-swatch ${c.id === color.id ? 'active' : ''} ${c.stock === 0 ? 'out-of-stock' : ''}"
             data-color-id="${c.id}"
             style="background:${c.hex}"
             title="${c.name}"
           ></div>
         `).join('')}
       </div>
-      <div class="color-name" id="color-name-label">${color.name}</div>
+      <p class="color-name" id="color-name-label">${color.name}</p>
     </div>
+
+    <!-- Разделитель -->
+    <div class="product-divider"></div>
 
     <!-- Цена -->
     <div class="price-block">
@@ -642,9 +669,9 @@ function _renderProductInfo(fabric, color) {
       </div>` : ''}
     </div>
 
-    <!-- Счётчик количества -->
-    <div>
-      <div class="color-section-title">${fabric.unit === 'кг' ? 'Количество, кг' : 'Метраж'}</div>
+    <!-- Счётчик -->
+    <div class="product-counter-section">
+      <p class="product-section-label">${fabric.unit === 'кг' ? 'Количество, кг' : 'Метраж'}</p>
       <div class="meter-counter">
         <button class="counter-btn" id="meter-minus">&#8722;</button>
         <input
@@ -659,18 +686,14 @@ function _renderProductInfo(fabric, color) {
         <button class="counter-btn" id="meter-plus">&#43;</button>
       </div>
       <div class="counter-total" id="counter-total">${formatPrice(total)}</div>
-      <div class="counter-hint" id="counter-hint">
-        ${formatPrice(price, fabric.unit)} · ${initMeters}&nbsp;${fabric.unit}
-      </div>
+      <div class="counter-hint" id="counter-hint">${formatPrice(price, fabric.unit)} · ${initMeters}&nbsp;${fabric.unit}</div>
     </div>
 
-    <!-- Запрос образца -->
-    <button class="sample-btn" id="sample-btn">
-      &#128196; Запросить образец бесплатно
-    </button>
+    <!-- Образец -->
+    <button class="sample-btn" id="sample-btn">Запросить образец бесплатно</button>
 
     <!-- Описание -->
-    <div class="product-description">${fabric.description}</div>
+    ${fabric.description ? `<p class="product-description">${fabric.description}</p>` : ''}
   `;
 
   // Слушатели событий
