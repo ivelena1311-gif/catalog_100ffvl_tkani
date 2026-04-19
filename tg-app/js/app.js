@@ -402,10 +402,18 @@ function renderCatalog() {
     >${cat}</button>
   `).join('');
 
-  // Счётчик
-  countEl.textContent = fabrics.length
-    ? `Показано: ${fabrics.length} ${_pluralize(fabrics.length, 'позиция', 'позиции', 'позиций')}`
+  // Редакционный заголовок + счётчик
+  const activeCategory = filters.category && filters.category !== 'Все' ? filters.category : 'Шоурум';
+  const countText = fabrics.length
+    ? `${fabrics.length} ${_pluralize(fabrics.length, 'позиция', 'позиции', 'позиций')}`
     : '';
+  countEl.innerHTML = `
+    <div class="catalog-section-header">
+      <p class="catalog-section-label">${activeCategory}</p>
+      <h2 class="catalog-section-title">Все ткани</h2>
+      ${countText ? `<span class="catalog-section-count">${countText}</span>` : ''}
+    </div>
+  `;
 
   // Сетка
   if (!fabrics.length) {
