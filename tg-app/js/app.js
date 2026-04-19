@@ -326,7 +326,7 @@ function renderCatalog() {
   TG.MainButton.hide();
 }
 
-/** Возвращает style или img-тег для миниатюры ткани */
+/** Возвращает style или img-тег для миниатюры ткани (используется в поиске и корзине) */
 function _thumbHTML(thumb, cssClass) {
   if (thumb && !thumb.startsWith('linear-gradient') && !thumb.startsWith('radial-gradient')) {
     return `<div class="${cssClass}" style="background:#f0f0f0;overflow:hidden">` +
@@ -335,16 +335,26 @@ function _thumbHTML(thumb, cssClass) {
   return `<div class="${cssClass}" style="background:${thumb || '#ccc'}"></div>`;
 }
 
-/** HTML одной карточки ткани */
+/** Медиа-слой для карточки каталога: фото или градиент на весь блок */
+function _fabricCardMediaHTML(thumb, name) {
+  if (thumb && !thumb.startsWith('linear-gradient') && !thumb.startsWith('radial-gradient')) {
+    return `<img class="fabric-card-img" src="${thumb}" alt="${name}" loading="lazy">`;
+  }
+  return `<div class="fabric-card-img" style="background:${thumb || '#333'}"></div>`;
+}
+
+/** HTML одной карточки ткани — photo-dominant, overlay text */
 function _fabricCardHTML(fabric) {
   return `
     <div class="fabric-card" data-fabric-id="${fabric.id}" role="button" tabindex="0">
-      ${_thumbHTML(fabric.thumb, 'fabric-thumb')}
-      <div class="fabric-card-body">
-        <div class="fabric-card-name">${fabric.name}</div>
-        <div class="fabric-card-composition">${fabric.composition}</div>
-        <div class="fabric-card-params">${fabric.width}&nbsp;см · ${fabric.density}&nbsp;г/м²</div>
-        <div class="fabric-card-price">${formatPrice(fabric.basePricePerMeter, fabric.unit)}</div>
+      <div class="fabric-card-media">
+        ${_fabricCardMediaHTML(fabric.thumb, fabric.name)}
+        <div class="fabric-card-overlay"></div>
+        <div class="fabric-card-caption">
+          <p class="fabric-card-category">${fabric.category}</p>
+          <h3 class="fabric-card-name">${fabric.name}</h3>
+          <p class="fabric-card-price">${formatPrice(fabric.basePricePerMeter, fabric.unit)}</p>
+        </div>
       </div>
     </div>
   `;
