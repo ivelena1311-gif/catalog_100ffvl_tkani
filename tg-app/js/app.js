@@ -413,18 +413,32 @@ function renderCatalog() {
     }
   });
 
-  // Редакционный заголовок + счётчик
-  const activeCategory = filters.category && filters.category !== 'Все' ? filters.category : 'Шоурум';
+  // Редакционный заголовок
+  const isAllCategory = !filters.category || filters.category === 'Все';
   const countText = fabrics.length
     ? `${fabrics.length} ${_pluralize(fabrics.length, 'позиция', 'позиции', 'позиций')}`
     : '';
-  countEl.innerHTML = `
-    <div class="catalog-section-header">
-      <p class="catalog-section-label">${activeCategory}</p>
-      <h2 class="catalog-section-title">Все ткани</h2>
-      ${countText ? `<span class="catalog-section-count">${countText}</span>` : ''}
-    </div>
-  `;
+
+  if (isAllCategory) {
+    countEl.innerHTML = `
+      <div class="catalog-hero-block">
+        <h2 class="catalog-hero-title">Ткань — это основа.</h2>
+        <p class="catalog-hero-sub">Всё начинается с прикосновения.</p>
+        <button class="catalog-hero-link" id="catalog-hero-cta">Смотреть все ткани</button>
+      </div>
+    `;
+    document.getElementById('catalog-hero-cta')?.addEventListener('click', () => {
+      document.getElementById('catalog-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      TG.HapticFeedback.selectionChanged();
+    });
+  } else {
+    countEl.innerHTML = `
+      <div class="catalog-cat-header">
+        <p class="catalog-cat-label">${filters.category}</p>
+        ${countText ? `<span class="catalog-cat-count">${countText}</span>` : ''}
+      </div>
+    `;
+  }
 
   // Сетка
   if (!fabrics.length) {
