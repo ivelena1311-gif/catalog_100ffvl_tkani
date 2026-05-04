@@ -343,7 +343,7 @@ function _initBannerSlider() {
 
   function startAuto() {
     clearInterval(timer);
-    timer = setInterval(next, 4000);
+    timer = setInterval(next, BANNER_SETTINGS.interval_ms || 4000);
   }
 
   startAuto();

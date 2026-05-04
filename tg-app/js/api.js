@@ -52,7 +52,7 @@ const Catalog = (() => {
    * @returns {Promise<void>}
    */
   async function load() {
-    const [fabricsRaw, categoriesRaw] = await Promise.all([
+    const [fabricsRaw, categoriesRaw, bannersData] = await Promise.all([
       fetch('/api/fabrics').then(r => {
         if (!r.ok) throw new Error(`/api/fabrics: ${r.status}`);
         return r.json();
@@ -61,6 +61,7 @@ const Catalog = (() => {
         if (!r.ok) throw new Error(`/api/categories: ${r.status}`);
         return r.json();
       }),
+      fetch('/api/banners').then(r => r.ok ? r.json() : { banners: [], interval_ms: 4000 }),
     ]);
 
     // Заполняем глобальный FABRICS (определён в data.js)
@@ -71,6 +72,21 @@ const Catalog = (() => {
     CATEGORIES.length = 0;
     CATEGORIES.push('Все');
     categoriesRaw.forEach(c => CATEGORIES.push(c.name));
+
+    // Заполняем BANNERS и BANNER_SETTINGS (определены в data.js)
+    BANNERS.length = 0;
+    (bannersData.banners || []).forEach(b => BANNERS.push({
+      id:       b.id,
+      image:    b.image_url || null,
+      gradient: b.gradient  || 'linear-gradient(135deg,#1a1108,#2d1f0a)',
+      label:    b.label     || null,
+      title:    b.title,
+      subtitle: b.subtitle  || null,
+      action:   b.action_type === 'category'
+                  ? { type: 'category', value: b.action_value }
+                  : null,
+    }));
+    BANNER_SETTINGS.interval_ms = bannersData.interval_ms || 4000;
   }
 
   /**

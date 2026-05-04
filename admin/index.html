@@ -228,6 +228,57 @@
                                   border-radius:9px; font-size:14px; outline:none; }
     .add-cat-form .field input:focus { border-color:var(--accent); }
 
+    /* ── Banners tab ── */
+    .banner-settings-card {
+      background:var(--card); border-radius:12px; border:1px solid var(--border);
+      padding:20px 24px; margin-bottom:20px;
+    }
+    .banner-settings-title {
+      font-size:12px; font-weight:600; text-transform:uppercase;
+      letter-spacing:.06em; color:var(--hint); margin-bottom:16px;
+    }
+    .setting-row { display:flex; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; }
+    .setting-row:last-child { margin-bottom:0; }
+    .setting-label { font-size:13px; color:var(--text); min-width:160px; font-weight:500; }
+    .seg-control { display:flex; gap:4px; }
+    .seg-btn {
+      padding:6px 16px; border-radius:8px; border:1.5px solid var(--border);
+      background:none; cursor:pointer; font-size:13px; font-weight:500; color:var(--hint);
+      transition:.15s;
+    }
+    .seg-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .seg-btn:hover:not(.active) { border-color:var(--accent); color:var(--accent); }
+
+    .banner-card {
+      background:var(--card); border-radius:12px; border:1px solid var(--border);
+      padding:14px 18px; margin-bottom:10px;
+      display:flex; align-items:center; gap:14px; transition:opacity .2s;
+    }
+    .banner-card.inactive-banner { opacity:.45; }
+    .banner-preview {
+      width:80px; height:52px; border-radius:8px; flex-shrink:0;
+      overflow:hidden; position:relative;
+    }
+    .banner-preview img { width:100%; height:100%; object-fit:cover; display:block; }
+    .banner-info { flex:1; min-width:0; }
+    .banner-card-label {
+      display:inline-block; font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+      color:var(--accent); background:#e6f4fd; border-radius:4px;
+      padding:2px 7px; margin-bottom:5px;
+    }
+    .banner-card-title { font-size:15px; font-weight:600; margin-bottom:2px;
+                         white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .banner-card-sub   { font-size:12px; color:var(--hint);
+                         white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .banner-card-action { font-size:11px; color:var(--hint); margin-top:4px; }
+    .banner-actions { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+
+    /* ── Gradient preview in modal ── */
+    .gradient-preview {
+      height:52px; border-radius:8px; margin-top:8px;
+      border:1px solid var(--border); transition:.3s;
+    }
+
     /* ── Loading/empty ── */
     .loading { text-align:center; padding:60px; color:var(--hint); }
     .empty   { text-align:center; padding:60px; color:var(--hint); font-size:15px; }
@@ -264,6 +315,7 @@
       <button class="nav-btn" data-tab="samples">Образцы</button>
       <button class="nav-btn" data-tab="fabrics">Каталог</button>
       <button class="nav-btn" data-tab="categories">Категории</button>
+      <button class="nav-btn" data-tab="banners">Баннеры</button>
       <button class="nav-btn" data-tab="analytics">Аналитика</button>
     </nav>
     <button class="logout-btn" id="logout-btn">Выйти</button>
@@ -313,6 +365,11 @@
       </div>
     </div>
 
+    <!-- Баннеры -->
+    <div class="tab-content" id="tab-banners">
+      <div id="banners-content"><div class="loading">Загрузка...</div></div>
+    </div>
+
     <!-- Аналитика -->
     <div class="tab-content" id="tab-analytics">
       <div id="analytics-content"><div class="loading">Загрузка...</div></div>
@@ -335,6 +392,21 @@
   </div>
 </div>
 
+<!-- ══ МОДАЛ: РЕДАКТОР БАННЕРА ════════════════════════════════════ -->
+<div class="modal-overlay" id="banner-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="banner-modal-title">Добавить баннер</div>
+      <button class="modal-close" onclick="closeBannerModal()">✕</button>
+    </div>
+    <div class="modal-body" id="banner-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeBannerModal()">Отмена</button>
+      <button class="btn btn-primary btn-sm" onclick="saveBanner()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
 
@@ -342,6 +414,9 @@ const API = '/api/admin';
 let _token = '', _orders = [], _samples = [], _fabrics = [], _categories = [];
 let _editFabric = null;
 let _editMode = 'edit'; // 'edit' | 'create'
+
+// Данные для вкладки баннеров
+let _banners = [], _bannerSettings = {}, _editBanner = null;
 
 // ════════════════════════════════════════════════════════
 // ВХОД
@@ -378,17 +453,22 @@ async function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display = 'block';
   renderOrders();
-  const [sr, fr, cr] = await Promise.all([
+  const [sr, fr, cr, br] = await Promise.all([
     fetch(`${API}/samples`,    { headers: { Authorization: `Bearer ${_token}` } }),
     fetch(`${API}/fabrics`,    { headers: { Authorization: `Bearer ${_token}` } }),
     fetch(`${API}/categories`, { headers: { Authorization: `Bearer ${_token}` } }),
+    fetch(`${API}/banners`,    { headers: { Authorization: `Bearer ${_token}` } }),
   ]);
   _samples    = await sr.json();
   _fabrics    = await fr.json();
   _categories = await cr.json();
+  const bd    = await br.json();
+  _banners    = bd.banners  || [];
+  _bannerSettings = Object.fromEntries((bd.settings || []).map(s => [s.key, s.value]));
   renderSamples();
   renderFabrics();
   renderCategories();
+  renderBannersTab();
 }
 
 // ════════════════════════════════════════════════════════
@@ -401,6 +481,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
     if (btn.dataset.tab === 'analytics') loadAnalytics();
+    if (btn.dataset.tab === 'banners')   renderBannersTab();
   });
 });
 
@@ -988,6 +1069,258 @@ function closeModal() {
   _editFabric = null;
   _editMode = 'edit';
 }
+
+// ════════════════════════════════════════════════════════
+// БАННЕРЫ
+// ════════════════════════════════════════════════════════
+
+function renderBannersTab() {
+  const el = document.getElementById('banners-content');
+  if (!el) return;
+
+  const maxVis  = _bannerSettings['banner_max_visible'] || '3';
+  const intMs   = _bannerSettings['banner_interval_ms'] || '4000';
+  const intSec  = String(Math.round(Number(intMs) / 1000));
+
+  const segMax = ['1','2','3'].map(v =>
+    `<button class="seg-btn${maxVis===v?' active':''}" onclick="updateBannerSetting('banner_max_visible','${v}',this)">${v}</button>`
+  ).join('');
+
+  const intOpts = [['3000','3с'],['5000','5с'],['8000','8с'],['0','Выкл']];
+  const segInt = intOpts.map(([ms, label]) =>
+    `<button class="seg-btn${intMs===ms?' active':''}" onclick="updateBannerSetting('banner_interval_ms','${ms}',this)">${label}</button>`
+  ).join('');
+
+  const bannerCards = _banners.length ? _banners.map(b => {
+    const preview = b.image_url
+      ? `<img src="${esc(b.image_url)}" alt="">`
+      : `<div style="width:100%;height:100%;background:${esc(b.gradient||'#333')}"></div>`;
+    const actionText = b.action_type === 'category'
+      ? `→ Категория: ${esc(b.action_value||'—')}`
+      : 'Без действия';
+    return `
+      <div class="banner-card${b.is_active?'':' inactive-banner'}" id="bcard-${b.id}">
+        <div class="banner-preview">${preview}</div>
+        <div class="banner-info">
+          ${b.label ? `<div class="banner-card-label">${esc(b.label)}</div>` : ''}
+          <div class="banner-card-title">${esc(b.title)}</div>
+          ${b.subtitle ? `<div class="banner-card-sub">${esc(b.subtitle)}</div>` : ''}
+          <div class="banner-card-action">${actionText}</div>
+        </div>
+        <div class="banner-actions">
+          <label class="visibility-toggle" style="padding:8px;cursor:pointer" title="${b.is_active?'Выключить':'Включить'}">
+            <div class="toggle-track${b.is_active?' on':''}" id="btoggle-${b.id}"></div>
+          </label>
+          <button class="btn btn-ghost btn-sm" onclick="openBannerModal(${b.id})">Редактировать</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteBanner(${b.id})">✕</button>
+        </div>
+      </div>`;
+  }).join('') : '<div class="empty">Баннеров нет. Добавьте первый!</div>';
+
+  el.innerHTML = `
+    <div class="banner-settings-card">
+      <div class="banner-settings-title">Настройки отображения</div>
+      <div class="setting-row">
+        <span class="setting-label">Показывать баннеров</span>
+        <div class="seg-control">${segMax}</div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Автопрокрутка</span>
+        <div class="seg-control">${segInt}</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div style="flex:1"></div>
+      <button class="btn btn-primary btn-sm" onclick="openBannerModal(null)">+ Добавить баннер</button>
+    </div>
+
+    ${bannerCards}
+  `;
+
+  // Вешаем обработчики тогглов
+  _banners.forEach(b => {
+    const track = document.getElementById(`btoggle-${b.id}`);
+    if (!track) return;
+    track.closest('label').addEventListener('click', () => toggleBannerActive(b.id, !b.is_active));
+  });
+}
+
+async function updateBannerSetting(key, value, btn) {
+  const res = await fetch(`${API}/banners?setting=${key}&value=${encodeURIComponent(value)}`, {
+    method: 'PATCH', headers: { Authorization: `Bearer ${_token}` },
+  });
+  if (res.ok) {
+    _bannerSettings[key] = value;
+    btn.closest('.seg-control').querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    alert('Ошибка сохранения настройки');
+  }
+}
+
+async function toggleBannerActive(id, isActive) {
+  const res = await fetch(`${API}/banners?id=${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+    body: JSON.stringify({ is_active: isActive }),
+  });
+  if (res.ok) {
+    const b = _banners.find(x => x.id === id);
+    if (b) b.is_active = isActive;
+    renderBannersTab();
+  }
+}
+
+async function deleteBanner(id) {
+  if (!confirm('Удалить этот баннер?')) return;
+  const res = await fetch(`${API}/banners?id=${id}`, {
+    method: 'DELETE', headers: { Authorization: `Bearer ${_token}` },
+  });
+  if (res.ok) {
+    _banners = _banners.filter(b => b.id !== id);
+    renderBannersTab();
+  } else {
+    alert('Ошибка удаления');
+  }
+}
+
+function openBannerModal(id) {
+  _editBanner = id ? _banners.find(b => b.id === id) : null;
+  const isNew = !_editBanner;
+
+  document.getElementById('banner-modal-title').textContent = isNew ? 'Добавить баннер' : 'Редактировать баннер';
+
+  const b = _editBanner || {};
+  const catOptions = _categories.map(c =>
+    `<option value="${esc(c.name)}"${(b.action_value===c.name)?'selected':''}>${esc(c.name)}</option>`
+  ).join('');
+
+  document.getElementById('banner-modal-body').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-title">Текст баннера</div>
+      <div class="field-grid">
+        <div class="field field-full">
+          <div class="field-label">Заголовок *</div>
+          <input id="bm-title" type="text" value="${esc(b.title||'')}" placeholder="Весенняя коллекция">
+        </div>
+        <div class="field">
+          <div class="field-label">Метка (мелкий текст сверху)</div>
+          <input id="bm-label" type="text" value="${esc(b.label||'')}" placeholder="Новинки">
+        </div>
+        <div class="field">
+          <div class="field-label">Подзаголовок</div>
+          <input id="bm-subtitle" type="text" value="${esc(b.subtitle||'')}" placeholder="Лёгкие ткани для сезона">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Фон баннера</div>
+      <div class="field-grid">
+        <div class="field field-full">
+          <div class="field-label">URL фото (оставьте пустым — будет градиент)</div>
+          <input id="bm-image" type="url" value="${esc(b.image_url||'')}" placeholder="https://...">
+        </div>
+        <div class="field field-full">
+          <div class="field-label">CSS-градиент (фон если нет фото)</div>
+          <input id="bm-gradient" type="text"
+            value="${esc(b.gradient||'linear-gradient(135deg, #1a1108 0%, #2d1f0a 100%)')}"
+            oninput="document.getElementById('bm-gradient-preview').style.background=this.value">
+          <div class="gradient-preview" id="bm-gradient-preview"
+            style="background:${esc(b.gradient||'linear-gradient(135deg, #1a1108 0%, #2d1f0a 100%)')}"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Действие при клике</div>
+      <div class="field-grid">
+        <div class="field">
+          <div class="field-label">Тип действия</div>
+          <select id="bm-action-type" onchange="document.getElementById('bm-action-val-wrap').style.display=this.value?'block':'none'">
+            <option value="">Без действия</option>
+            <option value="category"${b.action_type==='category'?' selected':''}>Открыть категорию</option>
+          </select>
+        </div>
+        <div class="field" id="bm-action-val-wrap" style="display:${b.action_type?'block':'none'}">
+          <div class="field-label">Категория</div>
+          <select id="bm-action-value">${catOptions}</select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Параметры</div>
+      <div class="field-grid">
+        <div class="field">
+          <div class="field-label">Порядок отображения (меньше = первый)</div>
+          <input id="bm-sort-order" type="number" value="${b.sort_order||0}" min="0" step="1">
+        </div>
+        <div class="field">
+          <div class="field-label">Статус</div>
+          <div class="visibility-toggle" onclick="this.querySelector('.toggle-track').classList.toggle('on')">
+            <div class="toggle-track${(b.is_active!==false)?' on':''}" id="bm-active-track"></div>
+            <div style="font-size:13px">Показывать баннер</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('banner-modal').classList.add('open');
+}
+
+function closeBannerModal() {
+  document.getElementById('banner-modal').classList.remove('open');
+  _editBanner = null;
+}
+
+async function saveBanner() {
+  const title = document.getElementById('bm-title').value.trim();
+  if (!title) { alert('Заголовок обязателен'); return; }
+
+  const actionType = document.getElementById('bm-action-type').value;
+  const payload = {
+    title,
+    label:        document.getElementById('bm-label').value.trim()    || null,
+    subtitle:     document.getElementById('bm-subtitle').value.trim() || null,
+    image_url:    document.getElementById('bm-image').value.trim()    || null,
+    gradient:     document.getElementById('bm-gradient').value.trim() || null,
+    action_type:  actionType || null,
+    action_value: actionType ? document.getElementById('bm-action-value').value : null,
+    is_active:    document.getElementById('bm-active-track').classList.contains('on'),
+    sort_order:   parseInt(document.getElementById('bm-sort-order').value) || 0,
+  };
+
+  const isNew = !_editBanner;
+  const url   = isNew ? `${API}/banners` : `${API}/banners?id=${_editBanner.id}`;
+  const method = isNew ? 'POST' : 'PATCH';
+
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) { alert('Ошибка сохранения'); return; }
+
+  if (isNew) {
+    const created = await res.json();
+    _banners.push(created);
+    _banners.sort((a, b) => a.sort_order - b.sort_order);
+  } else {
+    Object.assign(_editBanner, payload);
+    _banners.sort((a, b) => a.sort_order - b.sort_order);
+  }
+
+  closeBannerModal();
+  renderBannersTab();
+}
+
+document.getElementById('banner-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('banner-modal')) closeBannerModal();
+});
 
 // ════════════════════════════════════════════════════════
 // АНАЛИТИКА
