@@ -402,6 +402,17 @@ function renderCatalog() {
     >${cat}</button>
   `).join('');
 
+  // Прокручиваем активный чип в центр видимой области
+  requestAnimationFrame(() => {
+    const activeChip = catsBar.querySelector('.chip.active');
+    if (activeChip) {
+      const barW = catsBar.offsetWidth;
+      const chipL = activeChip.offsetLeft;
+      const chipW = activeChip.offsetWidth;
+      catsBar.scrollLeft = chipL - barW / 2 + chipW / 2;
+    }
+  });
+
   // Редакционный заголовок + счётчик
   const activeCategory = filters.category && filters.category !== 'Все' ? filters.category : 'Шоурум';
   const countText = fabrics.length

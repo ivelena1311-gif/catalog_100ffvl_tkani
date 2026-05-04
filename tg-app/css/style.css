@@ -527,29 +527,36 @@ a { color: var(--accent); text-decoration: none; }
 .chip {
   display: inline-flex;
   align-items: center;
-  padding: 4px 2px;
-  border-radius: 0;
+  padding: 6px 14px;
+  border-radius: var(--radius-chip);
   font-family: var(--font-body);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 0.25em;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   background: transparent;
-  color: var(--tg-hint);
+  color: var(--tg-text);
   cursor: pointer;
-  border-bottom: 1px solid transparent;
-  transition: color 0.3s, border-color 0.3s;
+  border: 1px solid hsla(38, 50%, 55%, 0.38);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-  min-height: 32px;
+  min-height: 34px;
+}
+
+.chip:hover {
+  border-color: hsla(38, 50%, 55%, 0.65);
+  background: hsla(38, 50%, 55%, 0.07);
 }
 
 .chip.active {
-  color: var(--tg-text);
-  border-bottom-color: var(--gold-dim);
-  background: transparent;
+  background: var(--gold-muted);
+  color: var(--cream);
+  border-color: transparent;
+  font-weight: 500;
+  animation: chip-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.chip:active { opacity: 0.7; }
+.chip:active { transform: scale(0.92); }
 
 /* --- Карточка каталога — photo-dominant --- */
 .fabric-card {
@@ -755,12 +762,13 @@ a { color: var(--accent); text-decoration: none; }
 .categories-bar {
   display: flex;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 12px 16px;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
   flex-shrink: 0;
 }
 
@@ -2361,6 +2369,13 @@ textarea {
 /* ================================================================
    20. АНИМАЦИИ (Editorial — из Lovable)
    ================================================================ */
+
+/* Выбор категории — упругий пружинный pop */
+@keyframes chip-pop {
+  0%   { transform: scale(0.82); }
+  60%  { transform: scale(1.07); }
+  100% { transform: scale(1); }
+}
 
 /* Медленный кинематографический зум — для hero-фото и галереи */
 @keyframes hero-zoom {
