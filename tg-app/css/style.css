@@ -813,7 +813,7 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 22px;
   font-style: italic;
   font-weight: 300;
-  color: var(--tg-hint);
+  color: var(--tg-text);
   letter-spacing: -0.01em;
   line-height: 1.15;
   margin: 0 0 16px;
@@ -829,7 +829,7 @@ a { color: var(--accent); text-decoration: none; }
   font-weight: 400;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--tg-text);
   background: none;
   border: none;
   padding: 0 0 2px;
