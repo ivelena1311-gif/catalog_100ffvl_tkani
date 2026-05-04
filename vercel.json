@@ -2,8 +2,10 @@
   "rewrites": [
     { "source": "/",              "destination": "/tg-app/index.html" },
     { "source": "/admin",         "destination": "/admin/index.html" },
-    { "source": "/admin/:path*",  "destination": "/admin/:path*" },
-    { "source": "/:path*",        "destination": "/tg-app/:path*" }
+    { "source": "/admin/:path*",       "destination": "/admin/:path*" },
+    { "source": "/api/banners",        "destination": "/api/categories?_banners=1" },
+    { "source": "/api/admin/banners",  "destination": "/api/admin/categories?_banners=1" },
+    { "source": "/:path*",             "destination": "/tg-app/:path*" }
   ],
   "headers": [
     {
