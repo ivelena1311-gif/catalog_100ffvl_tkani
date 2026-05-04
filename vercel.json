@@ -4,5 +4,19 @@
     { "source": "/admin",         "destination": "/admin/index.html" },
     { "source": "/admin/:path*",  "destination": "/admin/:path*" },
     { "source": "/:path*",        "destination": "/tg-app/:path*" }
+  ],
+  "headers": [
+    {
+      "source": "/admin",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/admin/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" }
+      ]
+    }
   ]
 }
