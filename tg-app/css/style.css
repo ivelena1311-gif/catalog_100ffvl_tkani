@@ -231,7 +231,7 @@ a { color: var(--accent); text-decoration: none; }
   height: 36px;
   border-radius: 50%;
   background: #1C2B4A;
-  border: 1.5px solid hsla(45, 62%, 73%, 0.3);
+  border: 0.8px solid hsla(45, 62%, 73%, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -241,10 +241,10 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .tab-icon svg {
-  width: 18px;
-  height: 18px;
-  color: hsla(45, 62%, 73%, 0.5);
-  stroke-width: 2;
+  width: 19px;
+  height: 19px;
+  color: hsla(45, 62%, 73%, 0.55);
+  stroke-width: 2.5;
   transition: color 0.22s;
 }
 
@@ -264,13 +264,14 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .tab-item.active .tab-icon {
+  border-width: 0.8px;
   border-color: var(--gold);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 14px hsla(45, 62%, 73%, 0.2);
 }
 
 .tab-item.active .tab-icon svg {
   color: var(--gold);
-  stroke-width: 2;
+  stroke-width: 2.5;
 }
 
 /* Бейдж на иконке корзины */
