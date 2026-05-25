@@ -79,6 +79,24 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    // Подставляем первое загруженное фото как thumb (приоритет над полем fabrics.thumb)
+    // Это позволяет любому загруженному фото сразу отображаться в каталоге
+    if (fabrics.length) {
+      const ids = fabrics.map((f) => f.id).join(',');
+      const photos = await dbGet(
+        `fabric_photos?select=fabric_id,url&fabric_id=in.(${ids})&order=fabric_id,sort_order`
+      );
+      // Берём первое фото для каждой ткани (список уже отсортирован по sort_order)
+      const firstPhoto = {};
+      for (const p of photos) {
+        if (!firstPhoto[p.fabric_id]) firstPhoto[p.fabric_id] = p.url;
+      }
+      fabrics = fabrics.map((f) => ({
+        ...f,
+        thumb: firstPhoto[f.id] || f.thumb,
+      }));
+    }
+
     res.status(200).json(fabrics);
   } catch (err) {
     console.error('[GET /api/fabrics]', err.message);
