@@ -215,23 +215,61 @@
        TAB BAR (нижняя навигация)
        ============================================================ -->
   <nav id="tab-bar" role="navigation" aria-label="Навигация">
+
+    <!-- Каталог — ножницы (тема ткани) -->
     <button class="tab-item active" data-screen="catalog" aria-label="Каталог">
-      <span class="tab-icon">&#128722;</span>
+      <span class="tab-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="6" cy="6" r="2.5"/>
+          <circle cx="6" cy="18" r="2.5"/>
+          <line x1="20" y1="4" x2="8.12" y2="15.88"/>
+          <line x1="14.47" y1="14.48" x2="20" y2="20"/>
+          <line x1="8.12" y1="8.12" x2="12" y2="12"/>
+        </svg>
+      </span>
       <span class="tab-label">Каталог</span>
     </button>
+
+    <!-- Поиск — лупа -->
     <button class="tab-item" data-screen="search" aria-label="Поиск">
-      <span class="tab-icon">&#128269;</span>
+      <span class="tab-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
+      </span>
       <span class="tab-label">Поиск</span>
     </button>
+
+    <!-- Заявка — буфер обмена с линиями -->
     <button class="tab-item" data-screen="cart" aria-label="Заявка" style="position:relative">
-      <span class="tab-icon">&#128203;</span>
+      <span class="tab-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="2" width="6" height="3" rx="1"/>
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+      </span>
       <span class="tab-label">Заявка</span>
       <span class="tab-badge hidden" id="cart-badge">0</span>
     </button>
+
+    <!-- Профиль — силуэт человека -->
     <button class="tab-item" data-screen="profile" aria-label="Профиль">
-      <span class="tab-icon">&#128100;</span>
+      <span class="tab-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </span>
       <span class="tab-label">Профиль</span>
     </button>
+
   </nav>
 
   <!-- ============================================================

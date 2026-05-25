@@ -67,7 +67,7 @@
   --radius-btn:    12px;
   --radius-chip:   20px;
   --radius-sheet:  18px;
-  --tab-height:    60px;
+  --tab-height:    64px;
   --header-height: 52px;
   --transition:    0.28s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-card:   0 2px 12px rgba(0,0,0,0.08);
@@ -225,11 +225,26 @@ a { color: var(--accent); text-decoration: none; }
 
 .tab-item:active { opacity: 0.7; }
 
+/* Кружок-иконка: тёмно-синий + золотая рамка (стиль navy+gold) */
 .tab-icon {
-  font-size: 22px;
-  line-height: 1;
-  color: rgba(255,255,255,0.5);
-  transition: color 0.2s;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #1C2B4A;
+  border: 1.5px solid hsla(38, 50%, 55%, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.22s, box-shadow 0.22s;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.5);
+}
+
+.tab-icon svg {
+  width: 16px;
+  height: 16px;
+  color: hsla(38, 50%, 55%, 0.45);
+  transition: color 0.22s;
 }
 
 .tab-label {
@@ -248,15 +263,20 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .tab-item.active .tab-icon {
+  border-color: var(--gold);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 14px hsla(38, 50%, 55%, 0.18);
+}
+
+.tab-item.active .tab-icon svg {
   color: var(--gold);
 }
 
 /* Бейдж на иконке корзины */
 .tab-badge {
   position: absolute;
-  top: 4px;
+  top: 5px;
   right: 50%;
-  transform: translateX(12px);
+  transform: translateX(15px);
   background: var(--danger);
   color: #fff;
   font-size: 9px;
