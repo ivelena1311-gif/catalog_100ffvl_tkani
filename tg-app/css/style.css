@@ -635,7 +635,7 @@ a { color: var(--accent); text-decoration: none; }
 .fabric-card-category {
   font-family: var(--font-body);
   font-size: 9px;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: hsla(45, 62%, 73%, 0.82);
