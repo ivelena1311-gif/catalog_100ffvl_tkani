@@ -955,8 +955,10 @@ a { color: var(--accent); text-decoration: none; }
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
   display: block;
+  background: #0d0d0d;
 }
 
 /* Overlay с названием ткани поверх галереи */
