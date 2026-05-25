@@ -53,10 +53,10 @@
   --danger:        #E53935;
 
   /* Editorial-палитра из Lovable */
-  --gold:          hsl(38, 50%, 55%);     /* золотой акцент */
-  --gold-muted:    hsl(38, 20%, 30%);
-  --gold-dim:      hsla(38, 50%, 55%, 0.4);
-  --cream:         hsl(40, 25%, 85%);
+  --gold:          hsl(45, 62%, 73%);     /* шампанское золото — светлее, без рыжины */
+  --gold-muted:    hsl(45, 22%, 34%);
+  --gold-dim:      hsla(45, 62%, 73%, 0.4);
+  --cream:         hsl(42, 28%, 87%);
 
   /* Типографика */
   --font-display:  'Cormorant Garamond', Georgia, serif;
@@ -225,13 +225,13 @@ a { color: var(--accent); text-decoration: none; }
 
 .tab-item:active { opacity: 0.7; }
 
-/* Кружок-иконка: тёмно-синий + золотая рамка (стиль navy+gold) */
+/* Кружок-иконка: тёмно-синий + шампанское золото (стиль navy+gold) */
 .tab-icon {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #1C2B4A;
-  border: 1.5px solid hsla(38, 50%, 55%, 0.28);
+  border: 1.5px solid hsla(45, 62%, 73%, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -241,34 +241,36 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .tab-icon svg {
-  width: 16px;
-  height: 16px;
-  color: hsla(38, 50%, 55%, 0.45);
+  width: 18px;
+  height: 18px;
+  color: hsla(45, 62%, 73%, 0.5);
+  stroke-width: 2;
   transition: color 0.22s;
 }
 
 .tab-label {
   font-family: var(--font-body);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 0.12em;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.45);
   transition: color 0.2s;
 }
 
 .tab-item.active .tab-label {
   color: var(--gold);
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .tab-item.active .tab-icon {
   border-color: var(--gold);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 14px hsla(38, 50%, 55%, 0.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), 0 0 14px hsla(45, 62%, 73%, 0.2);
 }
 
 .tab-item.active .tab-icon svg {
   color: var(--gold);
+  stroke-width: 2;
 }
 
 /* Бейдж на иконке корзины */
