@@ -279,8 +279,8 @@ a { color: var(--accent); text-decoration: none; }
   top: 5px;
   right: 50%;
   transform: translateX(15px);
-  background: var(--danger);
-  color: #fff;
+  background: #F2E8DA;
+  color: #1C2B4A;
   font-size: 9px;
   font-weight: 700;
   min-width: 16px;
@@ -290,7 +290,8 @@ a { color: var(--accent); text-decoration: none; }
   align-items: center;
   justify-content: center;
   padding: 0 4px;
-  border: 2px solid var(--tg-bg);
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .tab-badge.hidden { display: none; }
