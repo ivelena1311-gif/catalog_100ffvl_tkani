@@ -1068,10 +1068,10 @@ a { color: var(--accent); text-decoration: none; }
 .product-article {
   font-family: var(--font-body);
   font-size: 9px;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: var(--gold-dim);
+  color: var(--gold-line);
   margin: 0 0 16px;
 }
 
@@ -1209,7 +1209,7 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 32px;
   font-weight: 300;
   font-style: italic;
-  color: var(--gold);
+  color: var(--gold-line);
   line-height: 1;
 }
 
@@ -1266,7 +1266,7 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .tier-row.current span:last-child {
-  color: var(--gold);
+  color: var(--gold-line);
   font-size: 17px;
 }
 
