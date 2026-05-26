@@ -85,7 +85,7 @@ const Store = (() => {
 
   /** Ищет позицию в корзине по fabricId + colorId */
   function findCartItem(fabricId, colorId) {
-    return state.cart.find(i => i.fabricId === fabricId && i.colorId === colorId);
+    return state.cart.find(i => i.fabricId === fabricId && String(i.colorId) === String(colorId));
   }
 
   /**
@@ -133,7 +133,7 @@ const Store = (() => {
    */
   function removeFromCart(fabricId, colorId) {
     state.cart = state.cart.filter(
-      i => !(i.fabricId === fabricId && i.colorId === colorId)
+      i => !(i.fabricId === fabricId && String(i.colorId) === String(colorId))
     );
     save();
   }
