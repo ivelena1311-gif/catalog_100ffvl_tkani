@@ -996,11 +996,14 @@ function renderCart() {
     const fabric   = getFabricById(fabricId);
 
     if (e.target.closest('.cart-item-delete')) {
-      Store.removeFromCart(fabricId, colorId);
-      updateCartBadge();
-      TG.HapticFeedback.notificationOccurred('warning');
-      renderCart();
-      showToast('Позиция удалена из заявки');
+      TG.showConfirm('Удалить позицию из заявки?', confirmed => {
+        if (!confirmed) return;
+        Store.removeFromCart(fabricId, colorId);
+        updateCartBadge();
+        TG.HapticFeedback.notificationOccurred('warning');
+        renderCart();
+        showToast('Позиция удалена');
+      });
       return;
     }
 
