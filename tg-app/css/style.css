@@ -1388,28 +1388,52 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 /* Кнопка запроса образца */
-.sample-btn {
-  display: block;
-  width: 100%;
-  padding: 14px 0;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--gold-line);
-  color: var(--tg-text);
-  font-family: var(--font-body);
-  font-size: 10px;
-  letter-spacing: 0.35em;
-  text-transform: uppercase;
-  font-weight: 300;
-  cursor: pointer;
-  text-align: left;
-  transition: color 0.2s, border-color 0.2s;
-  margin-bottom: 20px;
+/* Блок двух овальных кнопок в карточке товара */
+.product-action-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.sample-btn:active {
-  color: var(--gold);
-  border-color: var(--gold);
+.btn-oval {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.12s;
+  padding: 14px 24px;
+}
+
+.btn-oval:active {
+  transform: scale(0.97);
+  opacity: 0.82;
+}
+
+/* Тёмно-синяя — основная (добавить в заявку) */
+.btn-oval-primary {
+  background: #1C2B4A;
+  color: #F2E8DA;
+  border: none;
+}
+
+/* Когда товар уже в заявке */
+.btn-oval-primary.in-cart {
+  background: transparent;
+  border: 1px solid var(--gold-line);
+  color: var(--gold-line);
+}
+
+/* Контурная золотая — вторичная (запросить образец) */
+.btn-oval-outline {
+  background: transparent;
+  border: 1px solid var(--gold-line);
+  color: var(--gold-line);
 }
 
 /* Описание ткани */

@@ -709,8 +709,11 @@ function _renderProductInfo(fabric, color) {
       <div class="counter-hint" id="counter-hint">${formatPrice(price, fabric.unit)} · ${initMeters}&nbsp;${fabric.unit}</div>
     </div>
 
-    <!-- Образец -->
-    <button class="sample-btn" id="sample-btn">Запросить образец бесплатно</button>
+    <!-- Кнопки действий -->
+    <div class="product-action-btns">
+      <button class="btn-oval btn-oval-primary" id="add-to-cart-btn">Добавить в заявку</button>
+      <button class="btn-oval btn-oval-outline" id="sample-oval-btn">Запросить образец бесплатно</button>
+    </div>
 
     <!-- Описание -->
     ${fabric.description ? `<p class="product-description">${fabric.description}</p>` : ''}
@@ -786,31 +789,45 @@ function _bindProductEvents(fabric) {
     updateMeters(parseFloat(meterInput.value) || fabric.minOrder);
   });
 
-  // Запрос образца
-  document.getElementById('sample-btn')?.addEventListener('click', () => {
-    openSampleSheet(fabric);
-  });
-}
-
-/** Обновляет текст MainButton на экране продукта */
-function _updateProductMainButton() {
-  const { fabric, colorId, meters } = _product;
-  if (!fabric) return;
-
-  const inCart  = Store.findCartItem(fabric.id, colorId);
-
-  if (inCart) {
-    setMainButton(`В заявке ✓ · Перейти`, () => {
+  // Добавить в заявку
+  document.getElementById('add-to-cart-btn')?.addEventListener('click', () => {
+    const { colorId, meters } = _product;
+    const inCart = Store.findCartItem(fabric.id, colorId);
+    if (inCart) {
       Router.tab('cart');
-    });
-  } else {
-    setMainButton(`+ Добавить к заявке · ${meters}\u00A0м`, () => {
+    } else {
       Store.addToCart(fabric.id, colorId, meters);
       updateCartBadge();
       TG.HapticFeedback.notificationOccurred('success');
       showToast('Добавлено к заявке');
       _updateProductMainButton();
-    });
+    }
+  });
+
+  // Запрос образца
+  document.getElementById('sample-oval-btn')?.addEventListener('click', () => {
+    openSampleSheet(fabric);
+  });
+}
+
+/** Обновляет состояние инлайн-кнопки "Добавить в заявку" */
+function _updateProductMainButton() {
+  const { fabric, colorId } = _product;
+  if (!fabric) return;
+
+  // Синяя кнопка Telegram не используется
+  setMainButton(null);
+
+  const btn    = document.getElementById('add-to-cart-btn');
+  if (!btn) return;
+  const inCart = Store.findCartItem(fabric.id, colorId);
+
+  if (inCart) {
+    btn.textContent = 'В заявке ✓ · Перейти';
+    btn.classList.add('in-cart');
+  } else {
+    btn.textContent = 'Добавить в заявку';
+    btn.classList.remove('in-cart');
   }
 }
 
@@ -1358,24 +1375,9 @@ function openSampleSheet(fabric) {
   const color     = getColorById(fabric, _product.colorId);
 
   contentEl.innerHTML = `
-    <div style="margin-bottom:12px">
+    <div style="margin-bottom:16px">
       <span style="font-weight:600">${fabric.name}</span>
       · Арт. ${fabric.article}
-    </div>
-
-    <!-- Выбор цвета образца -->
-    <div style="margin-bottom:16px">
-      <div class="color-section-title">Цвет образца</div>
-      <div class="color-swatches" id="sample-colors">
-        ${fabric.colors.map(c => `
-          <div
-            class="color-swatch ${c.id === color.id ? 'active' : ''}"
-            data-sample-color="${c.id}"
-            style="background:${c.hex}"
-            title="${c.name}"
-          ></div>
-        `).join('')}
-      </div>
     </div>
 
     <!-- Контактные данные -->
@@ -1402,15 +1404,6 @@ function openSampleSheet(fabric) {
     <button class="btn-primary" id="sample-submit-btn">Запросить образец</button>
   `;
 
-  // Выбор цвета образца
-  contentEl.querySelectorAll('[data-sample-color]').forEach(el => {
-    el.addEventListener('click', () => {
-      contentEl.querySelectorAll('[data-sample-color]').forEach(s => s.classList.remove('active'));
-      el.classList.add('active');
-      TG.HapticFeedback.selectionChanged();
-    });
-  });
-
   document.getElementById('sample-submit-btn')?.addEventListener('click', async () => {
     const recipient = document.getElementById('sample-recipient')?.value || '';
     const phone     = document.getElementById('sample-phone')?.value    || '';
@@ -1433,9 +1426,7 @@ function openSampleSheet(fabric) {
     btn.disabled = true;
     btn.textContent = '...';
 
-    const activeColorEl = contentEl.querySelector('[data-sample-color].active');
-    const activeColorId = activeColorEl?.dataset.sampleColor || null;
-    const activeColor   = fabric.colors.find(c => c.id === activeColorId) || color;
+    const activeColor = color; // цвет из карточки товара, выбор не нужен
 
     const user = TG.initDataUnsafe?.user || {};
 
