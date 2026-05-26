@@ -549,6 +549,7 @@ function _doRenderProduct(fabric, colorId) {
   _renderProductInfo(fabric, initColor);
   _updateFavBtn(fabric.id);
   _updateProductMainButton();
+  _updateSampleBtn();
 }
 
 function _renderGallery(fabric, color) {
@@ -804,9 +805,17 @@ function _bindProductEvents(fabric) {
     }
   });
 
-  // Запрос образца
+  // Запрос образца — добавляем в корзину
   document.getElementById('sample-oval-btn')?.addEventListener('click', () => {
-    openSampleSheet(fabric);
+    if (Store.hasSample(fabric.id)) {
+      Router.tab('cart');
+    } else {
+      Store.addSample(fabric.id);
+      updateCartBadge();
+      TG.HapticFeedback.notificationOccurred('success');
+      showToast('Образец добавлен в заявку');
+      _updateSampleBtn();
+    }
   });
 }
 
@@ -827,6 +836,21 @@ function _updateProductMainButton() {
     btn.classList.add('in-cart');
   } else {
     btn.textContent = 'Добавить в заявку';
+    btn.classList.remove('in-cart');
+  }
+}
+
+/** Обновляет состояние кнопки "Запросить образец" */
+function _updateSampleBtn() {
+  const { fabric } = _product;
+  if (!fabric) return;
+  const btn = document.getElementById('sample-oval-btn');
+  if (!btn) return;
+  if (Store.hasSample(fabric.id)) {
+    btn.textContent = 'Образец в заявке ✓ · Перейти';
+    btn.classList.add('in-cart');
+  } else {
+    btn.textContent = 'Запросить образец бесплатно';
     btn.classList.remove('in-cart');
   }
 }
@@ -933,16 +957,19 @@ function renderSearchContent(query) {
 
 function renderCart() {
   const cart    = Store.getCart();
+  const samples = Store.getSamples();
   const cartEl  = document.getElementById('cart-content');
   const countEl = document.getElementById('cart-header-count');
 
+  const totalItems = cart.length + samples.length;
+
   if (countEl) {
-    countEl.textContent = cart.length
-      ? `(${cart.length} ${_pluralize(cart.length, 'позиция', 'позиции', 'позиций')})`
+    countEl.textContent = totalItems
+      ? `(${totalItems} ${_pluralize(totalItems, 'позиция', 'позиции', 'позиций')})`
       : '';
   }
 
-  if (!cart.length) {
+  if (!totalItems) {
     cartEl.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">&#128203;</div>
@@ -958,29 +985,44 @@ function renderCart() {
     return;
   }
 
-  const total    = Store.getCartTotal();
+  const total       = Store.getCartTotal();
   const totalMeters = cart.reduce((s, i) => s + i.meters, 0);
 
   cartEl.innerHTML = `
+    ${cart.length ? `
     <div class="cart-list" id="cart-list">
       ${cart.map(item => _cartItemHTML(item)).join('')}
-    </div>
+    </div>` : ''}
+
+    ${samples.length ? `
+    <div class="cart-samples-section">
+      <div class="cart-samples-title">Образцы</div>
+      <div class="cart-sample-list" id="cart-sample-list">
+        ${samples.map(s => _sampleItemHTML(s)).join('')}
+      </div>
+    </div>` : ''}
 
     <button class="cart-add-more" id="cart-add-more">
       &#43; Добавить ещё ткани
     </button>
 
     <div class="cart-total-block">
+      ${cart.length ? `
       <div class="cart-total-row">
-        <span>Позиций</span><span>${cart.length}</span>
+        <span>Позиций ткани</span><span>${cart.length}</span>
       </div>
       <div class="cart-total-row">
-        <span>Общий объём</span><span>${totalMeters}</span>
-      </div>
+        <span>Общий объём</span><span>${totalMeters}&nbsp;м</span>
+      </div>` : ''}
+      ${samples.length ? `
+      <div class="cart-total-row">
+        <span>Образцов</span><span>${samples.length}</span>
+      </div>` : ''}
+      ${cart.length ? `
       <div class="cart-total-row main">
         <span>Итого</span>
         <span class="cart-total-price">${formatPrice(total)}</span>
-      </div>
+      </div>` : ''}
       <div class="cart-disclaimer">
         * Финальная стоимость согласуется с менеджером после отправки заявки
       </div>
@@ -1019,10 +1061,27 @@ function renderCart() {
     }
   });
 
+  // Удаление образца
+  document.getElementById('cart-sample-list')?.addEventListener('click', e => {
+    const item = e.target.closest('[data-sample-item]');
+    if (!item) return;
+    const fabricId = parseInt(item.dataset.fabricId);
+    if (e.target.closest('.cart-item-delete')) {
+      TG.showConfirm('Убрать образец из заявки?', confirmed => {
+        if (!confirmed) return;
+        Store.removeSample(fabricId);
+        updateCartBadge();
+        TG.HapticFeedback.notificationOccurred('warning');
+        renderCart();
+        showToast('Образец удалён');
+      });
+    }
+  });
+
   document.getElementById('cart-add-more')?.addEventListener('click', () => Router.tab('catalog'));
 
   // MainButton
-  setMainButton(`Оформить заявку (${cart.length})`, () => {
+  setMainButton(`Оформить заявку (${totalItems})`, () => {
     Router.push('checkout', () => renderCheckout());
   });
 }
@@ -1059,10 +1118,30 @@ function _cartItemHTML(item) {
   `;
 }
 
+function _sampleItemHTML(sample) {
+  const fabric = getFabricById(sample.fabricId);
+  if (!fabric) return '';
+  return `
+    <div class="cart-item" data-sample-item data-fabric-id="${fabric.id}">
+      ${_thumbHTML(fabric.thumb, 'cart-item-thumb')}
+      <div class="cart-item-info">
+        <div class="cart-item-name">${fabric.name}</div>
+        <div class="cart-item-sub">Арт. ${fabric.article}</div>
+        <div class="cart-sample-tag">все цвета</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+        <div class="cart-sample-free">бесплатно</div>
+        <button class="cart-item-delete" aria-label="Удалить">&#128465;</button>
+      </div>
+    </div>
+  `;
+}
+
 // ---- 4.5 ОФОРМЛЕНИЕ ЗАЯВКИ ----
 
 function renderCheckout() {
   const cart    = Store.getCart();
+  const samples = Store.getSamples();
   const total   = Store.getCartTotal();
   const user    = TG.initDataUnsafe?.user;
 
@@ -1077,8 +1156,9 @@ function renderCheckout() {
   const summaryEl = document.getElementById('checkout-summary');
   if (summaryEl) {
     summaryEl.innerHTML = `
+      ${cart.length ? `
       <div class="checkout-summary-row">
-        <span>Позиций</span><span>${cart.length}</span>
+        <span>Позиций ткани</span><span>${cart.length}</span>
       </div>
       <div class="checkout-summary-row">
         <span>Общий метраж</span><span>${cart.reduce((s, i) => s + i.meters, 0)}&nbsp;м</span>
@@ -1086,7 +1166,14 @@ function renderCheckout() {
       <div class="checkout-summary-row checkout-summary-total">
         <span>Примерная сумма</span>
         <span style="color:var(--price-color)">${formatPrice(total)}</span>
+      </div>` : ''}
+      ${samples.length ? `
+      <div class="checkout-summary-row">
+        <span>Образцов</span><span>${samples.length}</span>
       </div>
+      <div class="checkout-summary-row" style="font-size:11px;opacity:0.6">
+        <span>${samples.map(s => getFabricById(s.fabricId)?.article || '').join(', ')}</span>
+      </div>` : ''}
     `;
   }
 
@@ -1115,8 +1202,9 @@ async function _submitOrder() {
   TG.MainButton.showProgress();
   TG.MainButton.disable();
 
-  const user = TG.initDataUnsafe?.user || {};
-  const cart = Store.getCart();
+  const user    = TG.initDataUnsafe?.user || {};
+  const cart    = Store.getCart();
+  const samples = Store.getSamples();
 
   // Собираем позиции со snapshot цены
   const items = cart.map(item => {
@@ -1134,6 +1222,21 @@ async function _submitOrder() {
     };
   });
 
+  // Образцы как отдельные позиции с типом 'sample'
+  const sampleItems = samples.map(s => {
+    const fabric = getFabricById(s.fabricId);
+    return {
+      fabric_id:       s.fabricId,
+      fabric_name:     fabric?.name    || `Ткань #${s.fabricId}`,
+      article:         fabric?.article || '',
+      color_id:        null,
+      color_name:      'все цвета',
+      meters:          0,
+      price_per_meter: 0,
+      price_type:      'sample',
+    };
+  });
+
   try {
     const res  = await fetch('/api/orders', {
       method:  'POST',
@@ -1145,7 +1248,7 @@ async function _submitOrder() {
         tg_user_id:  user.id        || null,
         tg_username: user.username  || null,
         first_name:  user.first_name || name || null,
-        items,
+        items: [...items, ...sampleItems],
       }),
     });
 
@@ -1159,6 +1262,7 @@ async function _submitOrder() {
     }
 
     Store.clearCart();
+    Store.clearSamples();
     updateCartBadge();
     TG.MainButton.hideProgress();
     Router.push('success', () => renderSuccess(data.order_number));
@@ -1555,8 +1659,8 @@ function showToast(message, duration = 2500) {
 
 /** Обновляет бейдж корзины в Tab Bar */
 function updateCartBadge() {
-  const count   = Store.getCartCount();
-  const badge   = document.getElementById('cart-badge');
+  const count = Store.getCartCount() + Store.getSamples().length;
+  const badge = document.getElementById('cart-badge');
   if (!badge) return;
   badge.textContent = count;
   badge.classList.toggle('hidden', count === 0);

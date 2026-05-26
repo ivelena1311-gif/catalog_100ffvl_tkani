@@ -16,6 +16,8 @@ const Store = (() => {
   const state = {
     // Корзина: массив объектов {fabricId, colorId, colorName, meters}
     cart: [],
+    // Образцы: массив объектов {fabricId} — по одному на артикул, все цвета
+    samples: [],
     // История поиска (последние 5 запросов)
     searchHistory: [],
     // Избранное: Set из fabricId
@@ -39,6 +41,7 @@ const Store = (() => {
       if (!raw) return;
       const saved = JSON.parse(raw);
       if (saved.cart)           state.cart = saved.cart;
+      if (saved.samples)        state.samples = saved.samples;
       if (saved.searchHistory)  state.searchHistory = saved.searchHistory;
       if (saved.favorites)      state.favorites = new Set(saved.favorites);
       if (saved.filters)        state.filters = { ...state.filters, ...saved.filters };
@@ -52,6 +55,7 @@ const Store = (() => {
     try {
       localStorage.setItem('tg_fabric_store', JSON.stringify({
         cart:          state.cart,
+        samples:       state.samples,
         searchHistory: state.searchHistory,
         favorites:     Array.from(state.favorites),
         filters:       state.filters,
@@ -141,6 +145,39 @@ const Store = (() => {
   /** Очищает корзину */
   function clearCart() {
     state.cart = [];
+    save();
+  }
+
+  // ================================================================
+  // ОБРАЗЦЫ
+  // ================================================================
+
+  /** Возвращает копию списка образцов */
+  function getSamples() {
+    return [...state.samples];
+  }
+
+  /** Проверяет, есть ли образец для данной ткани */
+  function hasSample(fabricId) {
+    return state.samples.some(s => s.fabricId === fabricId);
+  }
+
+  /** Добавляет образец (если ещё нет) */
+  function addSample(fabricId) {
+    if (hasSample(fabricId)) return;
+    state.samples.push({ fabricId });
+    save();
+  }
+
+  /** Удаляет образец */
+  function removeSample(fabricId) {
+    state.samples = state.samples.filter(s => s.fabricId !== fabricId);
+    save();
+  }
+
+  /** Очищает все образцы */
+  function clearSamples() {
+    state.samples = [];
     save();
   }
 
@@ -266,6 +303,13 @@ const Store = (() => {
     updateCartItem,
     removeFromCart,
     clearCart,
+
+    // Образцы
+    getSamples,
+    hasSample,
+    addSample,
+    removeSample,
+    clearSamples,
 
     // История поиска
     getSearchHistory,
