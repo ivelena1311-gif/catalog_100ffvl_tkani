@@ -1244,7 +1244,6 @@ a { color: var(--accent); text-decoration: none; }
   font-style: italic;
   font-size: 16px;
   color: var(--gold-line);
-  opacity: 0.6;
 }
 
 .price-meta {
@@ -1371,7 +1370,7 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 22px;
   font-style: italic;
   font-weight: 300;
-  color: var(--gold);
+  color: var(--gold-line);
   text-align: right;
   margin-top: 4px;
 }
