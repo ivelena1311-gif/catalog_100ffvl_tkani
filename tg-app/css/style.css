@@ -1605,7 +1605,24 @@ a { color: var(--accent); text-decoration: none; }
    11. ЭКРАН: КОРЗИНА
    ================================================================ */
 
+/* Таб-переключатель в корзине */
+.cart-tab-bar {
+  display: flex;
+  gap: 10px;
+  padding: 16px 16px 12px;
+}
+.cart-tab-bar .btn-oval {
+  flex: 1;
+  min-height: 44px;
+  font-size: 10px;
+  padding: 10px 12px;
+}
+
 .cart-list {
+  padding: 8px 20px;
+}
+
+.cart-sample-list {
   padding: 8px 20px;
 }
 

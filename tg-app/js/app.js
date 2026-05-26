@@ -955,6 +955,9 @@ function renderSearchContent(query) {
 
 // ---- 4.4 КОРЗИНА ----
 
+/** Активная вкладка корзины: 'fabrics' | 'samples' */
+let _cartTab = 'fabrics';
+
 function renderCart() {
   const cart    = Store.getCart();
   const samples = Store.getSamples();
@@ -985,27 +988,58 @@ function renderCart() {
     return;
   }
 
+  // Автоматически переключиться на вкладку с контентом
+  if (_cartTab === 'fabrics' && !cart.length && samples.length) _cartTab = 'samples';
+  if (_cartTab === 'samples' && !samples.length && cart.length) _cartTab = 'fabrics';
+
   const total       = Store.getCartTotal();
   const totalMeters = cart.reduce((s, i) => s + i.meters, 0);
 
-  cartEl.innerHTML = `
-    ${cart.length ? `
-    <div class="cart-list" id="cart-list">
-      ${cart.map(item => _cartItemHTML(item)).join('')}
-    </div>` : ''}
+  const isFabrics = _cartTab === 'fabrics';
+  const isSamples = _cartTab === 'samples';
 
-    ${samples.length ? `
-    <div class="cart-samples-section">
-      <div class="cart-samples-title">Образцы</div>
+  cartEl.innerHTML = `
+
+    <!-- Таб-переключатель -->
+    <div class="cart-tab-bar">
+      <button class="btn-oval btn-oval-primary ${isFabrics ? 'in-cart' : ''}" id="cart-tab-fabrics">
+        Метраж${cart.length ? ` · ${cart.length}` : ''}
+      </button>
+      <button class="btn-oval btn-oval-primary ${isSamples ? 'in-cart' : ''}" id="cart-tab-samples">
+        Образцы${samples.length ? ` · ${samples.length}` : ''}
+      </button>
+    </div>
+
+    <!-- Контент активной вкладки -->
+    ${isFabrics ? (cart.length ? `
+      <div class="cart-list" id="cart-list">
+        ${cart.map(item => _cartItemHTML(item)).join('')}
+      </div>
+      <button class="cart-add-more" id="cart-add-more">&#43; Добавить ещё ткани</button>
+    ` : `
+      <div class="empty-state" style="padding:48px 32px">
+        <div class="empty-state-text">Нет тканей в заявке</div>
+        <button class="btn-primary" style="max-width:220px;margin-top:8px" id="go-catalog-btn">
+          Перейти в каталог
+        </button>
+      </div>
+    `) : ''}
+
+    ${isSamples ? (samples.length ? `
       <div class="cart-sample-list" id="cart-sample-list">
         ${samples.map(s => _sampleItemHTML(s)).join('')}
       </div>
-    </div>` : ''}
+      <button class="cart-add-more" id="cart-add-more">&#43; Добавить образцы из каталога</button>
+    ` : `
+      <div class="empty-state" style="padding:48px 32px">
+        <div class="empty-state-text">Нет образцов в заявке</div>
+        <button class="btn-primary" style="max-width:220px;margin-top:8px" id="go-catalog-btn">
+          Перейти в каталог
+        </button>
+      </div>
+    `) : ''}
 
-    <button class="cart-add-more" id="cart-add-more">
-      &#43; Добавить ещё ткани
-    </button>
-
+    <!-- Итоги (всегда видны) -->
     <div class="cart-total-block">
       ${cart.length ? `
       <div class="cart-total-row">
@@ -1029,9 +1063,23 @@ function renderCart() {
     </div>
   `;
 
-  // Делегирование событий
+  // Переключение вкладок
+  document.getElementById('cart-tab-fabrics')?.addEventListener('click', () => {
+    if (_cartTab === 'fabrics') return;
+    _cartTab = 'fabrics';
+    TG.HapticFeedback.selectionChanged();
+    renderCart();
+  });
+  document.getElementById('cart-tab-samples')?.addEventListener('click', () => {
+    if (_cartTab === 'samples') return;
+    _cartTab = 'samples';
+    TG.HapticFeedback.selectionChanged();
+    renderCart();
+  });
+
+  // Удаление позиции ткани
   document.getElementById('cart-list')?.addEventListener('click', e => {
-    const item   = e.target.closest('[data-cart-item]');
+    const item = e.target.closest('[data-cart-item]');
     if (!item) return;
     const fabricId = parseInt(item.dataset.fabricId);
     const colorId  = item.dataset.colorId;
@@ -1050,9 +1098,9 @@ function renderCart() {
     }
 
     if (e.target.closest('.cart-counter-btn')) {
-      const btn = e.target.closest('.cart-counter-btn');
+      const btn   = e.target.closest('.cart-counter-btn');
       const valEl = item.querySelector('.cart-counter-val');
-      const cur = parseInt(valEl.textContent) || fabric.minOrder;
+      const cur   = parseInt(valEl.textContent) || fabric.minOrder;
       const delta = btn.dataset.dir === 'plus' ? fabric.step : -fabric.step;
       const newVal = snapToStep(cur + delta, fabric.minOrder, fabric.step);
       Store.updateCartItem(fabricId, colorId, newVal);
@@ -1079,6 +1127,7 @@ function renderCart() {
   });
 
   document.getElementById('cart-add-more')?.addEventListener('click', () => Router.tab('catalog'));
+  document.getElementById('go-catalog-btn')?.addEventListener('click', () => Router.tab('catalog'));
 
   // MainButton
   setMainButton(`Оформить заявку (${totalItems})`, () => {
