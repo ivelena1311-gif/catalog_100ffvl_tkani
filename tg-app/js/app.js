@@ -680,7 +680,7 @@ function _renderProductInfo(fabric, color) {
     <!-- Цена -->
     <div class="price-block">
       <div class="price-main" id="price-main">${formatPrice(price, fabric.unit)}</div>
-      <div class="price-meta">от ${fabric.minOrder}&nbsp;${fabric.unit} · кратно ${fabric.step}&nbsp;${fabric.unit}</div>
+
       ${fabric.cutPrice ? `
       <div class="price-tiers-table visible" id="tiers-table">
         <div class="tier-row ${initMeters < 50 ? 'current' : ''}" data-tier="cut">
