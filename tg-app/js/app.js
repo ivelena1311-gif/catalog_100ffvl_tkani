@@ -228,6 +228,12 @@ const Router = (() => {
       TG.BackButton.hide();
     }
 
+    // In-app кнопки «Назад» (галерея + заголовки)
+    const canGoBack = history.length > 1 && screenId !== 'success';
+    document.querySelectorAll('.back-btn').forEach(btn => {
+      btn.classList.toggle('hidden', !canGoBack);
+    });
+
     // Tab Bar: подсветка активного таба, скрытие на checkout/success
     const tabBar = document.getElementById('tab-bar');
     if (NO_TAB_SCREENS.includes(screenId)) {
@@ -1794,9 +1800,8 @@ function setupEventListeners() {
     openFiltersSheet();
   });
 
-  // --- BackButton Telegram ---
-  TG.BackButton.onClick(() => {
-    // Если открыт bottom sheet — закрываем его
+  // --- BackButton Telegram + in-app кнопки «Назад» ---
+  function _goBack() {
     const openSheet = document.querySelector('.bottom-sheet.open');
     if (openSheet) {
       closeSheet(openSheet.id.replace('sheet-', ''));
@@ -1804,6 +1809,13 @@ function setupEventListeners() {
     }
     Router.back();
     TG.HapticFeedback.impactOccurred('light');
+  }
+
+  TG.BackButton.onClick(_goBack);
+
+  // Делегирование для всех .back-btn в DOM
+  document.addEventListener('click', e => {
+    if (e.target.closest('.back-btn')) _goBack();
   });
 
   // --- Overlay — закрывает bottom sheet ---
