@@ -1644,7 +1644,9 @@ a { color: var(--accent); text-decoration: none; }
   flex-shrink: 0;
   overflow: hidden;
   position: relative;
+  cursor: pointer;
 }
+.cart-item-thumb:active { opacity: 0.75; }
 
 .cart-item-info { flex: 1; min-width: 0; }
 

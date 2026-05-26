@@ -1085,6 +1085,12 @@ function renderCart() {
     const colorId  = item.dataset.colorId;
     const fabric   = getFabricById(fabricId);
 
+    if (e.target.closest('.cart-item-thumb')) {
+      TG.HapticFeedback.impactOccurred('light');
+      Router.push('product', () => renderProduct(fabricId));
+      return;
+    }
+
     if (e.target.closest('.cart-item-delete')) {
       TG.showConfirm('Удалить позицию из заявки?', confirmed => {
         if (!confirmed) return;
@@ -1114,6 +1120,13 @@ function renderCart() {
     const item = e.target.closest('[data-sample-item]');
     if (!item) return;
     const fabricId = parseInt(item.dataset.fabricId);
+
+    if (e.target.closest('.cart-item-thumb')) {
+      TG.HapticFeedback.impactOccurred('light');
+      Router.push('product', () => renderProduct(fabricId));
+      return;
+    }
+
     if (e.target.closest('.cart-item-delete')) {
       TG.showConfirm('Убрать образец из заявки?', confirmed => {
         if (!confirmed) return;
