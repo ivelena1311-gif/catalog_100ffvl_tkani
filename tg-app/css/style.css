@@ -56,6 +56,7 @@
   --gold:          hsl(45, 62%, 73%);     /* шампанское золото — светлее, без рыжины */
   --gold-muted:    hsl(45, 22%, 34%);
   --gold-dim:      hsla(45, 62%, 73%, 0.4);
+  --gold-line:     hsla(43, 48%, 46%, 0.78); /* тёмное антикварное золото — для линий карточки */
   --cream:         hsl(42, 28%, 87%);
 
   /* Типографика */
@@ -1074,12 +1075,17 @@ a { color: var(--accent); text-decoration: none; }
   margin: 0 0 16px;
 }
 
-/* Разделитель */
+/* Разделитель — антикварное золото со свечением в центре */
 .product-divider {
   height: 1px;
-  background: var(--gold-dim);
+  background: linear-gradient(90deg,
+    transparent        0%,
+    hsla(43, 48%, 38%, 0.3)  8%,
+    hsla(44, 52%, 54%, 0.92) 50%,
+    hsla(43, 48%, 38%, 0.3)  92%,
+    transparent        100%
+  );
   margin: 0 0 16px;
-  opacity: 0.5;
 }
 
 /* Характеристики: состав, ширина, плотность */
@@ -1232,7 +1238,7 @@ a { color: var(--accent); text-decoration: none; }
   flex-direction: column;
   gap: 6px;
   margin-top: 10px;
-  border-top: 1px solid var(--gold-dim);
+  border-top: 1px solid var(--gold-line);
   padding-top: 10px;
 }
 
@@ -1283,7 +1289,7 @@ a { color: var(--accent); text-decoration: none; }
   display: flex;
   align-items: center;
   gap: 0;
-  border: 1px solid var(--gold-dim);
+  border: 1px solid var(--gold-line);
   border-radius: 2px;
   overflow: hidden;
   margin-bottom: 8px;
@@ -1320,8 +1326,8 @@ a { color: var(--accent); text-decoration: none; }
   color: var(--tg-text);
   background: transparent;
   border: none;
-  border-left: 1px solid var(--gold-dim);
-  border-right: 1px solid var(--gold-dim);
+  border-left: 1px solid var(--gold-line);
+  border-right: 1px solid var(--gold-line);
   padding: 8px 4px;
   min-height: 52px;
 }
@@ -1352,7 +1358,7 @@ a { color: var(--accent); text-decoration: none; }
   padding: 14px 0;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--gold-dim);
+  border-bottom: 1px solid var(--gold-line);
   color: var(--tg-hint);
   font-family: var(--font-body);
   font-size: 10px;
