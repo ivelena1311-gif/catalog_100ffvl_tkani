@@ -1204,6 +1204,17 @@ a { color: var(--accent); text-decoration: none; }
   margin-bottom: 16px;
 }
 
+/* Подпись над главной ценой */
+.price-label {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--tg-hint);
+  margin: 0;
+}
+
 .price-main {
   font-family: var(--font-display);
   font-size: 32px;
@@ -1211,6 +1222,29 @@ a { color: var(--accent); text-decoration: none; }
   font-style: italic;
   color: var(--gold-line);
   line-height: 1;
+}
+
+/* Вторичная цена — на отрез */
+.price-secondary {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 2px;
+}
+.price-secondary span:first-child {
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--tg-hint);
+}
+.price-secondary span:last-child {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--gold-line);
+  opacity: 0.6;
 }
 
 .price-meta {

@@ -679,18 +679,12 @@ function _renderProductInfo(fabric, color) {
 
     <!-- Цена -->
     <div class="price-block">
-      <div class="price-main" id="price-main">${formatPrice(price, fabric.unit)}</div>
-
+      <p class="price-label">от 50&nbsp;${fabric.unit} · оптовая</p>
+      <div class="price-main" id="price-main">${formatPrice(fabric.basePricePerMeter, fabric.unit)}</div>
       ${fabric.cutPrice ? `
-      <div class="price-tiers-table visible" id="tiers-table">
-        <div class="tier-row ${initMeters < 50 ? 'current' : ''}" data-tier="cut">
-          <span>до 50&nbsp;${fabric.unit} · на отрез</span>
-          <span>${formatPrice(fabric.cutPrice, fabric.unit)}</span>
-        </div>
-        <div class="tier-row ${initMeters >= 50 ? 'current' : ''}" data-tier="base">
-          <span>от 50&nbsp;${fabric.unit} · оптовая</span>
-          <span>${formatPrice(fabric.basePricePerMeter, fabric.unit)}</span>
-        </div>
+      <div class="price-secondary">
+        <span>на отрез</span>
+        <span>${formatPrice(fabric.cutPrice, fabric.unit)}</span>
       </div>` : ''}
     </div>
 
@@ -767,17 +761,10 @@ function _bindProductEvents(fabric) {
     const price = getPriceForMeters(fabric, snapped);
     const total = price * snapped;
 
-    document.getElementById('price-main').innerHTML =
-      `${formatPrice(price, fabric.unit)}`;
     document.getElementById('counter-total').textContent = formatPrice(total, fabric.unit);
     document.getElementById('counter-hint').textContent  =
       `${formatPrice(price, fabric.unit)} · ${snapped}\u00A0${fabric.unit}`;
 
-    // Подсвечиваем активный блок цены (для двухценовой системы)
-    if (fabric.cutPrice) {
-      document.querySelector('#tiers-table [data-tier="cut"]')?.classList.toggle('current', snapped < 50);
-      document.querySelector('#tiers-table [data-tier="base"]')?.classList.toggle('current', snapped >= 50);
-    }
 
     _updateProductMainButton();
   }
