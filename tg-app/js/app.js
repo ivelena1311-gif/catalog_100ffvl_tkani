@@ -713,7 +713,7 @@ function _renderProductInfo(fabric, color) {
     <!-- Кнопки действий -->
     <div class="product-action-btns">
       <button class="btn-oval btn-oval-primary" id="add-to-cart-btn">Добавить в заявку</button>
-      <button class="btn-oval btn-oval-outline" id="sample-oval-btn">Запросить образец бесплатно</button>
+      <button class="btn-oval btn-oval-primary" id="sample-oval-btn">Запросить образец бесплатно</button>
     </div>
 
     <!-- Описание -->
