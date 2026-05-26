@@ -1233,17 +1233,17 @@ a { color: var(--accent); text-decoration: none; }
 }
 .price-secondary span:first-child {
   font-family: var(--font-body);
-  font-size: 9px;
-  font-weight: 300;
-  letter-spacing: 0.25em;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--tg-text);
+  color: hsl(43, 52%, 38%);
 }
 .price-secondary span:last-child {
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 16px;
-  color: var(--gold-line);
+  font-size: 18px;
+  color: hsl(43, 52%, 38%);
 }
 
 .price-meta {
@@ -1370,10 +1370,10 @@ a { color: var(--accent); text-decoration: none; }
 
 .counter-total {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 24px;
   font-style: italic;
   font-weight: 300;
-  color: var(--gold-line);
+  color: hsl(43, 52%, 38%);
   text-align: right;
   margin-top: 4px;
 }
