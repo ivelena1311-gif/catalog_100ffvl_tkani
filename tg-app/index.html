@@ -212,6 +212,19 @@
   </div>
 
   <!-- ============================================================
+       ЭКРАН: ИЗБРАННОЕ
+       ============================================================ -->
+  <div id="screen-favorites" class="screen" role="main">
+
+    <header class="screen-header">
+      <span class="screen-title">Избранное</span>
+    </header>
+
+    <div id="favorites-content"></div>
+
+  </div>
+
+  <!-- ============================================================
        TAB BAR (нижняя навигация)
        ============================================================ -->
   <nav id="tab-bar" role="navigation" aria-label="Навигация">
@@ -256,6 +269,18 @@
       </span>
       <span class="tab-label">Заявка</span>
       <span class="tab-badge hidden" id="cart-badge">0</span>
+    </button>
+
+    <!-- Избранное — сердце -->
+    <button class="tab-item" data-screen="favorites" aria-label="Избранное" style="position:relative">
+      <span class="tab-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </span>
+      <span class="tab-label">Избранное</span>
+      <span class="tab-badge hidden" id="fav-badge">0</span>
     </button>
 
     <!-- Профиль — силуэт человека -->

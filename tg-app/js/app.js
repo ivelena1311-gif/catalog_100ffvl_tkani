@@ -246,9 +246,10 @@ const Router = (() => {
 
   /** Рендер экрана при переключении таба */
   function _renderScreen(screenId) {
-    if (screenId === 'catalog') renderCatalog();
-    if (screenId === 'cart')    renderCart();
-    if (screenId === 'profile') renderProfile();
+    if (screenId === 'catalog')   renderCatalog();
+    if (screenId === 'cart')      renderCart();
+    if (screenId === 'profile')   renderProfile();
+    if (screenId === 'favorites') renderFavorites();
     // search и product рендерятся при открытии
   }
 
@@ -1499,6 +1500,55 @@ function closeSheet(id) {
 }
 
 /* ================================================================
+   5б. ИЗБРАННОЕ
+   ================================================================ */
+
+function renderFavorites() {
+  const content = document.getElementById('favorites-content');
+  if (!content) return;
+
+  const favIds  = Store.getFavorites();
+  const fabrics = FABRICS.filter(f => favIds.has(f.id));
+
+  if (!fabrics.length) {
+    content.innerHTML = `
+      <div class="favorites-empty">
+        <div class="favorites-empty-icon">&#9825;</div>
+        <p class="favorites-empty-title">Список пуст</p>
+        <p class="favorites-empty-hint">Нажмите ♡ в карточке товара,<br>чтобы добавить ткань</p>
+      </div>
+    `;
+    setMainButton(null);
+    return;
+  }
+
+  content.innerHTML = `
+    <div class="catalog-grid" id="favorites-grid">
+      ${fabrics.map(f => _fabricCardHTML(f)).join('')}
+    </div>
+  `;
+
+  document.getElementById('favorites-grid')?.addEventListener('click', e => {
+    const card = e.target.closest('.fabric-card');
+    if (!card) return;
+    const fabricId = parseInt(card.dataset.fabricId);
+    TG.HapticFeedback.impactOccurred('light');
+    Router.push('product', () => renderProduct(fabricId));
+  });
+
+  setMainButton(null);
+}
+
+/** Обновляет бейдж избранного в Tab Bar */
+function updateFavBadge() {
+  const count = Store.getFavorites().size;
+  const badge = document.getElementById('fav-badge');
+  if (!badge) return;
+  badge.textContent = count;
+  badge.classList.toggle('hidden', count === 0);
+}
+
+/* ================================================================
    6. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
    ================================================================ */
 
@@ -1633,6 +1683,7 @@ function setupEventListeners() {
     if (!fabric) return;
     const isFav = Store.toggleFavorite(fabric.id);
     _updateFavBtn(fabric.id);
+    updateFavBadge();
     TG.HapticFeedback.impactOccurred(isFav ? 'medium' : 'light');
     showToast(isFav ? 'Добавлено в избранное' : 'Убрано из избранного');
   });
@@ -1768,8 +1819,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).catch(() => {});
   }
 
-  // 8. Обновляем бейдж корзины
+  // 8. Обновляем бейджи
   updateCartBadge();
+  updateFavBadge();
 
   // 9. Обработчик изменения темы в рантайме
   window.addEventListener('themeChanged', applyTheme);
