@@ -716,7 +716,7 @@ function _renderProductInfo(fabric, color) {
     </div>
 
     <!-- Описание -->
-    ${fabric.description ? `<p class="product-description">${fabric.description}</p>` : ''}
+    ${fabric.description ? `<div class="product-divider"></div><p class="product-description">${fabric.description}</p>` : ''}
   `;
 
   // Слушатели событий
