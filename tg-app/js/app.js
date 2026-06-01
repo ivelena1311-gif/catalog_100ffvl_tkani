@@ -1204,10 +1204,15 @@ function renderCheckout() {
   const user    = TG.initDataUnsafe?.user;
 
   // Предзаполнение из Telegram-профиля
-  const nameField  = document.getElementById('field-name');
-  const phoneField = document.getElementById('field-phone');
+  const nameField     = document.getElementById('field-name');
+  const usernameField = document.getElementById('field-username');
+  const usernameRow   = document.getElementById('field-username-row');
   if (nameField && user) {
     nameField.value = [user.first_name, user.last_name].filter(Boolean).join(' ');
+  }
+  if (usernameField && usernameRow && user?.username) {
+    usernameField.value = '@' + user.username;
+    usernameRow.style.display = '';
   }
 
   // Сводка
