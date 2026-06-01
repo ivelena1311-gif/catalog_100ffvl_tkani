@@ -1023,11 +1023,11 @@ function renderCart() {
       </div>
       <button class="cart-add-more" id="cart-add-more">&#43; Добавить ещё ткани</button>
     ` : `
-      <div class="empty-state" style="padding:48px 32px">
-        <div class="empty-state-text">Нет тканей в заявке</div>
-        <button class="btn-primary" style="max-width:220px;margin-top:8px" id="go-catalog-btn">
-          Перейти в каталог
-        </button>
+      <div class="favorites-empty">
+        <div class="favorites-empty-icon">&#129525;</div>
+        <p class="favorites-empty-title">Добавьте ткань в заявку</p>
+        <p class="favorites-empty-hint">чтобы оформить первый заказ на метраж</p>
+        <button class="btn-oval btn-oval-primary" id="go-catalog-btn">Перейти в каталог</button>
       </div>
     `) : ''}
 
@@ -1037,41 +1037,44 @@ function renderCart() {
       </div>
       <button class="cart-add-more" id="cart-add-more">&#43; Добавить образцы из каталога</button>
     ` : `
-      <div class="empty-state" style="padding:48px 32px">
-        <div class="empty-state-text">Нет образцов в заявке</div>
-        <button class="btn-primary" style="max-width:220px;margin-top:8px" id="go-catalog-btn">
-          Перейти в каталог
-        </button>
+      <div class="favorites-empty">
+        <div class="favorites-empty-icon">&#10024;</div>
+        <p class="favorites-empty-title">Выберите понравившиеся ткани</p>
+        <p class="favorites-empty-hint">а мы бесплатно подготовим образцы, чтобы вы могли оценить цвет и фактуру</p>
+        <button class="btn-oval btn-oval-primary" id="go-catalog-btn">Перейти в каталог</button>
       </div>
     `) : ''}
 
-    <!-- Итоги (всегда видны) -->
+    <!-- Итоги (только когда в активной вкладке есть контент) -->
+    ${isFabrics && cart.length ? `
     <div class="cart-total-block">
-      ${isFabrics ? `
-        ${cart.length ? `
-        <div class="cart-total-row">
-          <span>Позиций ткани</span><span>${cart.length}</span>
-        </div>
-        <div class="cart-total-row">
-          <span>Общий объём</span><span>${totalMeters}&nbsp;м</span>
-        </div>
-        <div class="cart-total-row main">
-          <span>Итого</span>
-          <span class="cart-total-price">${formatPrice(total)}</span>
-        </div>` : ''}
-        <div class="cart-disclaimer">
-          * Финальная стоимость согласуется с менеджером после отправки заявки
-        </div>
-      ` : `
-        ${samples.length ? `
-        <div class="cart-total-row">
-          <span>Образцов</span><span>${samples.length}</span>
-        </div>` : ''}
-      `}
+      <div class="cart-total-row">
+        <span>Позиций ткани</span><span>${cart.length}</span>
+      </div>
+      <div class="cart-total-row">
+        <span>Общий объём</span><span>${totalMeters}&nbsp;м</span>
+      </div>
+      <div class="cart-total-row main">
+        <span>Итого</span>
+        <span class="cart-total-price">${formatPrice(total)}</span>
+      </div>
+      <div class="cart-disclaimer">
+        * Финальная стоимость согласуется с менеджером после отправки заявки
+      </div>
       <button class="btn-oval btn-oval-primary cart-submit-btn" id="cart-submit-btn">
-        ${isFabrics ? 'Оформить заявку на метраж' : 'Оформить заявку на образцы'}
+        Оформить заявку на метраж
       </button>
-    </div>
+    </div>` : ''}
+
+    ${isSamples && samples.length ? `
+    <div class="cart-total-block">
+      <div class="cart-total-row">
+        <span>Образцов</span><span>${samples.length}</span>
+      </div>
+      <button class="btn-oval btn-oval-primary cart-submit-btn" id="cart-submit-btn">
+        Оформить заявку на образцы
+      </button>
+    </div>` : ''}
   `;
 
   // Переключение вкладок
