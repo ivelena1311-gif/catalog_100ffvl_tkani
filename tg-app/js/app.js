@@ -978,10 +978,6 @@ function renderCart() {
       : '';
   }
 
-  // Автоматически переключиться на вкладку с контентом
-  if (_cartTab === 'fabrics' && !cart.length && samples.length) _cartTab = 'samples';
-  if (_cartTab === 'samples' && !samples.length && cart.length) _cartTab = 'fabrics';
-
   const total       = Store.getCartTotal();
   const totalMeters = cart.reduce((s, i) => s + i.meters, 0);
 
