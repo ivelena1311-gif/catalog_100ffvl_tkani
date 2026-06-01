@@ -1245,13 +1245,6 @@ function renderCheckout() {
         <span>Примерная сумма</span>
         <span style="color:var(--price-color)">${formatPrice(total)}</span>
       </div>` : ''}
-      ${samples.length ? `
-      <div class="checkout-summary-row">
-        <span>Образцов</span><span>${samples.length}</span>
-      </div>
-      <div class="checkout-summary-row" style="font-size:11px;opacity:0.6">
-        <span>${samples.map(s => getFabricById(s.fabricId)?.article || '').join(', ')}</span>
-      </div>` : ''}
     `;
   }
 
