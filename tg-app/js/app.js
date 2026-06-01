@@ -1047,25 +1047,27 @@ function renderCart() {
 
     <!-- Итоги (всегда видны) -->
     <div class="cart-total-block">
-      ${cart.length ? `
-      <div class="cart-total-row">
-        <span>Позиций ткани</span><span>${cart.length}</span>
-      </div>
-      <div class="cart-total-row">
-        <span>Общий объём</span><span>${totalMeters}&nbsp;м</span>
-      </div>` : ''}
-      ${samples.length ? `
-      <div class="cart-total-row">
-        <span>Образцов</span><span>${samples.length}</span>
-      </div>` : ''}
-      ${cart.length ? `
-      <div class="cart-total-row main">
-        <span>Итого</span>
-        <span class="cart-total-price">${formatPrice(total)}</span>
-      </div>` : ''}
-      <div class="cart-disclaimer">
-        * Финальная стоимость согласуется с менеджером после отправки заявки
-      </div>
+      ${isFabrics ? `
+        ${cart.length ? `
+        <div class="cart-total-row">
+          <span>Позиций ткани</span><span>${cart.length}</span>
+        </div>
+        <div class="cart-total-row">
+          <span>Общий объём</span><span>${totalMeters}&nbsp;м</span>
+        </div>
+        <div class="cart-total-row main">
+          <span>Итого</span>
+          <span class="cart-total-price">${formatPrice(total)}</span>
+        </div>` : ''}
+        <div class="cart-disclaimer">
+          * Финальная стоимость согласуется с менеджером после отправки заявки
+        </div>
+      ` : `
+        ${samples.length ? `
+        <div class="cart-total-row">
+          <span>Образцов</span><span>${samples.length}</span>
+        </div>` : ''}
+      `}
       <button class="btn-oval btn-oval-primary cart-submit-btn" id="cart-submit-btn">
         ${isFabrics ? 'Оформить заявку на метраж' : 'Оформить заявку на образцы'}
       </button>
