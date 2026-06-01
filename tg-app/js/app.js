@@ -1275,9 +1275,9 @@ function renderCheckout() {
   }
 
   // Скрываем hint при вводе; авто-расширение textarea
-  [['field-company'], ['field-city'], ['field-comment']].forEach(([id]) => {
+  ['field-company', 'field-city', 'field-comment'].forEach(id => {
     const el   = document.getElementById(id);
-    const hint = el?.nextElementSibling;
+    const hint = el?.parentElement?.querySelector('.form-field-hint');
     if (!el) return;
     el.addEventListener('input', () => {
       if (hint) hint.style.display = el.value ? 'none' : '';
