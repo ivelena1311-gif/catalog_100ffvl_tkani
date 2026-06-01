@@ -1166,9 +1166,9 @@ function _cartItemHTML(item) {
       ${_thumbHTML(fabric.thumb, 'cart-item-thumb')}
       <div class="cart-item-info">
         <div class="cart-item-name">${fabric.name}</div>
-        <div class="cart-item-sub">
-          Арт. ${fabric.article} ·
-          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color.hex};vertical-align:middle"></span>
+        <div class="cart-item-sub">Арт. ${fabric.article}</div>
+        <div class="cart-item-color-chip">
+          <span class="cart-item-color-dot" style="background:${color.hex}"></span>
           ${color.name}
         </div>
         <div class="cart-counter">

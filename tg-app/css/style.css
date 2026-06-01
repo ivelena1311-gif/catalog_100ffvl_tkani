@@ -1712,6 +1712,30 @@ a { color: var(--accent); text-decoration: none; }
   margin-top: 4px;
 }
 
+.cart-item-color-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: hsl(43, 52%, 38%);
+  border: 1px solid var(--gold-line);
+  border-radius: 20px;
+  padding: 3px 8px 3px 4px;
+}
+
+.cart-item-color-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid hsla(0, 0%, 0%, 0.12);
+  flex-shrink: 0;
+}
+
 /* Счётчик метража в корзине */
 .cart-counter {
   display: flex;
