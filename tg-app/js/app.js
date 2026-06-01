@@ -1276,14 +1276,16 @@ function renderCheckout() {
   }
   TG.MainButton.disable();
 
-  // Скрываем hint компании при вводе
-  const companyEl   = document.getElementById('field-company');
-  const companyHint = companyEl?.nextElementSibling;
-  if (companyEl && companyHint) {
-    companyEl.addEventListener('input', () => {
-      companyHint.style.display = companyEl.value ? 'none' : '';
-    });
-  }
+  // Скрываем hint при вводе (компания и комментарий)
+  [['field-company'], ['field-comment']].forEach(([id]) => {
+    const el   = document.getElementById(id);
+    const hint = el?.nextElementSibling;
+    if (el && hint) {
+      el.addEventListener('input', () => {
+        hint.style.display = el.value ? 'none' : '';
+      });
+    }
+  });
 }
 
 async function _submitOrder() {
