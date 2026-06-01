@@ -1675,7 +1675,7 @@ a { color: var(--accent); text-decoration: none; }
   align-items: flex-start;
   gap: 14px;
   padding: 16px 0;
-  border-bottom: 1px solid var(--gold-dim);
+  border-bottom: 1px solid var(--gold-line);
   opacity: 0.95;
 }
 
@@ -1718,7 +1718,7 @@ a { color: var(--accent); text-decoration: none; }
   align-items: center;
   gap: 6px;
   margin-top: 10px;
-  border: 1px solid var(--gold-dim);
+  border: 1px solid var(--gold-line);
   border-radius: 2px;
   overflow: hidden;
   width: fit-content;
@@ -1750,8 +1750,8 @@ a { color: var(--accent); text-decoration: none; }
   font-weight: 300;
   min-width: 36px;
   text-align: center;
-  border-left: 1px solid var(--gold-dim);
-  border-right: 1px solid var(--gold-dim);
+  border-left: 1px solid var(--gold-line);
+  border-right: 1px solid var(--gold-line);
   padding: 0 6px;
   line-height: 32px;
 }
@@ -1761,7 +1761,7 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 17px;
   font-style: italic;
   font-weight: 300;
-  color: var(--gold);
+  color: hsl(43, 52%, 38%);
   flex-shrink: 0;
   margin-top: 2px;
 }
@@ -1786,7 +1786,7 @@ a { color: var(--accent); text-decoration: none; }
 .cart-total-block {
   margin: 8px 20px 16px;
   padding: 16px 0;
-  border-top: 1px solid var(--gold-dim);
+  border-top: 1px solid var(--gold-line);
 }
 
 .cart-total-row {
@@ -1802,7 +1802,7 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .cart-total-row.main {
-  border-top: 1px solid var(--gold-dim);
+  border-top: 1px solid var(--gold-line);
   margin-top: 8px;
   padding-top: 12px;
   color: var(--tg-text);
@@ -1820,7 +1820,7 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 26px;
   font-style: italic;
   font-weight: 300;
-  color: var(--gold);
+  color: hsl(43, 52%, 38%);
 }
 
 .cart-disclaimer {
