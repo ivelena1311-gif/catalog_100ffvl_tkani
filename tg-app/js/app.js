@@ -978,22 +978,6 @@ function renderCart() {
       : '';
   }
 
-  if (!totalItems) {
-    cartEl.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">&#128203;</div>
-        <div class="empty-state-title">Заявка пуста</div>
-        <div class="empty-state-text">Добавьте ткани из каталога</div>
-        <button class="btn-primary" style="max-width:220px;margin-top:8px" id="go-catalog-btn">
-          Перейти в каталог
-        </button>
-      </div>
-    `;
-    document.getElementById('go-catalog-btn')?.addEventListener('click', () => Router.tab('catalog'));
-    TG.MainButton.hide();
-    return;
-  }
-
   // Автоматически переключиться на вкладку с контентом
   if (_cartTab === 'fabrics' && !cart.length && samples.length) _cartTab = 'samples';
   if (_cartTab === 'samples' && !samples.length && cart.length) _cartTab = 'fabrics';
