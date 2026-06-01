@@ -1864,6 +1864,36 @@ a { color: var(--accent); text-decoration: none; }
   letter-spacing: 0.2em;
 }
 
+.checkout-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 8px 0 32px;
+}
+
+.checkout-action-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkout-action-block .btn-oval-primary {
+  width: 100%;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+}
+
+.checkout-action-hint {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--tg-hint);
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+}
+
 .cart-add-more {
   display: block;
   width: 100%;

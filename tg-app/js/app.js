@@ -1248,8 +1248,16 @@ function renderCheckout() {
     `;
   }
 
-  // MainButton
-  setMainButton('Отправить заявку', _submitOrder);
+  TG.MainButton.hide();
+
+  document.getElementById('checkout-submit-btn')?.addEventListener('click', () => {
+    TG.HapticFeedback.impactOccurred('medium');
+    _submitOrder();
+  });
+  document.getElementById('checkout-manager-btn')?.addEventListener('click', () => {
+    TG.HapticFeedback.impactOccurred('light');
+    TG.openTelegramLink('https://t.me/Opt_100ffvl');
+  });
 
   // Маска и валидация телефона
   const phoneEl = document.getElementById('field-phone');
@@ -1263,11 +1271,8 @@ function renderCheckout() {
     phoneEl.addEventListener('input', () => {
       const formatted = _formatPhone(phoneEl.value);
       phoneEl.value = formatted || (phoneEl.value.length ? '+7 (' : '');
-      const valid = formatted.replace(/\D/g, '').length >= 11;
-      valid ? TG.MainButton.enable() : TG.MainButton.disable();
     });
   }
-  TG.MainButton.disable();
 
   // Скрываем hint при вводе (компания и комментарий)
   [['field-company'], ['field-city'], ['field-comment']].forEach(([id]) => {
