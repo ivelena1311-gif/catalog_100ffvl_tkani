@@ -1862,6 +1862,8 @@ a { color: var(--accent); text-decoration: none; }
   margin-top: 16px;
   font-size: 11px;
   letter-spacing: 0.2em;
+  /* PREVIEW: чёрная заливка вместо синей — удалить строку ниже чтобы вернуть синий */
+  background: #111111;
 }
 
 .cart-add-more {
