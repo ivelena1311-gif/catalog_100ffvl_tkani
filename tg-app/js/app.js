@@ -1275,6 +1275,15 @@ function renderCheckout() {
     });
   }
   TG.MainButton.disable();
+
+  // Скрываем hint компании при вводе
+  const companyEl   = document.getElementById('field-company');
+  const companyHint = companyEl?.nextElementSibling;
+  if (companyEl && companyHint) {
+    companyEl.addEventListener('input', () => {
+      companyHint.style.display = companyEl.value ? 'none' : '';
+    });
+  }
 }
 
 async function _submitOrder() {

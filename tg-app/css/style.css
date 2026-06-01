@@ -1971,11 +1971,11 @@ a { color: var(--accent); text-decoration: none; }
 
 .form-field-hint {
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 300;
   color: var(--tg-hint);
   line-height: 1.4;
-  margin-top: 4px;
+  opacity: 0.6;
 }
 
 .form-field input,
