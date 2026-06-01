@@ -1969,6 +1969,15 @@ a { color: var(--accent); text-decoration: none; }
   margin-bottom: 4px;
 }
 
+.form-field-hint {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 300;
+  color: var(--tg-hint);
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
 .form-field input,
 .form-field textarea {
   font-family: var(--font-body);
