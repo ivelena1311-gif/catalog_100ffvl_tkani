@@ -1888,7 +1888,7 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 11px;
   font-weight: 300;
   font-style: italic;
-  color: var(--tg-hint);
+  color: var(--tg-text);
   line-height: 1.5;
   margin: 0;
   text-align: center;
@@ -1978,8 +1978,7 @@ a { color: var(--accent); text-decoration: none; }
 
 /* Поле ввода — underline стиль */
 .form-field {
-  padding: 12px 0;
-  min-height: 52px;
+  padding: 10px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -2021,7 +2020,9 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .form-field textarea {
-  min-height: 72px;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
   padding: 4px 0;
   font-style: italic;
 }

@@ -1274,15 +1274,18 @@ function renderCheckout() {
     });
   }
 
-  // Скрываем hint при вводе (компания и комментарий)
+  // Скрываем hint при вводе; авто-расширение textarea
   [['field-company'], ['field-city'], ['field-comment']].forEach(([id]) => {
     const el   = document.getElementById(id);
     const hint = el?.nextElementSibling;
-    if (el && hint) {
-      el.addEventListener('input', () => {
-        hint.style.display = el.value ? 'none' : '';
-      });
-    }
+    if (!el) return;
+    el.addEventListener('input', () => {
+      if (hint) hint.style.display = el.value ? 'none' : '';
+      if (el.tagName === 'TEXTAREA') {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+      }
+    });
   });
 }
 
