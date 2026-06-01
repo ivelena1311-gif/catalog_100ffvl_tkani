@@ -1197,6 +1197,21 @@ function _sampleItemHTML(sample) {
 
 // ---- 4.5 ОФОРМЛЕНИЕ ЗАЯВКИ ----
 
+function _formatPhone(raw) {
+  let d = raw.replace(/\D/g, '');
+  if (d.startsWith('8') || d.startsWith('7')) d = d.slice(1);
+  d = d.slice(0, 10);
+  if (!d.length) return '';
+  let r = '+7 (' + d.slice(0, 3);
+  if (d.length <= 3) return r;
+  r += ') ' + d.slice(3, 6);
+  if (d.length <= 6) return r;
+  r += '-' + d.slice(6, 8);
+  if (d.length <= 8) return r;
+  r += '-' + d.slice(8, 10);
+  return r;
+}
+
 function renderCheckout() {
   const cart    = Store.getCart();
   const samples = Store.getSamples();
@@ -1243,13 +1258,23 @@ function renderCheckout() {
   // MainButton
   setMainButton('Отправить заявку', _submitOrder);
 
-  // Валидация в реальном времени
+  // Маска и валидация телефона
   const phoneEl = document.getElementById('field-phone');
-  phoneEl?.addEventListener('input', () => {
-    const valid = phoneEl.value.replace(/\D/g, '').length >= 10;
-    valid ? TG.MainButton.enable() : TG.MainButton.disable();
-  });
-  TG.MainButton.disable(); // Пока телефон не введён
+  if (phoneEl) {
+    phoneEl.addEventListener('focus', () => {
+      if (!phoneEl.value) phoneEl.value = '+7 (';
+    });
+    phoneEl.addEventListener('blur', () => {
+      if (phoneEl.value === '+7 (') phoneEl.value = '';
+    });
+    phoneEl.addEventListener('input', () => {
+      const formatted = _formatPhone(phoneEl.value);
+      phoneEl.value = formatted || (phoneEl.value.length ? '+7 (' : '');
+      const valid = formatted.replace(/\D/g, '').length >= 11;
+      valid ? TG.MainButton.enable() : TG.MainButton.disable();
+    });
+  }
+  TG.MainButton.disable();
 }
 
 async function _submitOrder() {
@@ -1257,8 +1282,8 @@ async function _submitOrder() {
   const name    = document.getElementById('field-name')?.value  || '';
   const comment = document.getElementById('field-comment')?.value || '';
 
-  if (phone.replace(/\D/g, '').length < 10) {
-    TG.showAlert('Введите корректный номер телефона');
+  if (phone.replace(/\D/g, '').length < 11) {
+    TG.showAlert('Пожалуйста, введите номер телефона для связи');
     return;
   }
 
