@@ -1289,8 +1289,9 @@ function renderCheckout() {
 }
 
 async function _submitOrder() {
-  const phone   = document.getElementById('field-phone')?.value || '';
-  const name    = document.getElementById('field-name')?.value  || '';
+  const phone   = document.getElementById('field-phone')?.value  || '';
+  const name    = document.getElementById('field-name')?.value   || '';
+  const city    = document.getElementById('field-city')?.value   || '';
   const comment = document.getElementById('field-comment')?.value || '';
 
   if (phone.replace(/\D/g, '').length < 11) {
@@ -1343,6 +1344,7 @@ async function _submitOrder() {
       body: JSON.stringify({
         phone,
         name,
+        city:        city || null,
         comment,
         tg_user_id:  user.id        || null,
         tg_username: user.username  || null,
