@@ -1857,6 +1857,13 @@ a { color: var(--accent); text-decoration: none; }
   line-height: 1.5;
 }
 
+.cart-submit-btn {
+  width: 100%;
+  margin-top: 16px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+}
+
 .cart-add-more {
   display: block;
   width: 100%;

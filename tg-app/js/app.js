@@ -1066,6 +1066,9 @@ function renderCart() {
       <div class="cart-disclaimer">
         * Финальная стоимость согласуется с менеджером после отправки заявки
       </div>
+      <button class="btn-oval btn-oval-primary cart-submit-btn" id="cart-submit-btn">
+        ${isFabrics ? 'Оформить заявку на метраж' : 'Оформить заявку на образцы'}
+      </button>
     </div>
   `;
 
@@ -1148,8 +1151,10 @@ function renderCart() {
   document.getElementById('cart-add-more')?.addEventListener('click', () => Router.tab('catalog'));
   document.getElementById('go-catalog-btn')?.addEventListener('click', () => Router.tab('catalog'));
 
-  // MainButton
-  setMainButton(`Оформить заявку (${totalItems})`, () => {
+  TG.MainButton.hide();
+
+  document.getElementById('cart-submit-btn')?.addEventListener('click', () => {
+    TG.HapticFeedback.impactOccurred('medium');
     Router.push('checkout', () => renderCheckout());
   });
 }
