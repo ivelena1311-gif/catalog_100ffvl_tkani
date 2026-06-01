@@ -1277,7 +1277,7 @@ function renderCheckout() {
   TG.MainButton.disable();
 
   // Скрываем hint при вводе (компания и комментарий)
-  [['field-company'], ['field-comment']].forEach(([id]) => {
+  [['field-company'], ['field-city'], ['field-comment']].forEach(([id]) => {
     const el   = document.getElementById(id);
     const hint = el?.nextElementSibling;
     if (el && hint) {
