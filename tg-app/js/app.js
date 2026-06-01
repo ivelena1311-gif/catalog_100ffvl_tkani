@@ -1008,10 +1008,10 @@ function renderCart() {
 
     <!-- Таб-переключатель -->
     <div class="cart-tab-bar">
-      <button class="btn-oval btn-oval-primary ${isFabrics ? 'in-cart' : ''}" id="cart-tab-fabrics">
+      <button class="btn-oval btn-oval-primary ${isSamples ? 'in-cart' : ''}" id="cart-tab-fabrics">
         Метраж${cart.length ? ` · ${cart.length}` : ''}
       </button>
-      <button class="btn-oval btn-oval-primary ${isSamples ? 'in-cart' : ''}" id="cart-tab-samples">
+      <button class="btn-oval btn-oval-primary ${isFabrics ? 'in-cart' : ''}" id="cart-tab-samples">
         Образцы${samples.length ? ` · ${samples.length}` : ''}
       </button>
     </div>
