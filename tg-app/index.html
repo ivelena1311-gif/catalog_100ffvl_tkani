@@ -227,6 +227,101 @@
   </div>
 
   <!-- ============================================================
+       ЭКРАН 5б: ОФОРМЛЕНИЕ ЗАЯВКИ НА ОБРАЗЦЫ
+       ============================================================ -->
+  <div id="screen-checkout-samples" class="screen no-tabbar" role="form">
+
+    <header class="screen-header">
+      <button class="back-btn screen-back-btn hidden" aria-label="Назад">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <span class="screen-title">Заявка на образцы</span>
+    </header>
+
+    <form class="checkout-form" id="checkout-samples-form" novalidate>
+
+      <div>
+        <div class="form-section-title">Контактные данные</div>
+        <div class="form-group">
+          <div class="form-field">
+            <label class="form-field-label" for="s-field-name">Имя и фамилия</label>
+            <input type="text" id="s-field-name" name="name" readonly style="opacity:0.7;cursor:default">
+          </div>
+          <div class="form-field" id="s-field-username-row" style="display:none">
+            <label class="form-field-label">Telegram</label>
+            <input type="text" id="s-field-username" readonly style="opacity:0.7;cursor:default">
+          </div>
+          <div class="form-field">
+            <label class="form-field-label" for="s-field-company">Компания/бренд</label>
+            <div class="form-input-hint-wrap">
+              <input type="text" id="s-field-company" name="company" placeholder="" autocomplete="organization">
+              <div class="form-field-hint">Укажите название вашего бренда, компании, ИП или ООО</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="form-section-title">Доставка</div>
+        <div class="form-group">
+          <div class="form-field">
+            <label class="form-field-label" for="s-field-city">Город</label>
+            <div class="form-input-hint-wrap">
+              <input type="text" id="s-field-city" name="city" placeholder="" autocomplete="address-level2">
+              <div class="form-field-hint">Укажите ваш город</div>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-field-label" for="s-field-sdek">Ближайший пункт выдачи СДЭК</label>
+            <div class="form-input-hint-wrap">
+              <input type="text" id="s-field-sdek" name="sdek" placeholder="">
+              <div class="form-field-hint">Укажите удобный пункт выдачи СДЭК</div>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-field-label" for="s-field-recipient">Фамилия, имя получателя *</label>
+            <input type="text" id="s-field-recipient" name="recipient" placeholder="Иванова Мария" autocomplete="name" required>
+          </div>
+          <div class="form-field">
+            <label class="form-field-label" for="s-field-phone">Телефон получателя *</label>
+            <input type="tel" id="s-field-phone" name="phone" placeholder="+7 (___) ___-__-__" autocomplete="tel" required>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="form-section-title">Комментарий к заявке</div>
+        <div class="form-group">
+          <div class="form-field">
+            <textarea id="s-field-comment" name="comment" placeholder="Ваши особые пожелания" rows="1"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="form-section-title">Состав заявки</div>
+        <div class="checkout-summary" id="checkout-samples-summary"></div>
+      </div>
+
+      <div class="checkout-actions">
+        <div class="checkout-action-block">
+          <button class="btn-oval btn-oval-primary" id="checkout-samples-submit-btn">Оформить заявку на образцы</button>
+          <p class="checkout-action-hint">После отправки заявки мы подготовим образцы и вышлем по указанному пункту СДЭК.</p>
+        </div>
+        <div class="checkout-action-block">
+          <button class="btn-oval btn-oval-primary" id="checkout-samples-manager-btn">Связаться с менеджером</button>
+          <p class="checkout-action-hint">Если возникли вопросы по образцам или условиям доставки — свяжитесь с менеджером.</p>
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+
+  <!-- ============================================================
        ЭКРАН 6: УСПЕШНАЯ ОТПРАВКА
        ============================================================ -->
   <div id="screen-success" class="screen no-tabbar" role="main">

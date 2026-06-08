@@ -95,7 +95,7 @@ const Router = (() => {
   // Экраны, относящиеся к Tab Bar (при переключении между ними — без анимации)
   const TAB_SCREENS = ['catalog', 'search', 'cart', 'profile'];
   // Экраны без Tab Bar
-  const NO_TAB_SCREENS = ['checkout', 'success'];
+  const NO_TAB_SCREENS = ['checkout', 'checkout-samples', 'success'];
 
   /** Текущий активный экран */
   function current() {
@@ -1140,7 +1140,11 @@ function renderCart() {
 
   document.getElementById('cart-submit-btn')?.addEventListener('click', () => {
     TG.HapticFeedback.impactOccurred('medium');
-    Router.push('checkout', () => renderCheckout());
+    if (_cartTab === 'samples') {
+      Router.push('checkout-samples', () => renderCheckoutSamples());
+    } else {
+      Router.push('checkout', () => renderCheckout());
+    }
   });
 }
 
@@ -1291,6 +1295,155 @@ function renderCheckout() {
       }
     });
   });
+}
+
+function renderCheckoutSamples() {
+  const samples = Store.getSamples();
+  const user    = TG.initDataUnsafe?.user;
+
+  const commentEl = document.getElementById('s-field-comment');
+  if (commentEl) commentEl.style.height = '';
+
+  const nameField     = document.getElementById('s-field-name');
+  const usernameField = document.getElementById('s-field-username');
+  const usernameRow   = document.getElementById('s-field-username-row');
+
+  if (nameField && user) {
+    nameField.value = [user.first_name, user.last_name].filter(Boolean).join(' ');
+  }
+  if (usernameField && usernameRow && user?.username) {
+    usernameField.value = '@' + user.username;
+    usernameRow.style.display = '';
+  }
+
+  const summaryEl = document.getElementById('checkout-samples-summary');
+  if (summaryEl) {
+    summaryEl.innerHTML = samples.map(s => {
+      const fabric = getFabricById(s.fabricId);
+      if (!fabric) return '';
+      return `<div class="checkout-summary-row"><span>${fabric.name}</span><span>все цвета</span></div>`;
+    }).join('') + `
+      <div class="checkout-summary-row checkout-summary-total">
+        <span>Образцов</span><span>${samples.length}</span>
+      </div>`;
+  }
+
+  TG.MainButton.hide();
+
+  document.getElementById('checkout-samples-submit-btn')?.addEventListener('click', () => {
+    TG.HapticFeedback.impactOccurred('medium');
+    _submitSamplesOrder();
+  });
+  document.getElementById('checkout-samples-manager-btn')?.addEventListener('click', () => {
+    TG.HapticFeedback.impactOccurred('light');
+    TG.openTelegramLink('https://t.me/Opt_100ffvl');
+  });
+
+  const phoneEl = document.getElementById('s-field-phone');
+  if (phoneEl) {
+    phoneEl.addEventListener('focus', () => {
+      if (!phoneEl.value) phoneEl.value = '+7 (';
+    });
+    phoneEl.addEventListener('blur', () => {
+      if (phoneEl.value === '+7 (') phoneEl.value = '';
+    });
+    phoneEl.addEventListener('input', () => {
+      const formatted = _formatPhone(phoneEl.value);
+      phoneEl.value = formatted || (phoneEl.value.length ? '+7 (' : '');
+    });
+  }
+
+  ['s-field-company', 's-field-city', 's-field-sdek', 's-field-comment'].forEach(id => {
+    const el   = document.getElementById(id);
+    const hint = el?.parentElement?.querySelector('.form-field-hint');
+    if (!el) return;
+    el.addEventListener('input', () => {
+      if (hint) hint.style.display = el.value ? 'none' : '';
+      if (el.tagName === 'TEXTAREA') {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+      }
+    });
+  });
+}
+
+async function _submitSamplesOrder() {
+  const phone     = document.getElementById('s-field-phone')?.value     || '';
+  const recipient = document.getElementById('s-field-recipient')?.value || '';
+  const city      = document.getElementById('s-field-city')?.value      || '';
+  const sdek      = document.getElementById('s-field-sdek')?.value      || '';
+  const company   = document.getElementById('s-field-company')?.value   || '';
+  const comment   = document.getElementById('s-field-comment')?.value   || '';
+
+  if (!recipient.trim()) {
+    TG.showAlert('Пожалуйста, укажите фамилию и имя получателя');
+    return;
+  }
+  if (phone.replace(/\D/g, '').length < 11) {
+    TG.showAlert('Пожалуйста, введите телефон получателя');
+    return;
+  }
+
+  TG.MainButton.showProgress();
+  TG.MainButton.disable();
+
+  const user    = TG.initDataUnsafe?.user || {};
+  const samples = Store.getSamples();
+
+  const sampleItems = samples.map(s => {
+    const fabric = getFabricById(s.fabricId);
+    return {
+      fabric_id:       s.fabricId,
+      fabric_name:     fabric?.name    || `Ткань #${s.fabricId}`,
+      article:         fabric?.article || '',
+      color_id:        null,
+      color_name:      'все цвета',
+      meters:          0,
+      price_per_meter: 0,
+      price_type:      'sample',
+    };
+  });
+
+  try {
+    const res = await fetch('/api/orders', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone,
+        name:        recipient,
+        city:        city    || null,
+        sdek_point:  sdek    || null,
+        comment,
+        company:     company || null,
+        tg_user_id:  user.id          || null,
+        tg_username: user.username    || null,
+        first_name:  user.first_name  || null,
+        order_type:  'samples',
+        items: sampleItems,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      TG.MainButton.hideProgress();
+      TG.MainButton.enable();
+      TG.showAlert(data.error || 'Ошибка отправки заявки. Попробуйте ещё раз.');
+      return;
+    }
+
+    Store.clearSamples();
+    updateCartBadge();
+    TG.MainButton.hideProgress();
+    Router.push('success', () => renderSuccess(data.order_number));
+    TG.HapticFeedback.notificationOccurred('success');
+
+  } catch (err) {
+    console.error('[_submitSamplesOrder]', err);
+    TG.MainButton.hideProgress();
+    TG.MainButton.enable();
+    TG.showAlert('Нет соединения с сервером. Проверьте интернет и попробуйте ещё раз.');
+  }
 }
 
 async function _submitOrder() {
