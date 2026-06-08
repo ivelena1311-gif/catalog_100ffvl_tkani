@@ -1279,6 +1279,7 @@ function renderCheckout() {
     phoneEl.addEventListener('input', () => {
       const formatted = _formatPhone(phoneEl.value);
       phoneEl.value = formatted || (phoneEl.value.length ? '+7 (' : '');
+      phoneEl.closest('.form-field')?.classList.remove('form-field--error');
     });
   }
 
@@ -1350,8 +1351,13 @@ function renderCheckoutSamples() {
     phoneEl.addEventListener('input', () => {
       const formatted = _formatPhone(phoneEl.value);
       phoneEl.value = formatted || (phoneEl.value.length ? '+7 (' : '');
+      phoneEl.closest('.form-field')?.classList.remove('form-field--error');
     });
   }
+
+  document.getElementById('s-field-recipient')?.addEventListener('input', function () {
+    this.closest('.form-field')?.classList.remove('form-field--error');
+  });
 
   ['s-field-company', 's-field-city', 's-field-sdek', 's-field-comment'].forEach(id => {
     const el   = document.getElementById(id);
@@ -1368,19 +1374,24 @@ function renderCheckoutSamples() {
 }
 
 async function _submitSamplesOrder() {
-  const phone     = document.getElementById('s-field-phone')?.value     || '';
-  const recipient = document.getElementById('s-field-recipient')?.value || '';
-  const city      = document.getElementById('s-field-city')?.value      || '';
-  const sdek      = document.getElementById('s-field-sdek')?.value      || '';
-  const company   = document.getElementById('s-field-company')?.value   || '';
-  const comment   = document.getElementById('s-field-comment')?.value   || '';
+  const recipientEl = document.getElementById('s-field-recipient');
+  const phoneEl     = document.getElementById('s-field-phone');
+  const phone       = phoneEl?.value     || '';
+  const recipient   = recipientEl?.value || '';
+  const city        = document.getElementById('s-field-city')?.value    || '';
+  const sdek        = document.getElementById('s-field-sdek')?.value    || '';
+  const company     = document.getElementById('s-field-company')?.value || '';
+  const comment     = document.getElementById('s-field-comment')?.value || '';
+
+  document.querySelectorAll('#checkout-samples-form .form-field--error')
+    .forEach(el => el.classList.remove('form-field--error'));
 
   if (!recipient.trim()) {
-    TG.showAlert('Пожалуйста, укажите фамилию и имя получателя');
+    _setFieldError(recipientEl, 'Пожалуйста, укажите фамилию и имя получателя');
     return;
   }
   if (phone.replace(/\D/g, '').length < 11) {
-    TG.showAlert('Пожалуйста, введите телефон получателя');
+    _setFieldError(phoneEl, 'Пожалуйста, введите телефон получателя');
     return;
   }
 
@@ -1446,14 +1457,25 @@ async function _submitSamplesOrder() {
   }
 }
 
+function _setFieldError(el, message) {
+  const field = el?.closest('.form-field');
+  if (field) field.classList.add('form-field--error');
+  el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  TG.showAlert(message);
+}
+
 async function _submitOrder() {
-  const phone   = document.getElementById('field-phone')?.value  || '';
+  const phoneEl = document.getElementById('field-phone');
+  const phone   = phoneEl?.value  || '';
   const name    = document.getElementById('field-name')?.value   || '';
   const city    = document.getElementById('field-city')?.value   || '';
   const comment = document.getElementById('field-comment')?.value || '';
 
+  document.querySelectorAll('#checkout-form .form-field--error')
+    .forEach(el => el.classList.remove('form-field--error'));
+
   if (phone.replace(/\D/g, '').length < 11) {
-    TG.showAlert('Пожалуйста, введите номер телефона для связи');
+    _setFieldError(phoneEl, 'Пожалуйста, введите номер телефона для связи');
     return;
   }
 

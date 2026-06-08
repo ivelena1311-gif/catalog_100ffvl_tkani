@@ -1988,6 +1988,13 @@ a { color: var(--accent); text-decoration: none; }
 
 .form-field:last-child { border-bottom: none; }
 
+.form-field--error {
+  border-bottom-color: #E53935;
+}
+.form-field--error .form-field-label {
+  color: #E53935;
+}
+
 .form-field-label {
   font-family: var(--font-body);
   font-size: 9px;
