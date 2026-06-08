@@ -1218,12 +1218,9 @@ function renderCheckout() {
   const total   = Store.getCartTotal();
   const user    = TG.initDataUnsafe?.user;
 
-  // Устанавливаем начальную высоту textarea в 1 строку
+  // Сбрасываем инлайн-высоту textarea к исходной (CSS-правило)
   const commentEl = document.getElementById('field-comment');
-  if (commentEl) {
-    commentEl.style.height = 'auto';
-    commentEl.style.height = commentEl.scrollHeight + 'px';
-  }
+  if (commentEl) commentEl.style.height = '';
 
   // Предзаполнение из Telegram-профиля
   const nameField     = document.getElementById('field-name');
