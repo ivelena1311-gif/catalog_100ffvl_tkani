@@ -2039,6 +2039,7 @@ a { color: var(--accent); text-decoration: none; }
 
 .form-field textarea {
   min-height: 0;
+  height: 1.5em;
   overflow: hidden;
   padding: 4px 0;
   font-style: italic;
