@@ -1365,6 +1365,7 @@ function renderCheckoutSamples() {
     if (!el) return;
     el.addEventListener('input', () => {
       if (hint) hint.style.display = el.value ? 'none' : '';
+      el.closest('.form-field')?.classList.remove('form-field--error');
       if (el.tagName === 'TEXTAREA') {
         el.style.height = 'auto';
         el.style.height = el.scrollHeight + 'px';
@@ -1376,11 +1377,10 @@ function renderCheckoutSamples() {
 async function _submitSamplesOrder() {
   const recipientEl = document.getElementById('s-field-recipient');
   const phoneEl     = document.getElementById('s-field-phone');
+  const sdekEl      = document.getElementById('s-field-sdek');
   const phone       = phoneEl?.value     || '';
   const recipient   = recipientEl?.value || '';
-  const city        = document.getElementById('s-field-city')?.value    || '';
-  const sdek        = document.getElementById('s-field-sdek')?.value    || '';
-  const company     = document.getElementById('s-field-company')?.value || '';
+  const sdek        = sdekEl?.value      || '';
   const comment     = document.getElementById('s-field-comment')?.value || '';
 
   document.querySelectorAll('#checkout-samples-form .form-field--error')
@@ -1388,6 +1388,10 @@ async function _submitSamplesOrder() {
 
   if (!recipient.trim()) {
     _setFieldError(recipientEl, 'Пожалуйста, укажите фамилию и имя получателя');
+    return;
+  }
+  if (!sdek.trim()) {
+    _setFieldError(sdekEl, 'Пожалуйста, укажите пункт выдачи СДЭК');
     return;
   }
   if (phone.replace(/\D/g, '').length < 11) {
@@ -1401,36 +1405,29 @@ async function _submitSamplesOrder() {
   const user    = TG.initDataUnsafe?.user || {};
   const samples = Store.getSamples();
 
-  const sampleItems = samples.map(s => {
+  const items = samples.map(s => {
     const fabric = getFabricById(s.fabricId);
     return {
-      fabric_id:       s.fabricId,
-      fabric_name:     fabric?.name    || `Ткань #${s.fabricId}`,
-      article:         fabric?.article || '',
-      color_id:        null,
-      color_name:      'все цвета',
-      meters:          0,
-      price_per_meter: 0,
-      price_type:      'sample',
+      fabric_id:   s.fabricId,
+      fabric_name: fabric?.name || `Ткань #${s.fabricId}`,
+      color_id:    null,
+      color_name:  'все цвета',
     };
   });
 
   try {
-    const res = await fetch('/api/orders', {
+    const res = await fetch('/api/samples', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         phone,
-        name:        recipient,
-        city:        city    || null,
-        sdek_point:  sdek    || null,
-        comment,
-        company:     company || null,
-        tg_user_id:  user.id          || null,
-        tg_username: user.username    || null,
-        first_name:  user.first_name  || null,
-        order_type:  'samples',
-        items: sampleItems,
+        recipient_name: recipient,
+        cdek_address:   sdek,
+        comment:        comment || null,
+        tg_user_id:     user.id         || null,
+        tg_username:    user.username   || null,
+        first_name:     user.first_name || null,
+        items,
       }),
     });
 
@@ -1446,7 +1443,7 @@ async function _submitSamplesOrder() {
     Store.clearSamples();
     updateCartBadge();
     TG.MainButton.hideProgress();
-    Router.push('success', () => renderSuccess(data.order_number));
+    Router.push('success', () => renderSuccess(data.request_number));
     TG.HapticFeedback.notificationOccurred('success');
 
   } catch (err) {
@@ -1482,43 +1479,26 @@ async function _submitOrder() {
   TG.MainButton.showProgress();
   TG.MainButton.disable();
 
-  const user    = TG.initDataUnsafe?.user || {};
-  const cart    = Store.getCart();
-  const samples = Store.getSamples();
+  const user = TG.initDataUnsafe?.user || {};
+  const cart = Store.getCart();
 
-  // Собираем позиции со snapshot цены
   const items = cart.map(item => {
     const fabric = getFabricById(item.fabricId);
     const price  = fabric ? getPriceForMeters(fabric, item.meters) : 0;
     const type   = (fabric?.cutPrice && item.meters < 50) ? 'cut' : 'base';
     return {
       fabric_id:       item.fabricId,
-      fabric_name:     fabric?.name     || `Ткань #${item.fabricId}`,
+      fabric_name:     fabric?.name   || `Ткань #${item.fabricId}`,
       color_id:        null,
-      color_name:      item.colorName   || 'Уточнить у менеджера',
+      color_name:      item.colorName || 'Уточнить у менеджера',
       meters:          item.meters,
       price_per_meter: price,
       price_type:      type,
     };
   });
 
-  // Образцы как отдельные позиции с типом 'sample'
-  const sampleItems = samples.map(s => {
-    const fabric = getFabricById(s.fabricId);
-    return {
-      fabric_id:       s.fabricId,
-      fabric_name:     fabric?.name    || `Ткань #${s.fabricId}`,
-      article:         fabric?.article || '',
-      color_id:        null,
-      color_name:      'все цвета',
-      meters:          0,
-      price_per_meter: 0,
-      price_type:      'sample',
-    };
-  });
-
   try {
-    const res  = await fetch('/api/orders', {
+    const res = await fetch('/api/orders', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1526,10 +1506,10 @@ async function _submitOrder() {
         name,
         city:        city || null,
         comment,
-        tg_user_id:  user.id        || null,
-        tg_username: user.username  || null,
+        tg_user_id:  user.id         || null,
+        tg_username: user.username   || null,
         first_name:  user.first_name || name || null,
-        items: [...items, ...sampleItems],
+        items,
       }),
     });
 
@@ -1543,7 +1523,6 @@ async function _submitOrder() {
     }
 
     Store.clearCart();
-    Store.clearSamples();
     updateCartBadge();
     TG.MainButton.hideProgress();
     Router.push('success', () => renderSuccess(data.order_number));
