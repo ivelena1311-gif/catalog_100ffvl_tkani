@@ -2044,6 +2044,12 @@ a { color: var(--accent); text-decoration: none; }
   font-style: italic;
 }
 
+.form-field textarea::placeholder {
+  font-style: italic;
+  color: var(--tg-hint);
+  opacity: 0.55;
+}
+
 /* Сводка заявки */
 .checkout-summary {
   background: transparent;
