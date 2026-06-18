@@ -1379,9 +1379,15 @@ function renderAnalytics(d) {
       ${stat(d.totalViews30d, 'Просмотров за 30 дней')}
     </div>
 
-    <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
-      <button class="btn btn-danger btn-sm" onclick="resetViewsCounter()">
-        Сбросить счётчик просмотров
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn btn-danger btn-sm" onclick="resetAnalytics('views', 'счётчик просмотров')">
+        Сбросить просмотры
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="resetAnalytics('orders', 'все заявки на ткани')">
+        Сбросить заявки
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="resetAnalytics('samples', 'все запросы образцов')">
+        Сбросить образцы
       </button>
     </div>
 
@@ -1444,16 +1450,16 @@ function fmtDate(iso) {
   return new Date(iso).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
 }
 
-async function resetViewsCounter() {
-  if (!confirm('Сбросить счётчик просмотров? Данные о просмотрах тканей будут удалены безвозвратно.')) return;
-  const res = await fetch('/api/analytics?type=views', {
+async function resetAnalytics(type, label) {
+  if (!confirm(`Удалить ${label}? Данные будут удалены безвозвратно.`)) return;
+  const res = await fetch(`/api/analytics?type=${type}`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${_token}` },
   });
   if (res.ok) {
     loadAnalytics();
   } else {
-    alert('Ошибка при сбросе счётчика');
+    alert('Ошибка при сбросе данных');
   }
 }
 </script>

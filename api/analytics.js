@@ -142,10 +142,11 @@ module.exports = async function handler(req, res) {
   if (req.method === 'DELETE') {
     if (!checkAuth(req, res)) return;
     const { type } = req.query;
-    if (type !== 'views') return res.status(400).json({ error: 'Укажите ?type=views' });
+    const allowedTypes = { views: 'analytics_views', orders: 'orders', samples: 'sample_requests' };
+    if (!allowedTypes[type]) return res.status(400).json({ error: 'Укажите ?type=views|orders|samples' });
     try {
       const r = await fetch(
-        `${process.env.SUPABASE_URL}/rest/v1/analytics_views?id=gte.0`,
+        `${process.env.SUPABASE_URL}/rest/v1/${allowedTypes[type]}?id=gte.0`,
         {
           method:  'DELETE',
           headers: {
@@ -159,7 +160,7 @@ module.exports = async function handler(req, res) {
       if (!r.ok) throw new Error(await r.text());
       return res.status(200).json({ ok: true });
     } catch (err) {
-      console.error('[DELETE /api/analytics?type=views]', err.message);
+      console.error(`[DELETE /api/analytics?type=${type}]`, err.message);
       return res.status(500).json({ error: 'Ошибка сервера' });
     }
   }
