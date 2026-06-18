@@ -1372,11 +1372,14 @@ function renderAnalytics(d) {
 
   return `
     <div class="stats" style="margin-bottom:20px">
-      ${stat(d.totalOrders,   'Всего заявок')}
-      ${stat(d.totalSamples,  'Запросов образцов')}
-      ${stat(d.totalUsers,    'Пользователей')}
-      ${stat(d.newUsersMonth, 'Новых за 30 дней')}
-      ${stat(d.totalViews30d, 'Просмотров за 30 дней')}
+      ${stat(d.totalOrders,        'Всего заявок')}
+      ${stat(d.totalSamples,       'Запросов образцов')}
+      ${stat(d.totalUsers,         'Пользователей')}
+      ${stat(d.newUsersMonth,      'Новых за 30 дней')}
+      ${stat(d.totalViews30d,      'Просмотров за 30 дней')}
+      ${stat(d.totalSessions30d || 0, 'Сессий за 30 дней')}
+      ${stat(fmtDuration(d.avgDurationSec), 'Среднее время')}
+      ${stat((d.avgScreens || 0) + ' экр.', 'Ср. глубина')}
     </div>
 
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-bottom:16px;flex-wrap:wrap">
@@ -1448,6 +1451,11 @@ function esc(s) {
 }
 function fmtDate(iso) {
   return new Date(iso).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function fmtDuration(sec) {
+  if (!sec) return '—';
+  if (sec < 60) return sec + 'с';
+  return Math.floor(sec / 60) + 'м ' + (sec % 60) + 'с';
 }
 
 async function resetAnalytics(type, label) {

@@ -6,7 +6,7 @@
  * POST /api/analytics?type=user — upsert пользователя  { tg_user_id, first_name?, username? }
  */
 
-const { dbGet, dbPost } = require('../lib/db');
+const { dbGet, dbPost, dbPatch } = require('../lib/db');
 const { checkAuth }     = require('../lib/admin-auth');
 
 module.exports = async function handler(req, res) {
@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     if (!checkAuth(req, res)) return;
     try {
-      const [topFabrics, ordersByDay, userStats, totalOrders, totalSamples] = await Promise.all([
+      const [topFabrics, ordersByDay, userStats, totalOrders, totalSamples, sessionStats] = await Promise.all([
         dbGet(
           'analytics_views?select=fabric_id,fabrics(name,article)' +
           '&viewed_at=gte.' + daysAgo(30) +
@@ -32,6 +32,7 @@ module.exports = async function handler(req, res) {
         dbGet('analytics_users?select=tg_user_id,first_name,username,first_seen,last_seen&order=last_seen.desc&limit=1000'),
         dbGet('orders?select=id&limit=99999'),
         dbGet('sample_requests?select=id&limit=99999'),
+        dbGet('analytics_sessions?select=duration_seconds,screens_visited&started_at=gte.' + daysAgo(30) + '&not.ended_at=is.null&limit=99999'),
       ]);
 
       const viewCounts = {};
@@ -64,12 +65,19 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({
         topFabrics:    topList,
         ordersByDay:   ordersChart,
-        totalUsers:    userStats.length,
-        newUsersMonth: userStats.filter(u => u.first_seen >= month30).length,
-        totalOrders:   totalOrders.length,
-        totalSamples:  totalSamples.length,
-        totalViews30d: topFabrics.length,
-        users:         userStats,
+        totalUsers:      userStats.length,
+        newUsersMonth:   userStats.filter(u => u.first_seen >= month30).length,
+        totalOrders:     totalOrders.length,
+        totalSamples:    totalSamples.length,
+        totalViews30d:   topFabrics.length,
+        users:           userStats,
+        totalSessions30d: sessionStats.length,
+        avgDurationSec:  sessionStats.length
+          ? Math.round(sessionStats.reduce((s, x) => s + (x.duration_seconds || 0), 0) / sessionStats.length)
+          : 0,
+        avgScreens:      sessionStats.length
+          ? Math.round(sessionStats.reduce((s, x) => s + (x.screens_visited || 0), 0) / sessionStats.length)
+          : 0,
       });
     } catch (err) {
       console.error('[GET /api/analytics]', err.message);
@@ -135,7 +143,40 @@ module.exports = async function handler(req, res) {
       }
     }
 
-    return res.status(400).json({ error: 'Укажите ?type=view или ?type=user' });
+    // POST ?type=session_start
+    if (type === 'session_start') {
+      const { tg_user_id, session_token } = body || {};
+      if (!session_token) return res.status(400).json({ error: 'session_token обязателен' });
+      try {
+        await dbPost('analytics_sessions', {
+          tg_user_id:    tg_user_id ? Number(tg_user_id) : null,
+          session_token,
+        });
+        return res.status(200).json({ ok: true });
+      } catch (err) {
+        console.error('[POST session_start]', err.message);
+        return res.status(500).json({ error: 'Ошибка сервера' });
+      }
+    }
+
+    // POST ?type=session_end
+    if (type === 'session_end') {
+      const { session_token, duration_seconds, screens_visited } = body || {};
+      if (!session_token) return res.status(400).json({ error: 'session_token обязателен' });
+      try {
+        await dbPatch(`analytics_sessions?session_token=eq.${encodeURIComponent(session_token)}`, {
+          ended_at:        new Date().toISOString(),
+          duration_seconds: Math.max(0, Number(duration_seconds) || 0),
+          screens_visited:  Math.max(0, Number(screens_visited) || 0),
+        });
+        return res.status(200).json({ ok: true });
+      } catch (err) {
+        console.error('[POST session_end]', err.message);
+        return res.status(500).json({ error: 'Ошибка сервера' });
+      }
+    }
+
+    return res.status(400).json({ error: 'Укажите ?type=view, ?type=user, ?type=session_start или ?type=session_end' });
   }
 
   // ── DELETE: сброс счётчика просмотров (с авторизацией) ──────

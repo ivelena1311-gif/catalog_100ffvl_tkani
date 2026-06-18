@@ -89,6 +89,10 @@ const TG = window.Telegram?.WebApp || {
    2. РОУТЕР
    ================================================================ */
 
+let _sessionToken = null;
+let _sessionStart = null;
+let _screenCount  = 0;
+
 const Router = (() => {
   // Стек навигации — массив id экранов
   let history = ['catalog'];
@@ -105,6 +109,7 @@ const Router = (() => {
   /** Переход на новый экран вперёд */
   function push(screenId, renderFn) {
     if (current() === screenId) return;
+    _screenCount++;
     renderFn?.();
 
     const fromEl = document.getElementById('screen-' + current());
@@ -119,7 +124,7 @@ const Router = (() => {
   /** Переключение вкладки Tab Bar (без анимации slide) */
   function tab(screenId) {
     if (current() === screenId && history.length === 1) return;
-
+    _screenCount++;
     // Рендерим экран перед показом
     _renderScreen(screenId);
 
@@ -278,6 +283,50 @@ function setMainButton(text, handler, options = {}) {
   options.disabled ? TG.MainButton.disable() : TG.MainButton.enable();
   TG.MainButton.show();
 }
+
+/* ================================================================
+   3b. СЕССИОННЫЙ ТРЕКИНГ
+   ================================================================ */
+
+function _startSession() {
+  _sessionToken = Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+  _sessionStart = Date.now();
+  _screenCount  = 1;
+  const user = TG.initDataUnsafe?.user;
+  fetch('/api/analytics?type=session_start', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ tg_user_id: user?.id || null, session_token: _sessionToken }),
+  }).catch(() => {});
+}
+
+function _endSession() {
+  if (!_sessionToken || !_sessionStart) return;
+  const payload = JSON.stringify({
+    session_token:    _sessionToken,
+    duration_seconds: Math.round((Date.now() - _sessionStart) / 1000),
+    screens_visited:  _screenCount,
+  });
+  _sessionToken = null;
+  _sessionStart = null;
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon('/api/analytics?type=session_end',
+      new Blob([payload], { type: 'application/json' }));
+  } else {
+    fetch('/api/analytics?type=session_end', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: payload, keepalive: true,
+    }).catch(() => {});
+  }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    _endSession();
+  } else if (document.visibilityState === 'visible' && !_sessionToken) {
+    _startSession();
+  }
+});
 
 /* ================================================================
    4. РЕНДЕР ЭКРАНОВ
@@ -2210,6 +2259,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       }),
     }).catch(() => {});
   }
+
+  // 7c. Старт сессии
+  _startSession();
 
   // 8. Обновляем бейджи
   updateCartBadge();
