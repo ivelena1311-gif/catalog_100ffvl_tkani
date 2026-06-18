@@ -138,6 +138,32 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Укажите ?type=view или ?type=user' });
   }
 
+  // ── DELETE: сброс счётчика просмотров (с авторизацией) ──────
+  if (req.method === 'DELETE') {
+    if (!checkAuth(req, res)) return;
+    const { type } = req.query;
+    if (type !== 'views') return res.status(400).json({ error: 'Укажите ?type=views' });
+    try {
+      const r = await fetch(
+        `${process.env.SUPABASE_URL}/rest/v1/analytics_views?id=gte.0`,
+        {
+          method:  'DELETE',
+          headers: {
+            'apikey':        process.env.SUPABASE_SERVICE_KEY,
+            'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+            'Content-Type':  'application/json',
+            'Prefer':        'return=minimal',
+          },
+        }
+      );
+      if (!r.ok) throw new Error(await r.text());
+      return res.status(200).json({ ok: true });
+    } catch (err) {
+      console.error('[DELETE /api/analytics?type=views]', err.message);
+      return res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  }
+
   return res.status(405).end();
 };
 
