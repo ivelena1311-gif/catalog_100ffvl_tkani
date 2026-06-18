@@ -18,7 +18,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     if (!checkAuth(req, res)) return;
     try {
-      const [topFabrics, ordersByDay, userStats, totalOrders, totalSamples, sessionStats] = await Promise.all([
+      const [topFabrics, ordersByDay, userStats, totalOrders, totalSamples] = await Promise.all([
         dbGet(
           'analytics_views?select=fabric_id,fabrics(name,article)' +
           '&viewed_at=gte.' + daysAgo(30) +
@@ -32,8 +32,20 @@ module.exports = async function handler(req, res) {
         dbGet('analytics_users?select=tg_user_id,first_name,username,first_seen,last_seen&order=last_seen.desc&limit=1000'),
         dbGet('orders?select=id&limit=99999'),
         dbGet('sample_requests?select=id&limit=99999'),
-        dbGet('analytics_sessions?select=duration_seconds,screens_visited&started_at=gte.' + daysAgo(30) + '&ended_at=not.is.null&limit=99999'),
       ]);
+
+      // Сессии — необязательный запрос, не ломает аналитику если таблица ещё не создана
+      let sessionStats = [];
+      try {
+        sessionStats = await dbGet(
+          'analytics_sessions?select=duration_seconds,screens_visited' +
+          '&started_at=gte.' + daysAgo(30) +
+          '&duration_seconds=not.is.null' +
+          '&limit=99999'
+        );
+      } catch (e) {
+        console.error('[analytics sessions]', e.message);
+      }
 
       const viewCounts = {};
       const fabricMeta = {};
