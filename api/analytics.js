@@ -29,7 +29,7 @@ module.exports = async function handler(req, res) {
           '&created_at=gte.' + daysAgo(30) +
           '&order=created_at.desc&limit=1000'
         ),
-        dbGet('analytics_users?select=tg_user_id,first_seen&limit=10000'),
+        dbGet('analytics_users?select=tg_user_id,first_name,username,first_seen,last_seen&order=last_seen.desc&limit=1000'),
         dbGet('orders?select=id&limit=1'),
         dbGet('sample_requests?select=id&limit=1'),
       ]);
@@ -69,6 +69,7 @@ module.exports = async function handler(req, res) {
         totalOrders:   totalOrders.length,
         totalSamples:  totalSamples.length,
         totalViews30d: topFabrics.length,
+        users:         userStats,
       });
     } catch (err) {
       console.error('[GET /api/analytics]', err.message);

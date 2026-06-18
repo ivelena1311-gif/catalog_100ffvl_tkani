@@ -1350,12 +1350,24 @@ function renderAnalytics(d) {
   const chartMax = Math.max(...d.ordersByDay.map(o => o.count), 1);
   const chartBars = d.ordersByDay.map(o => {
     const h = Math.round((o.count / chartMax) * 80);
-    const label = o.date.slice(5); // MM-DD
+    const label = o.date.slice(5);
     return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:28px">
       <div style="font-size:11px;color:var(--hint)">${o.count}</div>
       <div style="background:var(--accent);width:100%;height:${h}px;border-radius:3px 3px 0 0;min-height:2px"></div>
       <div style="font-size:10px;color:var(--hint);transform:rotate(-45deg);transform-origin:top left;margin-top:6px;white-space:nowrap">${label}</div>
     </div>`;
+  }).join('');
+
+  const users = d.users || [];
+  const userRows = users.map(u => {
+    const name = esc(u.first_name || '—');
+    const nick = u.username ? `<a href="https://t.me/${esc(u.username)}" target="_blank" style="color:var(--accent);text-decoration:none">@${esc(u.username)}</a>` : '<span style="color:var(--hint)">—</span>';
+    return `<tr>
+      <td>${name}</td>
+      <td>${nick}</td>
+      <td style="color:var(--hint);font-size:12px">${fmtDate(u.first_seen)}</td>
+      <td style="color:var(--hint);font-size:12px">${fmtDate(u.last_seen)}</td>
+    </tr>`;
   }).join('');
 
   return `
@@ -1396,6 +1408,20 @@ function renderAnalytics(d) {
         </div>` : '<div class="empty" style="padding:30px">Заявок пока нет</div>'}
       </div>
 
+    </div>
+
+    <!-- Посетители -->
+    <div class="fabrics-wrap" style="border-radius:12px;margin-top:20px">
+      <div style="padding:16px 18px;font-weight:600;border-bottom:1px solid var(--border)">
+        Посетители — ${users.length} чел.
+      </div>
+      ${users.length ? `
+      <table class="ft">
+        <thead><tr>
+          <th>Имя</th><th>Telegram</th><th>Первый визит</th><th>Последний визит</th>
+        </tr></thead>
+        <tbody>${userRows}</tbody>
+      </table>` : '<div class="empty" style="padding:30px">Нет данных</div>'}
     </div>`;
 }
 
