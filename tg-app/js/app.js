@@ -1440,10 +1440,14 @@ async function _submitSamplesOrder() {
       return;
     }
 
+    const snapshot = Store.getSamples().map(s => {
+      const fabric = getFabricById(s.fabricId);
+      return { name: fabric?.name || `Ткань #${s.fabricId}` };
+    });
     Store.clearSamples();
     updateCartBadge();
     TG.MainButton.hideProgress();
-    Router.push('success', () => renderSuccess(data.request_number));
+    Router.push('success', () => renderSuccess(data.request_number, { type: 'samples', items: snapshot }));
     TG.HapticFeedback.notificationOccurred('success');
 
   } catch (err) {
@@ -1522,10 +1526,14 @@ async function _submitOrder() {
       return;
     }
 
+    const snapshot = Store.getCart().map(item => {
+      const fabric = getFabricById(item.fabricId);
+      return { name: fabric?.name || `Ткань #${item.fabricId}`, meters: item.meters, colorName: item.colorName };
+    });
     Store.clearCart();
     updateCartBadge();
     TG.MainButton.hideProgress();
-    Router.push('success', () => renderSuccess(data.order_number));
+    Router.push('success', () => renderSuccess(data.order_number, { type: 'fabrics', items: snapshot }));
     TG.HapticFeedback.notificationOccurred('success');
 
   } catch (err) {
@@ -1538,16 +1546,39 @@ async function _submitOrder() {
 
 // ---- 4.6 ЭКРАН УСПЕХА ----
 
-function renderSuccess(orderNum) {
+function renderSuccess(orderNum, meta = {}) {
   const el = document.getElementById('success-content');
+  const { type = 'fabrics', items = [] } = meta;
+  const isSamples = type === 'samples';
+
+  const itemsHTML = items.length ? `
+    <div class="success-items">
+      ${items.map(it => `
+        <div class="success-item">
+          <span class="success-item-name">${it.name}</span>
+          ${isSamples
+            ? `<span class="success-item-tag">образец</span>`
+            : `<span class="success-item-meta">${it.meters}&nbsp;м · ${it.colorName || 'уточнить'}</span>`
+          }
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  const nextText = isSamples
+    ? `${MANAGER.name} подтвердит наличие образцов и уточнит детали отправки по СДЭК.`
+    : `${MANAGER.name} свяжется с вами до&nbsp;18:00 по московскому времени и подтвердит наличие тканей и условия поставки.`;
+
   el.innerHTML = `
     <div class="success-icon">&#10003;</div>
     <div class="success-line"></div>
-    <div class="success-title">Заявка отправлена</div>
-    <div class="success-text">
-      ${MANAGER.name} свяжется с вами до&nbsp;18:00 по московскому времени
+    <div class="success-title">${isSamples ? 'Запрос принят' : 'Заявка принята'}</div>
+    <div class="success-order-num">${isSamples ? 'Запрос' : 'Заявка'}&nbsp;№&nbsp;${orderNum}</div>
+    ${itemsHTML}
+    <div class="success-next">
+      <div class="success-next-title">Что дальше</div>
+      <p class="success-text">${nextText}</p>
     </div>
-    <div class="success-order-num">Заявка&nbsp;№&nbsp;${orderNum}</div>
     <button class="success-manager-btn" id="contact-manager-btn">
       Написать менеджеру
     </button>
