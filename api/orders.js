@@ -30,7 +30,7 @@
  */
 
 const { dbGet, dbPost } = require('../lib/db');
-const { sendNotification, formatOrderNotification } = require('../lib/notify');
+const { sendNotification, formatOrderNotification, formatOrderConfirmation } = require('../lib/notify');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -95,9 +95,14 @@ module.exports = async function handler(req, res) {
 
     await dbPost('order_items', orderItems);
 
-    // ── Telegram-уведомление ──────────────────────────────────
-    const text    = formatOrderNotification(order, orderItems);
+    // ── Telegram-уведомления ──────────────────────────────────
+    const text     = formatOrderNotification(order, orderItems);
     const notified = await sendNotification(text);
+
+    // Подтверждение клиенту
+    if (tg_user_id) {
+      await sendNotification(formatOrderConfirmation(order, orderItems), tg_user_id);
+    }
 
     // Обновляем флаг notified если успешно
     if (notified) {

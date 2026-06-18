@@ -22,7 +22,7 @@
  */
 
 const { dbPost } = require('../lib/db');
-const { sendNotification, formatSampleNotification } = require('../lib/notify');
+const { sendNotification, formatSampleNotification, formatSampleConfirmation } = require('../lib/notify');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -82,9 +82,14 @@ module.exports = async function handler(req, res) {
 
     await dbPost('sample_request_items', reqItems);
 
-    // ── Telegram-уведомление ──────────────────────────────────
+    // ── Telegram-уведомления ──────────────────────────────────
     const text     = formatSampleNotification(sampleReq, reqItems);
     const notified = await sendNotification(text);
+
+    // Подтверждение клиенту
+    if (tg_user_id) {
+      await sendNotification(formatSampleConfirmation(sampleReq, reqItems), tg_user_id);
+    }
 
     if (notified) {
       await fetch(
