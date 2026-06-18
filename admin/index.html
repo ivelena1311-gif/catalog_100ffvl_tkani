@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Админ-панель — 100FF VL</title>
+  <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -372,6 +373,16 @@
 
     <!-- Аналитика -->
     <div class="tab-content" id="tab-analytics">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:16px 0 20px;border-bottom:1px solid var(--border);margin-bottom:20px">
+        <span style="font-weight:600;font-size:14px;white-space:nowrap">📥 Excel-отчёт:</span>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--hint)">
+          с <input type="date" id="export-from" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;color:var(--text)">
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--hint)">
+          по <input type="date" id="export-to" style="padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;color:var(--text)">
+        </label>
+        <button class="btn btn-primary btn-sm" id="export-btn" onclick="exportToExcel()">Скачать Excel</button>
+      </div>
       <div id="analytics-content"><div class="loading">Загрузка...</div></div>
     </div>
   </main>
@@ -480,7 +491,18 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-    if (btn.dataset.tab === 'analytics') loadAnalytics();
+    if (btn.dataset.tab === 'analytics') {
+      const toEl   = document.getElementById('export-to');
+      const fromEl = document.getElementById('export-from');
+      if (toEl && !toEl.value) {
+        const today = new Date();
+        const ago30 = new Date(today);
+        ago30.setDate(ago30.getDate() - 30);
+        toEl.value   = today.toISOString().slice(0, 10);
+        fromEl.value = ago30.toISOString().slice(0, 10);
+      }
+      loadAnalytics();
+    }
     if (btn.dataset.tab === 'banners')   renderBannersTab();
   });
 });
@@ -1456,6 +1478,109 @@ function fmtDuration(sec) {
   if (!sec) return '—';
   if (sec < 60) return sec + 'с';
   return Math.floor(sec / 60) + 'м ' + (sec % 60) + 'с';
+}
+
+// ════════════════════════════════════════════════════════
+// EXCEL-ВЫГРУЗКА
+// ════════════════════════════════════════════════════════
+async function exportToExcel() {
+  const from = document.getElementById('export-from').value;
+  const to   = document.getElementById('export-to').value;
+  if (!from || !to) { alert('Выберите период'); return; }
+  if (from > to)    { alert('Дата "с" не может быть позже "по"'); return; }
+
+  const btn = document.getElementById('export-btn');
+  btn.disabled = true;
+  btn.textContent = 'Загрузка...';
+
+  try {
+    const res = await fetch(`/api/analytics-export?from=${from}&to=${to}`, {
+      headers: { Authorization: `Bearer ${_token}` },
+    });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error || res.status); }
+    const d = await res.json();
+
+    const wb = XLSX.utils.book_new();
+
+    // ── Лист 1: Заявки ───────────────────────────────────
+    const ordRows = [['Номер заявки','Дата','Имя','Telegram','Телефон','Ткань','Цвет','Метры','Цена/м (уе)','Тип','Сумма (уе)','Комментарий']];
+    let totalRevenue = 0;
+    for (const o of d.orders) {
+      for (const item of o.items) {
+        const sum = parseFloat(item.price_per_meter) * Number(item.meters);
+        totalRevenue += sum;
+        ordRows.push([
+          o.order_number,
+          fmtDate(o.created_at),
+          o.first_name || '',
+          o.tg_username ? '@' + o.tg_username : '',
+          o.phone,
+          item.fabric_name,
+          item.color_name,
+          Number(item.meters),
+          parseFloat(item.price_per_meter),
+          item.price_type === 'cut' ? 'Отрез' : 'Опт',
+          parseFloat(sum.toFixed(2)),
+          o.comment || '',
+        ]);
+      }
+    }
+    ordRows.push([]);
+    ordRows.push(['','','','','','','','','','ИТОГО:', parseFloat(totalRevenue.toFixed(2)), '']);
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(ordRows), 'Заявки');
+
+    // ── Лист 2: Образцы ──────────────────────────────────
+    const samRows = [['Номер запроса','Дата','Имя','Telegram','Телефон','Получатель','ПВЗ СДЭК','Ткани']];
+    for (const s of d.samples) {
+      samRows.push([
+        s.request_number,
+        fmtDate(s.created_at),
+        s.first_name || '',
+        s.tg_username ? '@' + s.tg_username : '',
+        s.phone,
+        s.recipient_name,
+        s.cdek_address,
+        s.items.map(i => i.fabric_name).join(', '),
+      ]);
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(samRows), 'Образцы');
+
+    // ── Лист 3: Ткани ────────────────────────────────────
+    const fabRows = [['Ткань','Артикул','Просмотры','Заказов (позиций)','Метры в заказах','Выручка (уе)','Образцов','Конверсия просм→заказ']];
+    for (const f of d.fabrics) {
+      const conv = f.views > 0 ? (f.orderPositions / f.views * 100).toFixed(1) + '%' : '—';
+      fabRows.push([
+        f.name, f.article,
+        f.views, f.orderPositions,
+        parseFloat(f.orderMeters.toFixed(2)),
+        parseFloat(f.orderRevenue.toFixed(2)),
+        f.sampleCount, conv,
+      ]);
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(fabRows), 'Ткани');
+
+    // ── Лист 4: Пользователи ─────────────────────────────
+    const usrRows = [['Имя','Telegram','Первый визит','Последний визит','Сессий (за период)','Ср. время (сек)','Ср. экранов']];
+    for (const u of d.users) {
+      usrRows.push([
+        u.first_name || '',
+        u.username ? '@' + u.username : '',
+        fmtDate(u.first_seen),
+        fmtDate(u.last_seen),
+        u.sessions_count,
+        u.avg_duration_sec || 0,
+        u.avg_screens || 0,
+      ]);
+    }
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(usrRows), 'Пользователи');
+
+    XLSX.writeFile(wb, `100FF_отчёт_${from}_${to}.xlsx`);
+  } catch (err) {
+    alert('Ошибка выгрузки: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Скачать Excel';
+  }
 }
 
 async function resetAnalytics(type, label) {
