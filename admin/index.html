@@ -1352,7 +1352,10 @@ async function loadAnalytics() {
   el.innerHTML = '<div class="loading">Загрузка...</div>';
   try {
     const res = await fetch(`/api/analytics`, { headers: { Authorization: `Bearer ${_token}` } });
-    if (!res.ok) throw new Error(res.status);
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error((body.error || res.status) + '');
+    }
     const d = await res.json();
     el.innerHTML = renderAnalytics(d);
   } catch (err) {

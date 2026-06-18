@@ -93,7 +93,7 @@ module.exports = async function handler(req, res) {
       });
     } catch (err) {
       console.error('[GET /api/analytics]', err.message);
-      return res.status(500).json({ error: 'Ошибка сервера' });
+      return res.status(500).json({ error: err.message });
     }
   }
 
