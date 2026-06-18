@@ -30,8 +30,8 @@ module.exports = async function handler(req, res) {
           '&order=created_at.desc&limit=1000'
         ),
         dbGet('analytics_users?select=tg_user_id,first_name,username,first_seen,last_seen&order=last_seen.desc&limit=1000'),
-        dbGet('orders?select=id&limit=1'),
-        dbGet('sample_requests?select=id&limit=1'),
+        dbGet('orders?select=id&limit=99999'),
+        dbGet('sample_requests?select=id&limit=99999'),
       ]);
 
       const viewCounts = {};
