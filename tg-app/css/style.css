@@ -2142,11 +2142,15 @@ a { color: var(--accent); text-decoration: none; }
 
 .success-order-num {
   font-family: var(--font-body);
-  font-size: 9px;
-  letter-spacing: 0.45em;
+  font-size: 11px;
+  letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: var(--gold);
-  font-weight: 300;
+  color: var(--tg-text);
+  font-weight: 400;
+}
+
+.success-screen .btn-oval {
+  max-width: 320px;
 }
 
 /* Состав заказа */

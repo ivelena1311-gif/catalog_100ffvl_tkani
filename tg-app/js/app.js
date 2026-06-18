@@ -1579,16 +1579,15 @@ function renderSuccess(orderNum, meta = {}) {
       <div class="success-next-title">Что дальше</div>
       <p class="success-text">${nextText}</p>
     </div>
-    <button class="success-manager-btn" id="contact-manager-btn">
-      Написать менеджеру
+    <button type="button" class="btn-oval btn-oval-primary" id="success-catalog-btn">
+      Вернуться в каталог
     </button>
   `;
 
-  document.getElementById('contact-manager-btn')?.addEventListener('click', () => {
-    TG.openTelegramLink(MANAGER.tgUsername);
-  });
+  TG.MainButton.hide();
 
-  setMainButton('Вернуться в каталог', () => {
+  document.getElementById('success-catalog-btn')?.addEventListener('click', () => {
+    TG.HapticFeedback.impactOccurred('light');
     Router.tab('catalog');
   });
 }
