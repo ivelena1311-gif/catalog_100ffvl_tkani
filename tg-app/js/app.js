@@ -1672,7 +1672,6 @@ async function renderProfile() {
         <div class="manager-avatar">${MANAGER.initials}</div>
         <div>
           <div class="manager-name">${MANAGER.name}</div>
-          <div class="manager-since">В тканях с ${MANAGER.since} года</div>
         </div>
       </div>
       <button class="manager-contact-btn" id="manager-contact-btn">
