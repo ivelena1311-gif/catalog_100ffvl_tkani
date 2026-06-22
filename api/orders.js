@@ -38,10 +38,28 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // ── GET: история заявок пользователя ─────────────────────────
+  // ── GET: история заявок или состояние корзины/избранного ──────
   if (req.method === 'GET') {
-    const { tg_user_id } = req.query;
+    const { tg_user_id, type } = req.query;
     if (!tg_user_id) return res.status(400).json({ error: 'tg_user_id обязателен' });
+
+    // GET ?type=state — корзина, образцы, избранное (кросс-девайс синхронизация)
+    if (type === 'state') {
+      try {
+        const rows = await dbGet(`user_state?tg_user_id=eq.${encodeURIComponent(tg_user_id)}&limit=1`);
+        if (rows.length === 0) return res.status(200).json({ cart: [], samples: [], favorites: [] });
+        return res.status(200).json({
+          cart:      rows[0].cart      || [],
+          samples:   rows[0].samples   || [],
+          favorites: rows[0].favorites || [],
+        });
+      } catch (err) {
+        console.error('[GET /api/orders?type=state]', err.message);
+        return res.status(500).json({ error: err.message });
+      }
+    }
+
+    // GET — история заявок
     try {
       const orders = await dbGet(
         `orders?tg_user_id=eq.${encodeURIComponent(tg_user_id)}&order=created_at.desc&limit=50`
@@ -62,7 +80,39 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  if (req.method !== 'POST')   return res.status(405).end();
+  if (req.method !== 'POST') return res.status(405).end();
+
+  // ── POST ?type=state — сохранить корзину/образцы/избранное ────
+  if (req.query.type === 'state') {
+    let body;
+    try { body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body; }
+    catch { return res.status(400).json({ error: 'Некорректный JSON' }); }
+    const { tg_user_id, cart, samples, favorites } = body || {};
+    if (!tg_user_id) return res.status(400).json({ error: 'tg_user_id обязателен' });
+    try {
+      const r = await fetch(`${process.env.SUPABASE_URL}/rest/v1/user_state`, {
+        method: 'POST',
+        headers: {
+          apikey:          process.env.SUPABASE_SERVICE_KEY,
+          Authorization:  `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer:         'resolution=merge-duplicates,return=minimal',
+        },
+        body: JSON.stringify({
+          tg_user_id: Number(tg_user_id),
+          cart:       Array.isArray(cart)      ? cart      : [],
+          samples:    Array.isArray(samples)   ? samples   : [],
+          favorites:  Array.isArray(favorites) ? favorites : [],
+          updated_at: new Date().toISOString(),
+        }),
+      });
+      if (!r.ok) throw new Error(`Supabase upsert ${r.status}: ${await r.text()}`);
+      return res.status(200).json({ ok: true });
+    } catch (err) {
+      console.error('[POST /api/orders?type=state]', err.message);
+      return res.status(500).json({ error: err.message });
+    }
+  }
 
   // ── Парсинг тела ──────────────────────────────────────────────
   let body;

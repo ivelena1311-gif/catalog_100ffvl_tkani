@@ -43,7 +43,7 @@ const Store = (() => {
     if (!_syncUserId) return;
     clearTimeout(_syncTimer);
     _syncTimer = setTimeout(() => {
-      fetch('/api/user-state', {
+      fetch('/api/orders?type=state', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -65,7 +65,7 @@ const Store = (() => {
   async function initSync(tgUserId, onSynced) {
     _syncUserId = tgUserId;
     try {
-      const res = await fetch(`/api/user-state?tg_user_id=${encodeURIComponent(tgUserId)}`);
+      const res = await fetch(`/api/orders?type=state&tg_user_id=${encodeURIComponent(tgUserId)}`);
       if (!res.ok) {
         console.warn('[Store.initSync] server error', res.status);
         return;
