@@ -16,16 +16,13 @@ module.exports = async function handler(req, res) {
     try {
       const [banners, settings] = await Promise.all([
         dbGet('banners?select=*&is_active=eq.true&order=sort_order'),
-        dbGet('settings?select=key,value&key=in.(banner_max_visible,banner_interval_ms)'),
+        dbGet('settings?select=key,value&key=in.(banner_interval_ms)'),
       ]);
-      const maxVisible = parseInt(
-        settings.find(s => s.key === 'banner_max_visible')?.value ?? '3', 10
-      );
       const intervalMs = parseInt(
         settings.find(s => s.key === 'banner_interval_ms')?.value ?? '4000', 10
       );
       return res.status(200).json({
-        banners:     banners.slice(0, maxVisible),
+        banners,
         interval_ms: intervalMs,
       });
     } catch (err) {

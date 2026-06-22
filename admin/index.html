@@ -1100,13 +1100,7 @@ function renderBannersTab() {
   const el = document.getElementById('banners-content');
   if (!el) return;
 
-  const maxVis  = _bannerSettings['banner_max_visible'] || '3';
-  const intMs   = _bannerSettings['banner_interval_ms'] || '4000';
-  const intSec  = String(Math.round(Number(intMs) / 1000));
-
-  const segMax = ['1','2','3'].map(v =>
-    `<button class="seg-btn${maxVis===v?' active':''}" onclick="updateBannerSetting('banner_max_visible','${v}',this)">${v}</button>`
-  ).join('');
+  const intMs  = _bannerSettings['banner_interval_ms'] || '4000';
 
   const intOpts = [['3000','3с'],['5000','5с'],['8000','8с'],['0','Выкл']];
   const segInt = intOpts.map(([ms, label]) =>
@@ -1142,10 +1136,6 @@ function renderBannersTab() {
   el.innerHTML = `
     <div class="banner-settings-card">
       <div class="banner-settings-title">Настройки отображения</div>
-      <div class="setting-row">
-        <span class="setting-label">Показывать баннеров</span>
-        <div class="seg-control">${segMax}</div>
-      </div>
       <div class="setting-row">
         <span class="setting-label">Автопрокрутка</span>
         <div class="seg-control">${segInt}</div>
