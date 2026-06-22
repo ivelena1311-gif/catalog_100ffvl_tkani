@@ -1322,7 +1322,7 @@ async function handleBannerImageSelect(input) {
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
-    const res = await fetch(`${API}/admin/upload`, {
+    const res = await fetch(`${API}/upload`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${_token}` },
       body: JSON.stringify({ filename: file.name, base64, contentType: file.type }),
