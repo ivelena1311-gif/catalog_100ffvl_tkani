@@ -30,6 +30,52 @@ const Store = (() => {
     lastSelectedColor: {},
   };
 
+  // Идентификатор Telegram-пользователя для серверной синхронизации
+  let _syncUserId = null;
+  let _syncTimer  = null;
+
+  // ================================================================
+  // СЕРВЕРНАЯ СИНХРОНИЗАЦИЯ
+  // ================================================================
+
+  /** Дебаунсированное сохранение корзины и избранного на сервер */
+  function saveToServer() {
+    if (!_syncUserId) return;
+    clearTimeout(_syncTimer);
+    _syncTimer = setTimeout(() => {
+      fetch('/api/user-state', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tg_user_id: _syncUserId,
+          cart:       state.cart,
+          favorites:  Array.from(state.favorites),
+        }),
+      }).catch(() => {});
+    }, 800);
+  }
+
+  /**
+   * Загружает состояние с сервера и перезаписывает локальное.
+   * Вызывать после того, как стал известен tg_user_id.
+   * @param {number|string} tgUserId
+   * @param {Function} [onSynced] — вызывается после успешной загрузки
+   */
+  async function initSync(tgUserId, onSynced) {
+    _syncUserId = tgUserId;
+    try {
+      const res = await fetch(`/api/user-state?tg_user_id=${encodeURIComponent(tgUserId)}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data.cart))      state.cart      = data.cart;
+      if (Array.isArray(data.favorites)) state.favorites = new Set(data.favorites);
+      save();
+      onSynced?.();
+    } catch (e) {
+      // Сервер недоступен — работаем с localStorage
+    }
+  }
+
   // ================================================================
   // ПЕРСИСТЕНТНОСТЬ (localStorage)
   // ================================================================
@@ -116,6 +162,7 @@ const Store = (() => {
       });
     }
     save();
+    saveToServer();
   }
 
   /**
@@ -130,6 +177,7 @@ const Store = (() => {
     const fabric = getFabricById(fabricId);
     item.meters = snapToStep(meters, fabric.minOrder, fabric.step);
     save();
+    saveToServer();
   }
 
   /**
@@ -140,12 +188,14 @@ const Store = (() => {
       i => !(i.fabricId === fabricId && String(i.colorId) === String(colorId))
     );
     save();
+    saveToServer();
   }
 
   /** Очищает корзину */
   function clearCart() {
     state.cart = [];
     save();
+    saveToServer();
   }
 
   // ================================================================
@@ -221,6 +271,7 @@ const Store = (() => {
       state.favorites.add(fabricId);
     }
     save();
+    saveToServer();
     return state.favorites.has(fabricId);
   }
 
@@ -330,5 +381,8 @@ const Store = (() => {
     // Последний цвет
     getLastColor,
     setLastColor,
+
+    // Серверная синхронизация
+    initSync,
   };
 })();

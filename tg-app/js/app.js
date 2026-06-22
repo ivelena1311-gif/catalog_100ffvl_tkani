@@ -2282,6 +2282,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         username:   _tgUser.username   || null,
       }),
     }).catch(() => {});
+
+    // Синхронизируем корзину и избранное с сервером (cross-device)
+    Store.initSync(_tgUser.id, () => {
+      updateCartBadge();
+      updateFavBadge();
+      // Обновляем текущий экран если пользователь уже на корзине или каталоге
+      const cur = Router.current();
+      if (cur === 'cart')    renderCart();
+      if (cur === 'catalog') renderCatalog();
+    });
   }
 
   // 7c. Старт сессии
