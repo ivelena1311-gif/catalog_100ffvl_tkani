@@ -1553,7 +1553,7 @@ a { color: var(--accent); text-decoration: none; }
   font-weight: 300;
   letter-spacing: 0.45em;
   text-transform: uppercase;
-  color: var(--gold-dim);
+  color: var(--gold-line);
   margin-bottom: 12px;
 }
 
@@ -2366,7 +2366,7 @@ a { color: var(--accent); text-decoration: none; }
   font-weight: 300;
   letter-spacing: 0.45em;
   text-transform: uppercase;
-  color: var(--gold-dim);
+  color: var(--gold-line);
   margin-bottom: 14px;
 }
 
@@ -2441,7 +2441,7 @@ a { color: var(--accent); text-decoration: none; }
   font-weight: 300;
   letter-spacing: 0.45em;
   text-transform: uppercase;
-  color: var(--gold-dim);
+  color: var(--gold-line);
   margin-bottom: 12px;
 }
 
@@ -2514,7 +2514,7 @@ a { color: var(--accent); text-decoration: none; }
   font-size: 20px;
   font-style: italic;
   font-weight: 300;
-  color: var(--gold);
+  color: var(--gold-line);
 }
 
 .order-repeat-btn {
