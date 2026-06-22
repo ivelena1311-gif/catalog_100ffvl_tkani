@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * GET  /api/user-state?tg_user_id=X  — загрузить корзину и избранное
- * POST /api/user-state               — сохранить { tg_user_id, cart, favorites }
+ * GET  /api/user-state?tg_user_id=X  — загрузить корзину, образцы и избранное
+ * POST /api/user-state               — сохранить { tg_user_id, cart, samples, favorites }
  */
 
 const { dbGet } = require('../lib/db');
@@ -17,8 +17,12 @@ module.exports = async function handler(req, res) {
     if (!tg_user_id) return res.status(400).json({ error: 'tg_user_id обязателен' });
     try {
       const rows = await dbGet(`user_state?tg_user_id=eq.${encodeURIComponent(tg_user_id)}&limit=1`);
-      if (rows.length === 0) return res.status(200).json({ cart: [], favorites: [] });
-      return res.status(200).json({ cart: rows[0].cart || [], favorites: rows[0].favorites || [] });
+      if (rows.length === 0) return res.status(200).json({ cart: [], samples: [], favorites: [] });
+      return res.status(200).json({
+        cart:      rows[0].cart      || [],
+        samples:   rows[0].samples   || [],
+        favorites: rows[0].favorites || [],
+      });
     } catch (err) {
       console.error('[GET /api/user-state]', err.message);
       return res.status(500).json({ error: err.message });
@@ -30,7 +34,7 @@ module.exports = async function handler(req, res) {
     try { body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body; }
     catch { return res.status(400).json({ error: 'Некорректный JSON' }); }
 
-    const { tg_user_id, cart, favorites } = body || {};
+    const { tg_user_id, cart, samples, favorites } = body || {};
     if (!tg_user_id) return res.status(400).json({ error: 'tg_user_id обязателен' });
 
     try {
@@ -45,6 +49,7 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           tg_user_id: Number(tg_user_id),
           cart:       Array.isArray(cart)      ? cart      : [],
+          samples:    Array.isArray(samples) ? samples : [],
           favorites:  Array.isArray(favorites) ? favorites : [],
           updated_at: new Date().toISOString(),
         }),

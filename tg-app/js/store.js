@@ -38,7 +38,7 @@ const Store = (() => {
   // СЕРВЕРНАЯ СИНХРОНИЗАЦИЯ
   // ================================================================
 
-  /** Дебаунсированное сохранение корзины и избранного на сервер */
+  /** Дебаунсированное сохранение корзины, образцов и избранного на сервер */
   function saveToServer() {
     if (!_syncUserId) return;
     clearTimeout(_syncTimer);
@@ -49,6 +49,7 @@ const Store = (() => {
         body: JSON.stringify({
           tg_user_id: _syncUserId,
           cart:       state.cart,
+          samples:    state.samples,
           favorites:  Array.from(state.favorites),
         }),
       }).catch(() => {});
@@ -65,14 +66,18 @@ const Store = (() => {
     _syncUserId = tgUserId;
     try {
       const res = await fetch(`/api/user-state?tg_user_id=${encodeURIComponent(tgUserId)}`);
-      if (!res.ok) return;
+      if (!res.ok) {
+        console.warn('[Store.initSync] server error', res.status);
+        return;
+      }
       const data = await res.json();
       if (Array.isArray(data.cart))      state.cart      = data.cart;
+      if (Array.isArray(data.samples))   state.samples   = data.samples;
       if (Array.isArray(data.favorites)) state.favorites = new Set(data.favorites);
       save();
       onSynced?.();
     } catch (e) {
-      // Сервер недоступен — работаем с localStorage
+      console.warn('[Store.initSync] fetch failed:', e.message);
     }
   }
 
@@ -217,18 +222,21 @@ const Store = (() => {
     if (hasSample(fabricId)) return;
     state.samples.push({ fabricId });
     save();
+    saveToServer();
   }
 
   /** Удаляет образец */
   function removeSample(fabricId) {
     state.samples = state.samples.filter(s => s.fabricId !== fabricId);
     save();
+    saveToServer();
   }
 
   /** Очищает все образцы */
   function clearSamples() {
     state.samples = [];
     save();
+    saveToServer();
   }
 
   // ================================================================
