@@ -37,6 +37,31 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // ── GET: история заявок пользователя ─────────────────────────
+  if (req.method === 'GET') {
+    const { tg_user_id } = req.query;
+    if (!tg_user_id) return res.status(400).json({ error: 'tg_user_id обязателен' });
+    try {
+      const orders = await dbGet(
+        `orders?tg_user_id=eq.${encodeURIComponent(tg_user_id)}&order=created_at.desc&limit=50`
+      );
+      if (orders.length > 0) {
+        const ids = orders.map(o => o.id).join(',');
+        const items = await dbGet(`order_items?order_id=in.(${ids})&select=*&limit=9999`);
+        const byOrder = {};
+        for (const item of items) {
+          (byOrder[item.order_id] = byOrder[item.order_id] || []).push(item);
+        }
+        return res.status(200).json(orders.map(o => ({ ...o, items: byOrder[o.id] || [] })));
+      }
+      return res.status(200).json([]);
+    } catch (err) {
+      console.error('[GET /api/orders]', err.message);
+      return res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  }
+
   if (req.method !== 'POST')   return res.status(405).end();
 
   // ── Парсинг тела ──────────────────────────────────────────────

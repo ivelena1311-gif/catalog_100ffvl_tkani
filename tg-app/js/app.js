@@ -1643,11 +1643,10 @@ function renderSuccess(orderNum, meta = {}) {
 
 // ---- 4.7 ПРОФИЛЬ ----
 
-function renderProfile() {
-  const user    = TG.initDataUnsafe?.user;
-  const orders  = DEMO_ORDERS;
+async function renderProfile() {
+  const user = TG.initDataUnsafe?.user;
   const initials = user
-    ? ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase()
+    ? ((user.first_name?.[0] || '') + (user.last_name?.[0] || '')).toUpperCase() || '?'
     : '??';
   const fullName = user
     ? [user.first_name, user.last_name].filter(Boolean).join(' ')
@@ -1655,8 +1654,6 @@ function renderProfile() {
 
   const profileEl = document.getElementById('profile-content');
   profileEl.innerHTML = `
-
-    <!-- Блок пользователя -->
     <div class="profile-user-card">
       <div class="profile-avatar">${initials}</div>
       <div class="profile-user-info">
@@ -1665,7 +1662,6 @@ function renderProfile() {
       </div>
     </div>
 
-    <!-- Менеджер -->
     <div class="manager-card">
       <div class="manager-card-header">Ваш менеджер</div>
       <div class="manager-info">
@@ -1680,38 +1676,14 @@ function renderProfile() {
       </button>
     </div>
 
-    <!-- Поделиться -->
     <button class="share-btn" id="share-btn">
       &#128257; Поделиться каталогом
     </button>
 
-    <!-- История заказов -->
-    <div>
+    <div id="profile-orders-section">
       <div class="orders-section-title">История заявок</div>
-      ${orders.map(order => {
-        const st = getOrderStatusLabel(order.status);
-        return `
-          <div class="order-card">
-            <div class="order-card-header">
-              <div>
-                <div class="order-id">#${order.id}</div>
-                <div class="order-date">${order.date}</div>
-              </div>
-              <span class="order-status ${st.cls}">${st.label}</span>
-            </div>
-            <div class="order-meta">
-              ${order.items.length} ${_pluralize(order.items.length, 'позиция', 'позиции', 'позиций')}
-              · ${order.items.reduce((s, i) => s + i.meters, 0)}&nbsp;м
-            </div>
-            <div class="order-total">${formatPrice(order.total)}</div>
-            <button class="order-repeat-btn" data-order-id="${order.id}">
-              &#8635; Повторить заявку
-            </button>
-          </div>
-        `;
-      }).join('')}
+      <div class="loading">Загрузка...</div>
     </div>
-
   `;
 
   document.getElementById('manager-contact-btn')?.addEventListener('click', () => {
@@ -1719,23 +1691,6 @@ function renderProfile() {
     TG.HapticFeedback.impactOccurred('medium');
   });
 
-  document.querySelectorAll('.order-repeat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const orderId = parseInt(btn.dataset.orderId);
-      const order   = DEMO_ORDERS.find(o => o.id === orderId);
-      if (!order) return;
-
-      order.items.forEach(item => {
-        Store.addToCart(item.fabricId, item.colorId, item.meters);
-      });
-      updateCartBadge();
-      TG.HapticFeedback.notificationOccurred('success');
-      showToast('Позиции добавлены в заявку');
-      Router.tab('cart');
-    });
-  });
-
-  // Кнопка «Поделиться»
   document.getElementById('share-btn')?.addEventListener('click', () => {
     const shareText = 'Посмотри каталог тканей 100FF VL';
     const shareUrl  = `https://t.me/share/url?url=${encodeURIComponent('https://t.me/' + MANAGER.tgUsername)}&text=${encodeURIComponent(shareText)}`;
@@ -1747,8 +1702,74 @@ function renderProfile() {
     TG.HapticFeedback.impactOccurred('light');
   });
 
-  // Скрываем MainButton
   TG.MainButton.hide();
+
+  const ordersSection = document.getElementById('profile-orders-section');
+
+  if (!user?.id) {
+    ordersSection.innerHTML = '<div class="orders-section-title">История заявок</div><div class="empty">Откройте приложение через Telegram</div>';
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/orders?tg_user_id=${user.id}`);
+    if (!res.ok) throw new Error(res.status);
+    const orders = await res.json();
+
+    if (orders.length === 0) {
+      ordersSection.innerHTML = '<div class="orders-section-title">История заявок</div><div class="empty">Заявок пока нет</div>';
+      return;
+    }
+
+    ordersSection.innerHTML = `
+      <div class="orders-section-title">История заявок</div>
+      ${orders.map(order => {
+        const st      = getOrderStatusLabel(order.status || 'processing');
+        const date    = new Date(order.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const items   = order.items || [];
+        const meters  = items.reduce((s, i) => s + Number(i.meters), 0);
+        const total   = Number(order.total_usd);
+        const totalStr = Number.isInteger(total) ? String(total) : total.toFixed(2).replace('.', ',');
+        return `
+          <div class="order-card">
+            <div class="order-card-header">
+              <div>
+                <div class="order-id">#${order.order_number || order.id}</div>
+                <div class="order-date">${date}</div>
+              </div>
+              <span class="order-status ${st.cls}">${st.label}</span>
+            </div>
+            <div class="order-meta">
+              ${items.length} ${_pluralize(items.length, 'позиция', 'позиции', 'позиций')}
+              · ${meters}&nbsp;м
+            </div>
+            <div class="order-total">${totalStr}&nbsp;уе.</div>
+            <button class="order-repeat-btn" data-order-id="${order.id}">
+              &#8635; Повторить заявку
+            </button>
+          </div>
+        `;
+      }).join('')}
+    `;
+
+    document.querySelectorAll('.order-repeat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const orderId = parseInt(btn.dataset.orderId);
+        const order   = orders.find(o => o.id === orderId);
+        if (!order) return;
+        (order.items || []).forEach(item => {
+          Store.addToCart(item.fabric_id, String(item.color_id), item.meters);
+        });
+        updateCartBadge();
+        TG.HapticFeedback.notificationOccurred('success');
+        showToast('Позиции добавлены в заявку');
+        Router.tab('cart');
+      });
+    });
+
+  } catch (e) {
+    ordersSection.innerHTML = '<div class="orders-section-title">История заявок</div><div class="empty">Не удалось загрузить историю</div>';
+  }
 }
 
 /* ================================================================
