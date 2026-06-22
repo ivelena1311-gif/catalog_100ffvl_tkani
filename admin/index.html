@@ -1263,14 +1263,21 @@ function openBannerModal(id) {
       <div class="field-grid">
         <div class="field">
           <div class="field-label">Тип действия</div>
-          <select id="bm-action-type" onchange="document.getElementById('bm-action-val-wrap').style.display=this.value?'block':'none'">
+          <select id="bm-action-type" onchange="onBannerActionTypeChange(this.value)">
             <option value="">Без действия</option>
             <option value="category"${b.action_type==='category'?' selected':''}>Открыть категорию</option>
+            <option value="fabric"${b.action_type==='fabric'?' selected':''}>Открыть карточку товара</option>
           </select>
         </div>
-        <div class="field" id="bm-action-val-wrap" style="display:${b.action_type?'block':'none'}">
+        <div class="field" id="bm-val-category" style="display:${b.action_type==='category'?'block':'none'}">
           <div class="field-label">Категория</div>
-          <select id="bm-action-value">${catOptions}</select>
+          <select id="bm-action-value-category">${catOptions}</select>
+        </div>
+        <div class="field field-full" id="bm-val-fabric" style="display:${b.action_type==='fabric'?'block':'none'}">
+          <div class="field-label">Товар</div>
+          <select id="bm-action-value-fabric">
+            ${_fabrics.map(f => `<option value="${f.id}"${String(b.action_value)===String(f.id)?' selected':''}>${esc(f.name)} (${esc(f.article||'')})</option>`).join('')}
+          </select>
         </div>
       </div>
     </div>
@@ -1299,6 +1306,11 @@ function openBannerModal(id) {
 function closeBannerModal() {
   document.getElementById('banner-modal').classList.remove('open');
   _editBanner = null;
+}
+
+function onBannerActionTypeChange(type) {
+  document.getElementById('bm-val-category').style.display = type === 'category' ? 'block' : 'none';
+  document.getElementById('bm-val-fabric').style.display   = type === 'fabric'   ? 'block' : 'none';
 }
 
 async function handleBannerImageSelect(input) {
@@ -1347,6 +1359,9 @@ async function saveBanner() {
   if (!title) { alert('Заголовок обязателен'); return; }
 
   const actionType = document.getElementById('bm-action-type').value;
+  let actionValue = null;
+  if (actionType === 'category') actionValue = document.getElementById('bm-action-value-category').value;
+  if (actionType === 'fabric')   actionValue = document.getElementById('bm-action-value-fabric').value;
   const payload = {
     title,
     label:        document.getElementById('bm-label').value.trim()    || null,
@@ -1354,7 +1369,7 @@ async function saveBanner() {
     image_url:    document.getElementById('bm-image').value.trim()    || null,
     gradient:     document.getElementById('bm-gradient').value.trim() || null,
     action_type:  actionType || null,
-    action_value: actionType ? document.getElementById('bm-action-value').value : null,
+    action_value: actionValue,
     is_active:    document.getElementById('bm-active-track').classList.contains('on'),
     sort_order:   parseInt(document.getElementById('bm-sort-order').value) || 0,
   };

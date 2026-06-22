@@ -82,9 +82,9 @@ const Catalog = (() => {
       label:    b.label     || null,
       title:    b.title,
       subtitle: b.subtitle  || null,
-      action:   b.action_type === 'category'
-                  ? { type: 'category', value: b.action_value }
-                  : null,
+      action:   b.action_type === 'category' ? { type: 'category', value: b.action_value }
+              : b.action_type === 'fabric'   ? { type: 'fabric',   value: Number(b.action_value) }
+              : null,
     }));
     BANNER_SETTINGS.interval_ms = bannersData.interval_ms || 4000;
   }

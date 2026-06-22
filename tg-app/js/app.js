@@ -418,6 +418,9 @@ function _initBannerSlider() {
           Store.setCategory(action.value);
           renderCatalog();
           TG.HapticFeedback.selectionChanged();
+        } else if (action.type === 'fabric') {
+          Router.push('product', () => renderProduct(action.value));
+          TG.HapticFeedback.selectionChanged();
         }
       } catch (_) {}
     }
