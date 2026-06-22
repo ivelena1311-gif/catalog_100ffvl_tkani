@@ -1497,7 +1497,7 @@ async function exportToExcel() {
   btn.textContent = 'Загрузка...';
 
   try {
-    const res = await fetch(`/api/analytics-export?from=${from}&to=${to}`, {
+    const res = await fetch(`/api/analytics?type=export&from=${from}&to=${to}`, {
       headers: { Authorization: `Bearer ${_token}` },
     });
     if (!res.ok) { const e = await res.json(); throw new Error(e.error || res.status); }
