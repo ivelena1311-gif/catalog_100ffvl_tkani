@@ -55,8 +55,8 @@
   /* Editorial-палитра из Lovable */
   --gold:          hsl(45, 62%, 73%);     /* шампанское золото — светлее, без рыжины */
   --gold-muted:    hsl(45, 22%, 34%);
-  --gold-dim:      hsla(45, 62%, 73%, 0.4);
-  --gold-line:     hsla(43, 48%, 46%, 0.78); /* тёмное антикварное золото — для линий карточки */
+  --gold-dim:      hsla(45, 62%, 73%, 0.6);
+  --gold-line:     hsl(43, 58%, 58%); /* золото для линий карточки */
   --cream:         hsl(42, 28%, 87%);
 
   /* Типографика */
@@ -2316,8 +2316,8 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .profile-avatar {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: transparent;
   border: 1px solid var(--gold-dim);
@@ -2330,6 +2330,7 @@ a { color: var(--accent); text-decoration: none; }
   font-style: italic;
   font-weight: 300;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .profile-user-info { flex: 1; min-width: 0; }

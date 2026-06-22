@@ -1655,7 +1655,11 @@ async function renderProfile() {
   const profileEl = document.getElementById('profile-content');
   profileEl.innerHTML = `
     <div class="profile-user-card">
-      <div class="profile-avatar">${initials}</div>
+      <div class="profile-avatar">
+        ${user?.photo_url
+          ? `<img src="${user.photo_url}" alt="${fullName}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+          : initials}
+      </div>
       <div class="profile-user-info">
         <div class="profile-user-name">${fullName}</div>
         ${user?.username ? `<div class="profile-user-sub">@${user.username}</div>` : ''}
