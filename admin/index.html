@@ -1241,8 +1241,21 @@ function openBannerModal(id) {
       <div class="form-section-title">Фон баннера</div>
       <div class="field-grid">
         <div class="field field-full">
-          <div class="field-label">URL фото (оставьте пустым — будет градиент)</div>
-          <input id="bm-image" type="url" value="${esc(b.image_url||'')}" placeholder="https://...">
+          <div class="field-label">Фото баннера (оставьте пустым — будет градиент)</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div id="bm-image-preview" style="width:100%;height:150px;border-radius:8px;overflow:hidden;background:#f0ebe0;display:flex;align-items:center;justify-content:center;">
+              ${b.image_url
+                ? `<img src="${esc(b.image_url)}" style="width:100%;height:100%;object-fit:cover;">`
+                : `<span style="color:var(--hint);font-size:13px;">Фото не выбрано</span>`}
+            </div>
+            <input type="hidden" id="bm-image" value="${esc(b.image_url||'')}">
+            <input type="file" id="bm-image-file" accept="image/*" style="display:none" onchange="handleBannerImageSelect(this)">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('bm-image-file').click()">Выбрать фото с компьютера</button>
+              <button type="button" class="btn btn-ghost btn-sm" id="bm-image-remove" style="display:${b.image_url?'inline-flex':'none'};color:#c0392b" onclick="removeBannerImage()">Удалить фото</button>
+              <span id="bm-image-uploading" style="display:none;font-size:13px;color:var(--hint)">Загрузка...</span>
+            </div>
+          </div>
         </div>
         <div class="field field-full">
           <div class="field-label">CSS-градиент (фон если нет фото)</div>
@@ -1296,6 +1309,47 @@ function openBannerModal(id) {
 function closeBannerModal() {
   document.getElementById('banner-modal').classList.remove('open');
   _editBanner = null;
+}
+
+async function handleBannerImageSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('bm-image-uploading').style.display = 'inline';
+  try {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const res = await fetch(`${API}/admin/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${_token}` },
+      body: JSON.stringify({ filename: file.name, base64, contentType: file.type }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert('Ошибка загрузки: ' + (err.error || res.status));
+      return;
+    }
+    const { url } = await res.json();
+    document.getElementById('bm-image').value = url;
+    document.getElementById('bm-image-preview').innerHTML =
+      `<img src="${url}" style="width:100%;height:100%;object-fit:cover;">`;
+    document.getElementById('bm-image-remove').style.display = 'inline-flex';
+  } catch (e) {
+    alert('Ошибка загрузки фото');
+  } finally {
+    document.getElementById('bm-image-uploading').style.display = 'none';
+    input.value = '';
+  }
+}
+
+function removeBannerImage() {
+  document.getElementById('bm-image').value = '';
+  document.getElementById('bm-image-preview').innerHTML =
+    '<span style="color:var(--hint);font-size:13px;">Фото не выбрано</span>';
+  document.getElementById('bm-image-remove').style.display = 'none';
 }
 
 async function saveBanner() {
