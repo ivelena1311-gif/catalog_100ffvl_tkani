@@ -2121,7 +2121,8 @@ function setupEventListeners() {
   document.getElementById('categories-bar')?.addEventListener('click', e => {
     const chip = e.target.closest('[data-category]');
     if (!chip) return;
-    Store.setCategory(chip.dataset.category);
+    if (chip.dataset.category === 'Все') Store.resetFilters();
+    else Store.setCategory(chip.dataset.category);
     renderCatalog();
     TG.HapticFeedback.selectionChanged();
   });
