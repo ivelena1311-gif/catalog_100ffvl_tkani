@@ -24,7 +24,9 @@ const Store = (() => {
     favorites: new Set(),
     // Активные фильтры каталога
     filters: {
-      category: 'Все',   // активная категория
+      category:  'Все',
+      filterHit: false,
+      filterNew: false,
     },
     // Последний активный цвет на экране товара {fabricId: colorId}
     lastSelectedColor: {},
@@ -296,8 +298,18 @@ const Store = (() => {
     save();
   }
 
+  function toggleFilterHit() {
+    state.filters.filterHit = !state.filters.filterHit;
+    save();
+  }
+
+  function toggleFilterNew() {
+    state.filters.filterNew = !state.filters.filterNew;
+    save();
+  }
+
   function resetFilters() {
-    state.filters = { category: 'Все' };
+    state.filters = { category: 'Все', filterHit: false, filterNew: false };
     save();
   }
 
@@ -323,11 +335,20 @@ const Store = (() => {
    */
   function getFilteredFabrics(searchQuery) {
     let result = [...FABRICS];
-    const { category } = state.filters;
+    const { category, filterHit, filterNew } = state.filters;
 
     // Фильтр по категории
     if (category && category !== 'Все') {
       result = result.filter(f => f.category === category);
+    }
+
+    // Фильтр по меткам
+    if (filterHit && filterNew) {
+      result = result.filter(f => f.isHit || f.isNew);
+    } else if (filterHit) {
+      result = result.filter(f => f.isHit);
+    } else if (filterNew) {
+      result = result.filter(f => f.isNew);
     }
 
     // Поиск (по названию, артикулу, составу)
@@ -383,6 +404,8 @@ const Store = (() => {
     // Фильтры
     getFilters,
     setCategory,
+    toggleFilterHit,
+    toggleFilterNew,
     resetFilters,
     getFilteredFabrics,
 

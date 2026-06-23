@@ -444,6 +444,7 @@ function renderCatalog() {
   const grid       = document.getElementById('catalog-grid');
   const countEl    = document.getElementById('catalog-count');
   const catsBar    = document.getElementById('categories-bar');
+  const badgeBar   = document.getElementById('badge-filter-bar');
 
   // Баннеры (рендерятся один раз независимо от фильтров)
   renderBanners();
@@ -460,6 +461,14 @@ function renderCatalog() {
       aria-selected="${filters.category === cat}"
     >${cat}</button>
   `).join('');
+
+  // Метки-фильтры
+  if (badgeBar) {
+    badgeBar.innerHTML = `
+      <button class="badge-chip badge-chip--hit ${filters.filterHit ? 'active' : ''}" data-badge="hit">ХИТ</button>
+      <button class="badge-chip badge-chip--new ${filters.filterNew ? 'active' : ''}" data-badge="new">НОВИНКА</button>
+    `;
+  }
 
   // Прокручиваем активный чип в центр видимой области
   requestAnimationFrame(() => {
@@ -2113,6 +2122,16 @@ function setupEventListeners() {
     const chip = e.target.closest('[data-category]');
     if (!chip) return;
     Store.setCategory(chip.dataset.category);
+    renderCatalog();
+    TG.HapticFeedback.selectionChanged();
+  });
+
+  // --- Фильтры по меткам (Хит / Новинка) ---
+  document.getElementById('badge-filter-bar')?.addEventListener('click', e => {
+    const chip = e.target.closest('[data-badge]');
+    if (!chip) return;
+    if (chip.dataset.badge === 'hit') Store.toggleFilterHit();
+    else Store.toggleFilterNew();
     renderCatalog();
     TG.HapticFeedback.selectionChanged();
   });
