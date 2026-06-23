@@ -541,11 +541,17 @@ function _fabricCardMediaHTML(thumb, name) {
 
 /** HTML одной карточки ткани — photo-dominant, overlay text */
 function _fabricCardHTML(fabric) {
+  const badges = [
+    fabric.isHit ? '<span class="fabric-badge fabric-badge--hit">ХИТ</span>' : '',
+    fabric.isNew ? '<span class="fabric-badge fabric-badge--new">НОВИНКА</span>' : '',
+  ].filter(Boolean).join('');
+
   return `
     <div class="fabric-card" data-fabric-id="${fabric.id}" role="button" tabindex="0">
       <div class="fabric-card-media">
         ${_fabricCardMediaHTML(fabric.thumb, fabric.name)}
         <div class="fabric-card-overlay"></div>
+        ${badges ? `<div class="fabric-badges">${badges}</div>` : ''}
         <div class="fabric-card-caption">
           <p class="fabric-card-category">${fabric.category}</p>
           <h3 class="fabric-card-name">${fabric.name}</h3>

@@ -13,6 +13,7 @@ const { checkAuth } = require('../../lib/admin-auth');
 const ALLOWED_FIELDS = [
   'name', 'article', 'category_id', 'composition', 'width', 'density',
   'description', 'thumb', 'base_price', 'cut_price', 'min_order', 'step', 'is_active', 'unit',
+  'is_hit', 'is_new',
 ];
 
 module.exports = async function handler(req, res) {
@@ -85,6 +86,8 @@ module.exports = async function handler(req, res) {
       if (field === 'unit')         { patch.unit        = val === 'кг' ? 'кг' : 'м'; continue; }
       if (field === 'category_id')  { patch.category_id = val ? parseInt(val) : null; continue; }
       if (field === 'is_active')    { patch.is_active   = Boolean(val); continue; }
+      if (field === 'is_hit')      { patch.is_hit      = Boolean(val); continue; }
+      if (field === 'is_new')      { patch.is_new      = Boolean(val); continue; }
       patch[field] = val ?? null;
     }
 
@@ -128,6 +131,8 @@ module.exports = async function handler(req, res) {
       min_order:   rest.min_order ? parseFloat(rest.min_order) : null,
       step:        rest.step ? parseFloat(rest.step) : null,
       unit:        rest.unit === 'кг' ? 'кг' : 'м',
+      is_hit:      Boolean(rest.is_hit),
+      is_new:      Boolean(rest.is_new),
     };
 
     try {

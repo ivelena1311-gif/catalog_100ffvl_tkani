@@ -51,7 +51,7 @@ module.exports = async function handler(req, res) {
   let path =
     'fabrics' +
     '?select=id,name,article,category_id,composition,width,density,' +
-    'base_price,cut_price,min_order,step,unit,thumb,is_active,' +
+    'base_price,cut_price,min_order,step,unit,thumb,is_active,is_hit,is_new,' +
     'categories(name)' +
     '&is_active=eq.true' +
     '&order=id';

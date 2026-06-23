@@ -834,6 +834,20 @@ function renderEditor() {
       </div>
     </div>
 
+    <div class="form-section">
+      <div class="form-section-title">Метки на карточке</div>
+      <div style="display:flex;gap:24px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px">
+          <input type="checkbox" id="e-is-hit" ${f.is_hit?'checked':''}>
+          <span style="background:hsl(45,62%,73%);color:hsl(30,40%,18%);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:20px">ХИТ</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px">
+          <input type="checkbox" id="e-is-new" ${f.is_new?'checked':''}>
+          <span style="background:rgba(0,0,0,0.55);color:hsl(45,62%,73%);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:20px;border:1px solid rgba(212,175,95,.35)">НОВИНКА</span>
+        </label>
+      </div>
+    </div>
+
     ${_editMode === 'create' ? '<p style="color:var(--hint);font-size:13px">Фото и цвета можно добавить после создания ткани.</p>' : `
     <div class="form-section">
       <div class="form-section-title">Фотографии</div>
@@ -921,6 +935,8 @@ document.getElementById('modal-save-btn').addEventListener('click', async () => 
     cut_price:   document.getElementById('e-cut-price')?.value || null,
     description: document.getElementById('e-description')?.value || '',
     is_active:   _editFabric.is_active,
+    is_hit:      document.getElementById('e-is-hit')?.checked || false,
+    is_new:      document.getElementById('e-is-new')?.checked || false,
   };
 
   if (!fields.name) {

@@ -40,6 +40,8 @@ const Catalog = (() => {
       unit:              f.unit || 'м',
       thumb:             f.thumb || 'linear-gradient(145deg,#ccc,#999)',
       description:       f.description || '',
+      isHit:             !!f.is_hit,
+      isNew:             !!f.is_new,
       // colors и photos — только в ответе детального запроса (?id=N)
       colors:  (f.colors  && f.colors.length)  ? f.colors  : [DEFAULT_COLOR],
       photos:  (f.photos  && f.photos.length)  ? f.photos  : [],
