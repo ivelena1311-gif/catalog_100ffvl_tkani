@@ -681,10 +681,10 @@ a { color: var(--accent); text-decoration: none; }
 
 .fabric-badge {
   display: inline-block;
-  padding: 3px 7px 2px;
+  padding: 5px 10px 4px;
   border-radius: 20px;
   font-family: var(--font-body);
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -693,8 +693,8 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 .fabric-badge--hit {
-  background: var(--gold);
-  color: hsl(30, 40%, 18%);
+  background: hsl(32, 28%, 65%);
+  color: hsl(25, 35%, 20%);
 }
 
 .fabric-badge--new {
