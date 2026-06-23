@@ -81,8 +81,8 @@ module.exports = async function handler(req, res) {
       if (field === 'cut_price')    { patch.cut_price   = val ? parseFloat(val) : null; continue; }
       if (field === 'width')        { patch.width       = val ? parseInt(val) : null; continue; }
       if (field === 'density')      { patch.density     = val ? parseInt(val) : null; continue; }
-      if (field === 'min_order')    { patch.min_order   = val ? parseFloat(val) : null; continue; }
-      if (field === 'step')         { patch.step        = val ? parseFloat(val) : null; continue; }
+      if (field === 'min_order')    { if (val !== null && val !== '') patch.min_order = parseFloat(val); continue; }
+      if (field === 'step')         { if (val !== null && val !== '') patch.step      = parseFloat(val); continue; }
       if (field === 'unit')         { patch.unit        = val === 'кг' ? 'кг' : 'м'; continue; }
       if (field === 'category_id')  { patch.category_id = val ? parseInt(val) : null; continue; }
       if (field === 'is_active')    { patch.is_active   = Boolean(val); continue; }
