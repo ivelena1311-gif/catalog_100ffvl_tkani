@@ -465,8 +465,8 @@ function renderCatalog() {
   // Метки-фильтры
   if (badgeBar) {
     badgeBar.innerHTML = `
-      <button class="badge-chip badge-chip--hit ${filters.filterHit ? 'active' : ''}" data-badge="hit">ХИТ</button>
-      <button class="badge-chip badge-chip--new ${filters.filterNew ? 'active' : ''}" data-badge="new">НОВИНКА</button>
+      <button class="chip ${filters.filterHit ? 'active' : ''}" data-badge="hit">ХИТ</button>
+      <button class="chip ${filters.filterNew ? 'active' : ''}" data-badge="new">НОВИНКА</button>
     `;
   }
 
