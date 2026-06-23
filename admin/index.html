@@ -882,7 +882,8 @@ function renderEditor() {
           <div class="field"><div class="field-label">Название</div>
             <input id="new-color-name" placeholder="Бордо, Синий..."></div>
         </div>
-        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="addColor()">Добавить цвет</button>
+        <button class="btn btn-primary btn-sm" id="add-color-btn" style="margin-top:10px" onclick="addColor()">Добавить цвет</button>
+        <div id="add-color-status" style="font-size:12px;margin-top:6px;min-height:16px"></div>
       </div>
     </div>`}
   `;
@@ -1066,21 +1067,47 @@ async function deletePhoto(id) {
 
 // ── Цвет: добавить ───────────────────────────────────
 async function addColor() {
-  const hex  = document.getElementById('new-color-hex').value;
-  const name = document.getElementById('new-color-name').value.trim();
-  if (!name) { alert('Введите название цвета'); return; }
-  const res = await fetch(`${API}/colors`, {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
-    body: JSON.stringify({ fabric_id: _editFabric.id, hex, name }),
-  });
-  if (res.ok) {
-    const color = await res.json();
-    _editFabric.colors = [...(_editFabric.colors||[]), color];
-    document.getElementById('colors-grid').innerHTML = renderColorsGrid();
-    document.getElementById('new-color-name').value = '';
-  } else {
-    alert('Ошибка при добавлении цвета');
+  const hexEl   = document.getElementById('new-color-hex');
+  const nameEl  = document.getElementById('new-color-name');
+  const statusEl = document.getElementById('add-color-status');
+  const btn     = document.getElementById('add-color-btn');
+
+  const hex  = (hexEl?.value || '').trim() || '#888888';
+  const name = (nameEl?.value || '').trim();
+
+  if (!name) { statusEl.style.color = 'var(--danger)'; statusEl.textContent = 'Введите название цвета'; return; }
+
+  statusEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  try {
+    const res = await fetch(`${API}/colors`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+      body: JSON.stringify({ fabric_id: _editFabric.id, hex, name }),
+    });
+    if (res.ok) {
+      const color = await res.json();
+      _editFabric.colors = [...(_editFabric.colors||[]), color];
+      document.getElementById('colors-grid').innerHTML = renderColorsGrid();
+      nameEl.value = '';
+      hexEl.value  = '#888888';
+      document.getElementById('color-preview').style.background = '#888888';
+      statusEl.style.color = 'var(--success)';
+      statusEl.textContent = 'Цвет добавлен';
+      setTimeout(() => { statusEl.textContent = ''; }, 2000);
+    } else {
+      const errData = await res.json().catch(() => ({}));
+      statusEl.style.color = 'var(--danger)';
+      statusEl.textContent = 'Ошибка: ' + (errData.error || res.status);
+    }
+  } catch (e) {
+    statusEl.style.color = 'var(--danger)';
+    statusEl.textContent = 'Сетевая ошибка: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Добавить цвет';
   }
 }
 
