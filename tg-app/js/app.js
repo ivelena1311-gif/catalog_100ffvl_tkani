@@ -756,15 +756,16 @@ function _renderProductInfo(fabric, color) {
       <p class="product-section-label">Цвет</p>
       <div class="color-swatches">
         ${fabric.colors.map(c => `
-          <div
-            class="color-swatch ${c.id === color.id ? 'active' : ''}"
-            data-color-id="${c.id}"
-            style="background:${c.hex}"
-            title="${c.name}"
-          ></div>
+          <div class="color-swatch-wrap">
+            <div
+              class="color-swatch ${String(c.id) === String(color.id) ? 'active' : ''}"
+              data-color-id="${c.id}"
+              style="background:${c.hex}"
+            ></div>
+            <span class="swatch-label">${c.name}</span>
+          </div>
         `).join('')}
       </div>
-      <p class="color-name" id="color-name-label">${color.name}</p>
     </div>
 
     <!-- Разделитель -->
@@ -833,10 +834,6 @@ function _bindProductEvents(fabric) {
       document.querySelectorAll('#product-info .color-swatch').forEach(s => {
         s.classList.toggle('active', s.dataset.colorId === colorId);
       });
-
-      // Обновляем название цвета
-      const label = document.getElementById('color-name-label');
-      if (label) label.textContent = color.name;
 
       _updateProductMainButton();
       TG.HapticFeedback.selectionChanged();

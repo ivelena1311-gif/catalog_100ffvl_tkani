@@ -123,7 +123,7 @@ function getFabricById(id) {
 
 /** Получить цвет ткани по id цвета */
 function getColorById(fabric, colorId) {
-  return fabric.colors.find(c => c.id === colorId) || fabric.colors[0];
+  return fabric.colors.find(c => String(c.id) === String(colorId)) || fabric.colors[0];
 }
 
 /** Первый цвет */
