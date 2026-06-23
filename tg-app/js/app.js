@@ -757,7 +757,7 @@ function _renderProductInfo(fabric, color) {
       <div class="color-swatches">
         ${fabric.colors.map(c => `
           <div
-            class="color-swatch ${c.id === color.id ? 'active' : ''} ${c.stock === 0 ? 'out-of-stock' : ''}"
+            class="color-swatch ${c.id === color.id ? 'active' : ''}"
             data-color-id="${c.id}"
             style="background:${c.hex}"
             title="${c.name}"

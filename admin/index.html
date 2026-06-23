@@ -209,6 +209,11 @@
       background:var(--danger); color:#fff; border:none;
       width:18px; height:18px; border-radius:50%; cursor:pointer;
       font-size:12px; display:flex; align-items:center; justify-content:center; }
+    .color-toggle { position:absolute; top:-4px; left:-4px;
+      background:#ccc; color:#fff; border:none;
+      width:18px; height:18px; border-radius:50%; cursor:pointer;
+      font-size:10px; display:flex; align-items:center; justify-content:center; }
+    .color-toggle.on { background:var(--success); }
     .add-color-form { border:1.5px dashed var(--border); border-radius:10px; padding:14px; }
     .color-preview-swatch { width:32px; height:32px; border-radius:50%;
       border:2px solid rgba(0,0,0,.1); flex-shrink:0; align-self:flex-end; margin-bottom:9px; }
@@ -903,9 +908,14 @@ function renderColorsGrid() {
   const colors = _editFabric.colors || [];
   if (!colors.length) return '<span style="color:var(--hint);font-size:13px">Цвета не добавлены</span>';
   return colors.map(c => `
-    <div class="color-item" id="color-${c.id}">
+    <div class="color-item" id="color-${c.id}" style="${c.is_active === false ? 'opacity:.4' : ''}">
       <div class="color-swatch-admin" style="background:${esc(c.hex)}"></div>
       <div class="color-info">${esc(c.name)}</div>
+      <button class="color-toggle ${c.is_active === false ? '' : 'on'}"
+        onclick="toggleColorActive(${c.id}, ${c.is_active !== false})"
+        title="${c.is_active === false ? 'Включить цвет' : 'Скрыть цвет'}">
+        ${c.is_active === false ? '○' : '●'}
+      </button>
       <button class="color-del" onclick="deleteColor(${c.id})" title="Удалить">✕</button>
     </div>`).join('');
 }
@@ -1109,6 +1119,23 @@ async function addColor() {
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Добавить цвет'; }
   }
+}
+
+// ── Цвет: вкл/выкл ───────────────────────────────────
+async function toggleColorActive(id, currentActive) {
+  const newState = !currentActive;
+  try {
+    const res = await fetch(`${API}/colors?id=${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json', Authorization:`Bearer ${_token}` },
+      body: JSON.stringify({ is_active: newState }),
+    });
+    if (res.ok) {
+      const color = _editFabric.colors.find(c => c.id === id);
+      if (color) color.is_active = newState;
+      document.getElementById('colors-grid').innerHTML = renderColorsGrid();
+    }
+  } catch (e) { /* ignore */ }
 }
 
 // ── Цвет: удалить ────────────────────────────────────

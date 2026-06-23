@@ -28,7 +28,7 @@ module.exports = async function handler(req, res) {
     try {
       const [fabrics, colors, photos] = await Promise.all([
         dbGet(`fabrics?select=*,categories(name)&id=eq.${numId}&is_active=eq.true`),
-        dbGet(`fabric_colors?select=id,hex,name,stock,rolls&fabric_id=eq.${numId}&order=id`),
+        dbGet(`fabric_colors?select=id,hex,name&fabric_id=eq.${numId}&is_active=eq.true&order=id`),
         dbGet(`fabric_photos?select=url&fabric_id=eq.${numId}&order=sort_order`),
       ]);
 

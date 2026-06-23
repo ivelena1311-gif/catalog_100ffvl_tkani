@@ -5,7 +5,7 @@
  * DELETE /api/admin/colors?id=N   — удалить цвет
  */
 
-const { dbGet, dbPost } = require('../../lib/db');
+const { dbGet, dbPost, dbPatch } = require('../../lib/db');
 const { checkAuth } = require('../../lib/admin-auth');
 
 module.exports = async function handler(req, res) {
@@ -39,6 +39,30 @@ module.exports = async function handler(req, res) {
     } catch (err) {
       console.error('[POST /api/admin/colors]', err.message);
       return res.status(500).json({ error: 'Ошибка сервера' });
+    }
+  }
+
+  // ── PATCH: переключить активность цвета ──────────────────────
+  if (req.method === 'PATCH') {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: 'id обязателен' });
+
+    let body;
+    try {
+      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } catch {
+      return res.status(400).json({ error: 'Некорректный JSON' });
+    }
+
+    const { is_active } = body || {};
+    if (is_active === undefined) return res.status(400).json({ error: 'is_active обязателен' });
+
+    try {
+      const [color] = await dbPatch(`fabric_colors?id=eq.${Number(id)}`, { is_active: Boolean(is_active) });
+      return res.status(200).json(color);
+    } catch (err) {
+      console.error('[PATCH /api/admin/colors]', err.message);
+      return res.status(500).json({ error: err.message });
     }
   }
 
