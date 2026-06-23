@@ -662,12 +662,24 @@ function _renderGallery(fabric, color) {
 }
 
 let _galleryIndex = 0;
+let _galleryCount = 0;
 
 function _initGallerySwipe(slidesEl, dotsEl, count) {
   _galleryIndex = 0;
+  _galleryCount = count;
   let startX = 0;
 
   const gallery = document.getElementById('product-gallery');
+  const btnPrev = document.getElementById('gallery-arrow-prev');
+  const btnNext = document.getElementById('gallery-arrow-next');
+
+  if (btnPrev) btnPrev.onclick = () => {
+    if (_galleryIndex > 0) { _galleryIndex--; _updateGallery(slidesEl, dotsEl); }
+  };
+  if (btnNext) btnNext.onclick = () => {
+    if (_galleryIndex < count - 1) { _galleryIndex++; _updateGallery(slidesEl, dotsEl); }
+  };
+
   gallery.ontouchstart = e => { startX = e.touches[0].clientX; };
   gallery.ontouchend   = e => {
     const diff = startX - e.changedTouches[0].clientX;
@@ -676,6 +688,8 @@ function _initGallerySwipe(slidesEl, dotsEl, count) {
     if (diff < 0 && _galleryIndex > 0)         _galleryIndex--;
     _updateGallery(slidesEl, dotsEl);
   };
+
+  _updateGallery(slidesEl, dotsEl);
 }
 
 function _updateGallery(slidesEl, dotsEl) {
@@ -684,6 +698,10 @@ function _updateGallery(slidesEl, dotsEl) {
   dotsEl.querySelectorAll('.gallery-dot').forEach((d, i) => {
     d.classList.toggle('active', i === _galleryIndex);
   });
+  const btnPrev = document.getElementById('gallery-arrow-prev');
+  const btnNext = document.getElementById('gallery-arrow-next');
+  if (btnPrev) btnPrev.classList.toggle('hidden', _galleryCount <= 1 || _galleryIndex === 0);
+  if (btnNext) btnNext.classList.toggle('hidden', _galleryCount <= 1 || _galleryIndex === _galleryCount - 1);
 }
 
 function _renderProductInfo(fabric, color) {
